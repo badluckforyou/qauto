@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>{{ title }}</title>
+    <!-- plugins:css -->
+    <link rel="stylesheet" href="{% static 'vendors/iconfonts/mdi/css/materialdesignicons.css' %}">
+    <!-- endinject -->
+    <!-- vendor css for this page -->
+    <!-- End vendor css for this page -->
+    <!-- inject:css -->
+    <link rel="stylesheet" href="{% static 'css/shared/style.css' %}">
+    <!-- endinject -->
+    <!-- Layout style -->
+    <link rel="stylesheet" href="{% static 'css/demo_1/style.css' %}">
+    <!-- Layout style -->
+    <link rel="shortcut icon" href="{% static 'images/favicon.ico' %}" />
+  </head>
+  <body class="header-fixed">
+    <!-- partial:partials/_header.html -->
+    <nav class="t-header">
+      <div class="t-header-brand-wrapper">
+        <a>
+          <img class="logo" src="{% static 'images/logo.png' %}" alt="">
+          <img class="logo-mini" src="{% static 'images/logo_mini.png' %}" alt="">
+        </a>
+      </div>
+      <div class="t-header-content-wrapper">
+        <div class="t-header-content">
+          <button class="t-header-toggler t-header-mobile-toggler d-block d-lg-none">
+            <i class="mdi mdi-menu"></i>
+          </button>
+          <form action="#" class="t-header-search-box">
+            <div class="input-group">
+              <input type="text" class="form-control" id="inlineFormInputGroup" placeholder="Search" autocomplete="off">
+              <button class="btn btn-primary" type="submit"><i class="mdi mdi-arrow-right-thick"></i></button>
+            </div>
+          </form>
+          <ul class="nav ml-auto">
+            <li class="nav-item dropdown">
+              <a class="nav-link" href="#" id="notificationDropdown" data-toggle="dropdown" aria-expanded="false">
+                <i class="mdi mdi-account mdi-1x">{{ username }}</i>
+              </a>
+              <div class="dropdown-menu navbar-dropdown dropdown-menu-right" aria-labelledby="notificationDropdown" style="width: 130px;">
+                <div class="dropdown-body">
+                  <div class="dropdown-list">
+                    <div class="rounded-circle bg-inverse-primary text-primary">
+                    </div>
+                    <div class="content-wrapper" onclick="location.href='/user';">
+                      <small class="content-text">My information</small>
+                    </div>
+                  </div>
+                  <div class="dropdown-list" onclick="location.href='/login';">
+                    <div class="rounded-circle bg-inverse-warning text-warning">
+                    </div>
+                    <div class="content-wrapper">
+                      <small class="content-text">Logout</small>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+    <!-- partial -->
+    <div class="page-body">
+      <!-- partial:partials/_sidebar.html -->
+      <div class="sidebar">
+        <div class="user-profile">
+          <div class="display-avatar animated-avatar">
+            <img class="profile-img img-lg rounded-circle" src="{% static 'images/image.png' %}" alt="profile image">
+          </div>
+          <div class="info-wrapper">
+            <p class="user-name">{{ company }}</p>
+            <h6 class="display-income"></h6>
+          </div>
+        </div>
+        <ul class="navigation-menu">
+          <li class="nav-category-divider">HOME</li>
+          <li>
+            <a>
+              <span class="link-title">主页</span>
+              <i class="mdi mdi-home link-icon"></i>
+            </a>
+          </li>
+          <li class="nav-category-divider">STRESSTEST</li>
+          <li>
+            <a href="/stresstest/">
+              <span class="link-title">压力测试</span>
+              <i class="mdi mdi-application link-icon"></i>
+            </a>
+          </li>
+          <li>
+            <a href="/result/">
+              <span class="link-title">结果</span>
+              <i class="mdi mdi-application link-icon"></i>
+            </a>
+          </li>
+          <li class="nav-category-divider">User</li>
+          <li>
+            <a href="/user">
+              <span class="link-title">My Information</span>
+              <i class="mdi mdi-account link-icon"></i>
+            </a>
+          </li>
+        </ul>
+      </div>
+      <!-- partial -->
+      <div class="page-content-wrapper">
+        <div class="page-content-wrapper-inner">
+          <div class="content-viewport">
+            <div class="row">
+              <div class="col-12 py-5">
+                <h4>Note</h4>
+                <p class="text-gray">Wirte by author.</p>
+              </div>
+            </div>
+            <div class="row" style="height: 750px;">
+              <div class="col-lg-12 col-md-12 equel-grid">
+                <div class="grid">
+                  <div class="grid-body d-flex flex-column h-100">
+                    <div class="wrapper">
+                      <div class="d-flex justify-content-between">
+                        <div class="split-header">
+                          <img class="img-ss mt-1 mb-1 mr-2" src="{% static 'images/social-icons/instagram.svg' %}" alt="instagram">
+                          <h5 class="card-title">Manual of folders</h5>
+                        </div>
+                      </div>
+                        <pre class="text-gray" style="font-size: 14px;">{{ manual_of_folders }}</pre>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-lg-12 col-md-12 equel-grid">
+                <div class="grid">
+                  <div class="grid-body d-flex flex-column h-100">
+                    <div class="wrapper">
+                      <div class="d-flex justify-content-between">
+                        <div class="split-header">
+                          <img class="img-ss mt-1 mb-1 mr-2" src="{% static 'images/social-icons/instagram.svg' %}" alt="instagram">
+                          <h5 class="card-title">Common Issues</h5>
+                        </div>
+                      </div>
+                        <pre class="text-gray" style="font-size: 14px;">{{ common_issues }}</pre>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>        
+        <!-- partial -->
+      </div>
+      <!-- page content ends -->
+    </div>
+    <!--page body ends -->
+    <!-- SCRIPT LOADING START FORM HERE /////////////-->
+    <!-- plugins:js -->
+    <script src="{% static 'vendors/js/core.js' %}"></script>
+    <!-- endinject -->
+    <!-- Vendor Js For This Page Ends-->
+    <script src="{% static 'vendors/apexcharts/apexcharts.min.js' %}"></script>
+    <script src="{% static 'vendors/chartjs/Chart.min.js' %}"></script>
+    <script src="{% static 'js/charts/chartjs.addon.js' %}"></script>
+    <!-- Vendor Js For This Page Ends-->
+    <!-- build:js -->
+    <script src="{% static 'js/template.js' %}"></script>
+    <script src="{% static 'js/dashboard.js' %}"></script>
+    <!-- endbuild -->
+    <script type="text/javascript"></script>
+  </body>
+</html>

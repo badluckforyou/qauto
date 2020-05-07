@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>{{ title }}</title>
+    <!-- plugins:css -->
+    <link rel="stylesheet" href="{% static 'vendors/iconfonts/mdi/css/materialdesignicons.css' %}">
+    <!-- endinject -->
+    <!-- vendor css for this page -->
+    <!-- End vendor css for this page -->
+    <!-- inject:css -->
+    <link rel="stylesheet" href="{% static 'css/shared/style.css' %}">
+    <!-- endinject -->
+    <!-- Layout style -->
+    <link rel="stylesheet" href="{% static 'css/demo_1/style.css' %}">
+    <!-- Layout style -->
+    <link rel="shortcut icon" href="{% static 'images/favicon.ico' %}" />
+    <script type="text/javascript">
+      window.onload = function(){
+        $('#game').val('{{ game }}');
+      }
+    </script>
+  </head>
+  <body class="header-fixed" id="thebody">
+    <!-- partial:partials/_header.html -->
+    <nav class="t-header">
+      <div class="t-header-brand-wrapper">
+        <a>
+          <img class="logo" src="{% static 'images/logo.png' %}" alt="">
+          <img class="logo-mini" src="{% static 'images/logo_mini.png' %}" alt="">
+        </a>
+      </div>
+      <div class="t-header-content-wrapper">
+        <div class="t-header-content">
+          <button class="t-header-toggler t-header-mobile-toggler d-block d-lg-none">
+            <i class="mdi mdi-menu"></i>
+          </button>
+          <form action="#" class="t-header-search-box">
+            <div class="input-group">
+              <input type="text" class="form-control" id="inlineFormInputGroup" placeholder="Search" autocomplete="off">
+              <button class="btn btn-primary" type="submit"><i class="mdi mdi-arrow-right-thick"></i></button>
+            </div>
+          </form>
+          <ul class="nav ml-auto">
+            <li class="nav-item dropdown">
+              <a class="nav-link" href="#" id="notificationDropdown" data-toggle="dropdown" aria-expanded="false">
+                <i class="mdi mdi-account mdi-1x">{{ username }}</i>
+              </a>
+              <div class="dropdown-menu navbar-dropdown dropdown-menu-right" aria-labelledby="notificationDropdown" style="width: 130px;">
+                <div class="dropdown-body">
+                  <div class="dropdown-list">
+                    <div class="rounded-circle bg-inverse-primary text-primary">
+                    </div>
+                    <div class="content-wrapper" onclick="location.href='/user';">
+                      <small class="content-text">My information</small>
+                    </div>
+                  </div>
+                  <div class="dropdown-list" onclick="location.href='/login';">
+                    <div class="rounded-circle bg-inverse-warning text-warning">
+                    </div>
+                    <div class="content-wrapper">
+                      <small class="content-text">Logout</small>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+    <!-- partial -->
+    <div class="page-body">
+      <!-- partial:partials/_sidebar.html -->
+      <div class="sidebar">
+        <div class="user-profile">
+          <div class="display-avatar animated-avatar">
+            <img class="profile-img img-lg rounded-circle" src="{% static 'images/image.png' %}" alt="profile image">
+          </div>
+          <div class="info-wrapper">
+            <p class="user-name">{{ company }}</p>
+            <h6 class="display-income"></h6>
+          </div>
+        </div>
+        <ul class="navigation-menu">
+          <li class="nav-category-divider">HOME</li>
+          <li>
+            <a href="/home/">
+              <span class="link-title">主页</span>
+              <i class="mdi mdi-home link-icon"></i>
+            </a>
+          </li>
+          <li class="nav-category-divider">STRESSTEST</li>
+          <li>
+            <a href="/stresstest/">
+              <span class="link-title">压力测试</span>
+              <i class="mdi mdi-application link-icon"></i>
+            </a>
+          </li>
+          <li>
+            <a>
+              <span class="link-title">结果</span>
+              <i class="mdi mdi-application link-icon"></i>
+            </a>
+          </li>
+          <li class="nav-category-divider">USER</li>
+          <li>
+            <a href="/user">
+              <span class="link-title">My Information</span>
+              <i class="mdi mdi-account link-icon"></i>
+            </a>
+          </li>
+        </ul>
+      </div>
+      <!-- partial -->
+      <div class="page-content-wrapper">
+        <div class="page-content-wrapper-inner">
+          <div class="content-viewport" style="float: left;">
+            <div class="row">
+              <div class="col-12">
+                <div class="grid" style="height: 60px;">
+                  <div class="grid-body text-gray">
+                    <div class="header">
+                      <form method="GET" id="games" name="games">
+                        <select class="custom-select" id="game" name="game" style="width: 200px;float: left;padding: 0 15px;height: 30px">
+                          {% for game in games %}
+                          <option>{{ game }}</option>
+                          {% endfor %}
+                        </select>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-5">
+                <div class="grid" style="height: 350px;">
+                  <div class="grid-body">
+                    <h2 class="grid-title">Doughnut Chart</h2>
+                    <div class="item-wrapper">
+                      <canvas id="doughnutChart" width="600" height="400">
+                        此浏览器不支持canvas, 无法显示结果数据图!!!
+                      </canvas>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-7">
+                <div class="grid" style="height: 350px;">
+                  <div class="grid-body">
+                    <h2 class="grid-title">Summary</h2>
+                    <div class="item-wrapper">
+                      <label id="summary" name="summary"></label>
+                    </div>
+                    <div class="item-wrapper">
+                      <label><br></label>
+                    </div>
+                    <div class="item-wrapper">
+                      <button class="btn btn-secondary" id="delbtn" onclick="delRow('{{ grandchildrow.Id }}')">
+                        下载失败报告
+                      </button>
+                      <label>&nbsp;</label>
+                      <button class="btn btn-secondary" id="delbtn" onclick="delRow('{{ grandchildrow.Id }}')">
+                        发送失败报告
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- <img src="media/luzhiqi/fight2/report/1581940089199.jpg" alt="图片无法显示"> -->
+              <div class="col-12">
+                <div class="grid">
+                  <div class="grid-body text-gray">
+                    <div>
+                      <table id="table" name="table" class="table table-hover">
+                        <thead>
+                          <tr>
+                            <th style="width: 210px;">设备编号</th>
+                            <th style="width: 100px;">测试游戏</th>
+                            <th style="width: 80px;">游戏安装</th>
+                            <th style="width: 80px;">当前状态</th>
+                            <th style="width: 80px;">角色等级</th>
+                            <th style="width: 80px;">测试结果</th>
+                            <th style="width: 150px;">运行日志</th>
+                            <th style="width: 240px;">详细报告</th>
+                          </tr>
+                        </thead>
+                        <tbody id="result" name="result">
+                          {% for item in data %}
+                          <tr id="trid">
+                            <td style = "word-wrap:break-word;white-space:normal;">{{ item.SERIALNUMBER }}</td>
+                            <td style = "word-wrap:break-word;white-space:normal;">{{ item.GAME }}</td>
+                            <td style = "word-wrap:break-word;white-space:normal;">{{ item.INSTALL }}</td>
+                            <td style = "word-wrap:break-word;white-space:normal;">{{ item.ACTIVITY }}</td>
+                            <td style = "word-wrap:break-word;white-space:normal;">Lv.{{ item.LEVEL }}</td>
+                            <td style = "word-wrap:break-word;white-space:normal;">{{ item.RESULT }}</td>
+                            <td style = "word-wrap:break-word;white-space:normal;"><a href="/log/?game={{ item.GAME }}&log={{ item.LOG }}">查看详细过程</a></td>
+                            <td style = "word-wrap:break-word;white-space:normal;"><a href="/report/?game={{ item.GAME }}&report={{ item.REPORT }}" target="_blank">查看测试报告</a></td>
+                            <!-- <td style = "word-wrap:break-word;white-space:normal;">
+                              <button class="btn btn-inverse-info btn-xs" id="delbtn" onclick="goToNewHtml('{{ item.GAME }}','{{ item.REPORT }}' )">
+                                查看
+                              </button>
+                              <button class="btn btn-inverse-info btn-xs" data-toggle="modal" data-target="#the_grandchild_case" class="button button-rounded button-tiny fontstyle fontsize" onclick="editRow(this)">
+                                下载
+                              </button>
+                              <button class="btn btn-inverse-info btn-xs" id="delbtn" onclick="delRow('{{ grandchildrow.Id }}')">
+                                邮箱
+                              </button>
+                            </td> -->
+                          </tr>
+                          {% endfor %}
+                        </tbody>
+                      </table>
+                    </div>
+                    <!-- <div style="position: absolute; right: 100px;bottom: 30px;"> -->
+                    <div style="float: right; margin-right: 150px;">
+                      {% if not data.has_previous%}
+                      <span><a>First </a></span>&nbsp;|
+                      {% else %}
+                      <span><a href="?game={{ game }}&page=1">First </a></span>&nbsp;|
+                      {% endif %}
+                      {% if data.has_previous %}
+                      <span><a href="?game={{ game }}&page={{ data.previous_page_number }}">Previous </a></span>&nbsp;|
+                      {% else %}
+                      <span>Previous </span>&nbsp;|
+                      {% endif %}
+                      {% if data.has_next %}
+                      <span id="nextpage"><a href="?game={{ game }}&page={{ data.next_page_number }}">Next </a></span>&nbsp;|
+                      {% else %}
+                      <span><a>Next </a></span>&nbsp;|
+                      {% endif %}
+                      {% if not data.has_next %}
+                      <span><a>Last </a></span>&nbsp;|
+                      {% else %}
+                      <span><a href="?game={{ game }}&page={{ data.paginator.num_pages }}">Last </a></span>&nbsp;|
+                      {% endif %}
+                      &nbsp;Page&nbsp;<span><a>{{ data.number }}</a></span>/<span><a>{{ data.paginator.num_pages }}</a></span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- page content ends -->
+    </div>
+    <!--page body ends -->
+    <!-- SCRIPT LOADING START FORM HERE /////////////-->
+    <!-- plugins:js -->
+    <script src="{% static 'vendors/js/core.js' %}"></script>
+    <!-- endinject -->
+    <!-- Vendor Js For This Page Ends-->
+    <script src="{% static 'vendors/apexcharts/apexcharts.min.js' %}"></script>
+    <script src="{% static 'vendors/chartjs/Chart.min.js' %}"></script>
+    <script src="{% static 'js/charts/chartjs.addon.js' %}"></script>
+    <!-- Vendor Js For This Page Ends-->
+    <!-- build:js -->
+    <script src="{% static 'js/template.js' %}"></script>
+    <script src="{% static 'js/dashboard.js' %}"></script>
+    <!-- endbuild -->
+    <script type="text/javascript">
+      $(window).on("load", function(){
+        $("table tr").each(function(){
+          var fourTd = $(this).find("td:eq(4)");
+          if (fourTd.text() == "Lv.None"){
+            fourTd.html("None");
+          }
+          var fiveTd = $(this).find("td:eq(5)");
+          if (fiveTd.text() == "失败"){
+            fiveTd.css("color", "#f5003a");
+          }
+          else if (fiveTd.text() == "成功"){
+            fiveTd.css("color", "#20E33B");
+          } 
+        });
+        $("#game").change(function(){
+          $("#games").submit();
+        });
+        var succ = 0;
+        var fail = 0;
+        var result = "{{ result }}"
+        var data = JSON.parse(result.replace(/&quot;/g, '"'));
+        for (i=0; i<data.length; i++){
+          if (data[i]["RESULT"] == "成功"){
+            succ++;
+          }
+          else if (data[i]["RESULT"] == "失败"){
+            fail++;
+          }
+        }
+        var total = succ + fail;
+        if ($("#doughnutChart").length) {
+          var doughnutChartCanvas = $("#doughnutChart").get(0).getContext("2d");
+          var DoughnutData = {
+            datasets: [{
+              data: [succ, fail],
+              backgroundColor: ["#20E33B", "#f5003a"],
+              borderColor: ["#20E33B", "#f5003a"],
+              borderWidth: ["#20E33B", "#f5003a"]
+            }],
+            labels: [
+              "成功",
+              "失败",
+            ],
+          };
+          var DoughnutOptions = {
+            responsive: true,
+            animation: {
+              animateScale: true,
+              animateRotate: true,
+              onComplete: function(){
+                console.log("😠 Please do not keep your mouse moving on the doughnut chart!!!");
+                // console.log("😊 If you don't, leave and let me alone ~~");
+              }
+            }
+          };
+          var doughnutChart = new Chart(doughnutChartCanvas, {
+            type: 'doughnut',
+            data: DoughnutData,
+            options: DoughnutOptions,
+          });
+          Chart.pluginService.register({
+            beforeDraw: function(chart){
+              var height = chart.chart.height;
+              var width = chart.chart.width;
+              var doughnut = chart.chart.ctx;
+              doughnut.restore();
+              // doughnutChartCanvas.font = fontsize + "em Verdana";
+              doughnut.font = Chart.helpers.fontString(Chart.defaults.global.defaultFontSize, Chart.defaults.global.defaultFontStyle, Chart.defaults.global.defaultFontFamily)
+              doughnut.textBaseline = "middle";
+
+              var msg = "通过率";
+              var msgWidth = doughnut.measureText(msg).width;
+              var msgPosX = Math.round((width - msgWidth) / 2);
+              var msgPosY = Math.round(height / 2 + 5);
+              doughnut.fillText(msg, msgPosX, msgPosY);
+
+              var percent = ((succ / total) * 100).toFixed(2) + "%";
+              if (total == 0){
+                percent = "0.00%";
+              }
+              var percentWidth = doughnut.measureText(percent).width;
+              var percentPosX = Math.round((width - percentWidth) / 2);
+              var percentPosY = Math.round(height / 2 + 25);
+              doughnut.fillText(percent, percentPosX, percentPosY);
+              doughnut.save();
+            }
+          });
+        }
+        var message = "<br>INFORMATION OF THE RESULT<br>——————————————<br><br>游戏:&nbsp;&nbsp;" + "{{ game }}" + "<br><br>成功终端数:&nbsp;&nbsp;&nbsp;<span style='color:#20E33B'>" + succ + "</span><br>失败终端数:&nbsp;&nbsp;&nbsp;<span style='color:#f5003a'>" + fail + "</span><br>所有终端数:&nbsp;&nbsp;&nbsp;<span style='color:#696ffb'>" + total + "</span>&nbsp;";
+        $("#summary").html(message);
+      });
+      function goToNewHtml(game, report){
+        window.open("/report/?game=" + game + "&report=" + report, "_blank");
+      }
+    </script>
+  </body>
+</html>

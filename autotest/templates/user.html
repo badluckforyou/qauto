@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+{% load staticfiles %}
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>{{ title }}</title>
+    <!-- plugins:css -->
+    <link rel="stylesheet" href="{% static 'vendors/iconfonts/mdi/css/materialdesignicons.css' %}">
+    <link rel="stylesheet" href="{% static 'vendors/css/vendor.addons.css' %}">
+    <!-- endinject -->
+    <!-- vendor css for this page -->
+    <!-- End vendor css for this page -->
+    <!-- inject:css -->
+    <link rel="stylesheet" href="{% static 'css/shared/style.css' %}">
+    <!-- endinject -->
+    <!-- Layout style -->
+    <link rel="stylesheet" href="{% static 'css/demo_1/style.css' %}">
+    <!-- Layout style -->
+    <link rel="shortcut icon" href="{% static 'images/favicon.ico' %}" />
+    <script type="text/javascript">
+      function clearbr(){
+        var notice = '{{ notice }}'.replace(/&#39;/g, "'");
+        $('#notice').text(notice);
+      }
+      window.onload = function(){
+        clearbr();
+      }
+    </script>
+  </head>
+  <body class="header-fixed">
+    <!-- partial:../../partials/_header.html -->
+    <nav class="t-header">
+      <div class="t-header-brand-wrapper">
+        <a href="../../index.html">
+          <img class="logo" src="{% static 'images/logo.png' %}" alt="">
+          <img class="logo-mini" src="{% static 'images/logo_mini.png' %}" alt="">
+        </a>
+      </div>
+      <div class="t-header-content-wrapper">
+        <div class="t-header-content">
+          <button class="t-header-toggler t-header-mobile-toggler d-block d-lg-none">
+            <i class="mdi mdi-menu"></i>
+          </button>
+          <form action="#" class="t-header-search-box">
+            <div class="input-group">
+              <input type="text" class="form-control" id="inlineFormInputGroup" placeholder="Search" autocomplete="off">
+              <button class="btn btn-primary" type="submit"><i class="mdi mdi-arrow-right-thick"></i></button>
+            </div>
+          </form>
+          <ul class="nav ml-auto">
+            <li class="nav-item dropdown">
+              <a class="nav-link" href="#" id="notificationDropdown" data-toggle="dropdown" aria-expanded="false">
+                <i class="mdi mdi-account mdi-1x">{{ username }}</i>
+              </a>
+              <div class="dropdown-menu navbar-dropdown dropdown-menu-right" aria-labelledby="notificationDropdown" style="width: 130px;">
+                <div class="dropdown-body">
+                  <div class="dropdown-list" onclick="location.href='/user';">
+                    <div class="rounded-circle bg-inverse-primary text-primary">
+                    </div>
+                    <div class="content-wrapper">
+                      <small class="content-text">My information</small>
+                    </div>
+                  </div>
+                  <div class="dropdown-list" onclick="location.href='/login';">
+                    <div class="rounded-circle bg-inverse-warning text-warning">
+                    </div>
+                    <div class="content-wrapper">
+                      <small class="content-text">Logout</small>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+    <!-- partial -->
+    <div class="page-body">
+      <!-- partial:partials/_sidebar.html -->
+      <div class="sidebar">
+        <div class="user-profile">
+          <div class="display-avatar animated-avatar">
+            <img class="profile-img img-lg rounded-circle" src="{% static 'images/image.png' %}" alt="profile image">
+          </div>
+          <div class="info-wrapper">
+            <p class="user-name">{{ company }}</p>
+            <h6 class="display-income"></h6>
+          </div>
+        </div>
+        <ul class="navigation-menu">
+          <li class="nav-category-divider">HOME</li>
+          <li>
+            <a href="/home">
+              <span class="link-title">Home</span>
+              <i class="mdi mdi-home link-icon"></i>
+            </a>
+          </li>
+          <li class="nav-category-divider">SOCKET</li>
+          <li>
+            <a href="#sample-pages" data-toggle="collapse" aria-expanded="false">
+              <span class="link-title">Socket-Single</span>
+              <i class="mdi mdi-application link-icon"></i>
+            </a>
+            <ul class="collapse navigation-submenu" id="sample-pages">
+              <li>
+                <a href="/socket/single/testcase/">Test case</a>
+              </li>
+              <li>
+                <a href="/socket/single/testcase-execute/">Execute</a>
+              </li>
+            </ul>
+          </li>
+          <li>
+            <a href="#sample-page" data-toggle="collapse" aria-expanded="false">
+              <span class="link-title">Socket-Auto</span>
+              <i class="mdi mdi-application link-icon"></i>
+            </a>
+            <ul class="collapse navigation-submenu" id="sample-page">
+              <li>
+                <a href="/socket/auto/testcase/">Test case</a>
+              </li>
+              <li>
+                <a href="/socket/auto/testcase-execute/">Execute</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-category-divider">WEBSOCKET</li>
+          <li>
+            <a href="#ui-elements" data-toggle="collapse" aria-expanded="false">
+              <span class="link-title">Websocket-Single</span>
+              <i class="mdi mdi-application link-icon"></i>
+            </a>
+            <ul class="collapse navigation-submenu" id="ui-elements">
+              <li>
+                <a href="/websocket/single/testcase/">Test case</a>
+              </li>
+              <li>
+                <a href="/websocket/single/testcase-execute/">Execute</a>
+              </li>
+            </ul>
+          </li>
+          <li>
+            <a href="#ui-element" data-toggle="collapse" aria-expanded="false">
+              <span class="link-title">Websocket-Auto</span>
+              <i class="mdi mdi-application link-icon"></i>
+            </a>
+            <ul class="collapse navigation-submenu" id="ui-element">
+              <li>
+                <a href="/websocket/auto/testcase/">Test case</a>
+              </li>
+              <li>
+                <a href="/websocket/auto/testcase-execute/">Execute</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-category-divider">User</li>
+          <li>
+            <a>
+              <span class="link-title">My Information</span>
+              <i class="mdi mdi-account link-icon"></i>
+            </a>
+          </li>
+        </ul>
+      </div>
+      <!-- partial -->
+      <div class="page-content-wrapper">
+        <div class="page-content-wrapper-inner">
+          <div class="content-viewport">
+            <div class="row">
+              <div class="col-lg-12 equel-grid">
+                <div class="grid">
+                  <p class="grid-header">Notice</p>
+                  <div class="grid-body">
+                    <div class="item-wrapper">
+                      <div class="row mb-3">
+                        <div class="col-md-8 mx-auto">
+                          <div class="form-group row showcase_row_area">
+                            <div>
+                              <label>
+                                <label>Hello, {{ username }}.<br></label>
+                                <label id="notice"></label>
+                                <label style="float: right;"><br>Administrater</label>
+                              </label>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-12 equel-grid">
+                <div class="grid">
+                  <p class="grid-header">Change My Information</p>
+                  <div class="grid-body">
+                    <div class="item-wrapper">
+                      <form class="row mb-3" method="POST" onsubmit="return false" id="user_infomation">
+                        <div class="col-md-8 mx-auto">
+                          <div class="form-group row showcase_row_area">
+                            <div class="col-md-3 showcase_text_area">
+                              <label for="email">Email</label>
+                            </div>
+                            <div class="col-md-6 showcase_content_area">
+                              <input type="email" class="form-control" id="email" placeholder="Enter your new email" value="{{ email }}" />
+                            </div>
+                          </div>
+                          <div class="form-group row showcase_row_area">
+                            <div class="col-md-3 showcase_text_area">
+                              <label for="old_pwd">Old Password</label>
+                            </div>
+                            <div class="col-md-6 showcase_content_area">
+                              <input type="password" class="form-control" id="old_pwd" placeholder="Enter your old password">
+                            </div>
+                          </div>
+                          <div class="form-group row showcase_row_area">
+                            <div class="col-md-3 showcase_text_area">
+                              <label for="new_pwd">New Password</label>
+                            </div>
+                            <div class="col-md-6 showcase_content_area">
+                              <input type="password" class="form-control" id="new_pwd" placeholder="Enter your new password">
+                            </div>
+                          </div>
+                          <div class="form-group row showcase_row_area">
+                            <div class="col-md-3 showcase_text_area">
+                              <label for="new_pwd">New Password Again</label>
+                            </div>
+                            <div class="col-md-6 showcase_content_area">
+                              <input type="password" class="form-control" id="new_pwd_again" placeholder="Enter your new password again">
+                            </div>
+                          </div>
+                          <label id="message" style="margin-left: 120px;"></label>
+                          <button type="submit" class="btn btn-sm btn-primary" style="float: right; margin-right: 180px;" id="update_info">Update</button>
+                        </div>
+                      </form>
+                      {% for msg in server %}
+                      <form class="row mb-3" method="POST" onsubmit="return false" id="socket_server">
+                        <div class="col-md-8 mx-auto">
+                          <div class="form-group row showcase_row_area">
+                            <div class="col-md-3 showcase_text_area">
+                              <label>Socket Server Id</label>
+                            </div>
+                            <div class="col-md-6 showcase_content_area">
+                              <input class="form-control" id="socket_server_id" placeholder="Enter your new Server Id" value="{{ msg.SocketServerId }}" />
+                            </div>
+                          </div>
+                          <div class="form-group row showcase_row_area">
+                            <div class="col-md-3 showcase_text_area">
+                              <label>Socket Server IP</label>
+                            </div>
+                            <div class="col-md-6 showcase_content_area">
+                              <input class="form-control" id="socket_server_ip" placeholder="Enter your new Server IP" value="{{ msg.SocketServerIp }}" />
+                            </div>
+                          </div>
+                          <div class="form-group row showcase_row_area">
+                            <div class="col-md-3 showcase_text_area">
+                              <label>Socket Server PORT</label>
+                            </div>
+                            <div class="col-md-6 showcase_content_area">
+                              <input class="form-control" id="socket_server_port" placeholder="Enter your new Server PORT" value="{{ msg.SocketServerPort }}"/>
+                            </div>
+                          </div>
+                          <label id="message" style="margin-left: 120px;"></label>
+                          <button type="submit" class="btn btn-sm btn-primary" style="float: right; margin-right: 180px;" id="update_socket_server">Update</button>
+                        </div>
+                      </form>
+                      <form class="row mb-3" method="POST" onsubmit="return false" id="ws_server">
+                        <div class="col-md-8 mx-auto">
+                          <div class="form-group row showcase_row_area">
+                            <div class="col-md-3 showcase_text_area">
+                              <label>Websocket Server IP</label>
+                            </div>
+                            <div class="col-md-6 showcase_content_area">
+                              <input class="form-control" id="ws_server_ip" placeholder="Enter your new Server IP" value="{{ msg.WebSocketServerIp }}" />
+                            </div>
+                          </div>
+                          <div class="form-group row showcase_row_area">
+                            <div class="col-md-3 showcase_text_area">
+                              <label>Websocket Server PORT</label>
+                            </div>
+                            <div class="col-md-6 showcase_content_area">
+                              <input class="form-control" id="ws_server_port" placeholder="Enter your new Server PORT" value="{{ msg.WebSocketServerPort }}"/>
+                            </div>
+                          </div>
+                          <label id="message" style="margin-left: 120px;"></label>
+                          <button type="submit" class="btn btn-sm btn-primary" style="float: right; margin-right: 180px;" id="update_ws_server">Update</button>
+                        </div>
+                      </form>
+                      {% endfor %}
+                      {% csrf_token %}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- content viewport ends -->
+      </div>
+      <!-- page content ends -->
+    </div>
+    <!--page body ends -->
+    <!-- SCRIPT LOADING START FORM HERE /////////////-->
+    <!-- plugins:js -->
+    <script src="{% static 'vendors/js/core.js' %}"></script>
+    <script src="{% static 'vendors/js/vendor.addons.js' %}"></script>
+    <!-- endinject -->
+    <!-- Vendor Js For This Page Ends-->
+    <!-- Vendor Js For This Page Ends-->
+    <!-- build:js -->
+    <script src="{% static 'js/template.js' %}"></script>
+    <script type="text/javascript">
+      $('#update_info').click(function(){
+        $.ajax({
+          cache: false,
+          url: "update_infomation",
+          dataType: 'text',
+          type: 'POST',
+          async: false,
+          data: {
+            "email": $('#email').val(),
+            "old_pwd": $('#old_pwd').val(),
+            "new_pwd": $('#new_pwd').val(),
+            "new_pwd_again": $('#new_pwd_again').val(),
+          },
+          success: function (data) {
+            if (data == '"empty"') {
+              $('#message').text('Please do not input empty email or password!');
+            }
+            else if (data == '"wrong"') {
+              $('#message').text('Please check your old password!');
+            }
+            else if (data == '"different"') {
+              $('#message').text('Two different new passwords!');
+            }
+            else {
+              alert('Success!');
+              $(location).attr('href', '/login/');
+            }
+          },
+          error: function (data) {
+            alert('Fail!');
+          }
+        });
+      });
+      $('#update_socket_server').click(function(){
+        $.ajax({
+          cache: false,
+          url: "update_socket_server",
+          dataType: 'text',
+          type: 'POST',
+          async: false,
+          data: {
+            "socket_server_id": $('#socket_server_id').val(),
+            "socket_server_ip": $('#socket_server_ip').val(),
+            "socket_server_port": $('#socket_server_port').val(),
+          },
+          success: function (data) {
+            alert('Update socket server information success!')
+          },
+          error: function (data) {
+            alert('Fail!');
+          }
+        });
+      });
+      $('#update_ws_server').click(function(){
+        $.ajax({
+          cache: false,
+          url: "update_websocket_server",
+          dataType: 'text',
+          type: 'POST',
+          async: false,
+          data: {
+            "ws_server_id": $('#ws_server_id').val(),
+            "ws_server_ip": $('#ws_server_ip').val(),
+            "ws_server_port": $('#ws_server_port').val(),
+          },
+          success: function (data) {
+            alert('Update websocket server information success!')
+          },
+          error: function (data) {
+            alert('Fail!');
+          }
+        });
+      });
+    </script>
+    <!-- endbuild -->
+  </body>
+</html>
