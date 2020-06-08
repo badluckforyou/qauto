@@ -15,10 +15,9 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from autotest.app_settings import AppSettings
 from autotest.models import AutoUITestResult
 from autotest.helper import _hash_encrypted, get_files
-from autotest.database import DataBaseManage
+from autotest.database import dbmanage
 
 
-database = DataBaseManage()
 
 def get_true_username(request):
     sharer = request.GET.get("u")
@@ -37,7 +36,7 @@ def generate_image(file, image):
 
 
 def get_dates(query):
-    dates = database.select("autotest_autouitestresult", "date", query)
+    dates = dbmanage.select("autotest_autouitestresult", "date", query)
     dates =  list(set([d[0] for d in dates])) if dates else []
     dates.sort()
     return ["All"] + dates
@@ -51,21 +50,21 @@ def result(request):
 
     if project == "All":
         data = AutoUITestResult.objects.filter(username=username)
-        result = database.select("autotest_autouitestresult", "testresult", "username='%s'" % username)
+        result = dbmanage.select("autotest_autouitestresult", "testresult", "username='%s'" % username)
         dates = ["All"]
     elif project != "All" and date == "All":
         data = AutoUITestResult.objects.filter(Q(username=username) & Q(project=AppSettings.PROJECTS[project]))
         query = "username='%s' and project='%s'" % (username, AppSettings.PROJECTS[project])
-        result = database.select("autotest_autouitestresult", "testresult", query)
+        result = dbmanage.select("autotest_autouitestresult", "testresult", query)
         dates = get_dates(query)
     else:
         data = AutoUITestResult.objects.filter(Q(username=username) & 
                                                 Q(project=AppSettings.PROJECTS[project]) &
                                                 Q(date=date))
         query = "username='%s' and project='%s' and date='%s'" % (username, AppSettings.PROJECTS[project], date)
-        result = database.select("autotest_autouitestresult", "testresult", query)
+        result = dbmanage.select("autotest_autouitestresult", "testresult", query)
         query = "username='%s' and project='%s'" % (username, AppSettings.PROJECTS[project])
-        dates = get_dates(query)
+        dates = get_dates(query)    
 
     if result:
         result = [r[0] for r in result]

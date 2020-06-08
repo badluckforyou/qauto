@@ -5,10 +5,10 @@ from qauto import settings
 
 
 # db = {
-#     "HOST": "0.0.0.0",
+#     "HOST": "127.0.0.1",
 #     "PORT": 3306,
 #     "USER": "root",
-#     "PASSWORD": "0987zbc123",
+#     "PASSWORD": "0987abc123",
 #     "DBNAME": "qauto"
 # }
 
@@ -117,3 +117,4 @@ class DataBaseManage:
         statement = "UPDATE {} SET {} WHERE {};".format(table, data, keywords)
         self.curs.execute(statement)
 
+dbmanage = DataBaseManage()

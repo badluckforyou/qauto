@@ -19,12 +19,11 @@ from django.http import JsonResponse
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 
-from autotest.readsteps import read_steps
 from autotest.app_settings import AppSettings
 from autotest.helper import _hash_encrypted, get_specified_files
 from autotest.models import SubServer, Task
-from autotest.database import DataBaseManage
-from autotest.csv import parse_csv
+from autotest.database import dbmanage
+from autotest.task_watching import watching
 
 
 __author__ = "Jackey"
@@ -32,6 +31,9 @@ __author__ = "Jackey"
 
 
 LOGGER = logging.getLogger("autotest")
+watching_thread = threading.Thread(target=watching, args=())
+watching_thread.setDaemon(False)
+watching_thread.start()
 
 
 
@@ -51,12 +53,12 @@ def remove_file(filepath, key):
         raise("WRONG KEY OF REMOVING FILES!!!")
 
 
-def get_sub_servers(database, username):
+def get_sub_servers(username):
     sub_servers = list()
-    _sub_servers = database.select("autotest_subserver", "username, server", "single=0 and status=0")
+    _sub_servers = dbmanage.select("autotest_subserver", "username, server", "single=0 and status=0")
     if _sub_servers:
         sub_servers = [' - '.join(s) for s in _sub_servers]
-    my_sub_server = database.select("autotest_subserver", "username, server", "username='%s' and single=1 and status=0" % username)
+    my_sub_server = dbmanage.select("autotest_subserver", "username, server", "username='%s' and single=1 and status=0" % username)
     if my_sub_server:
         sub_servers += [' - '.join(m) for m in my_sub_server]
     return sub_servers
@@ -87,8 +89,7 @@ def automated_testing(request):
         message = upload_file(request)
     filepath = os.path.join(AppSettings.TESTERFOLDER, _hash_encrypted(username), AppSettings.PROJECTS[project])
 
-    database = DataBaseManage()
-    sub_servers = get_sub_servers(database, username)
+    sub_servers = get_sub_servers(username)
 
     status = get_status(request)
     if status == 0:
@@ -166,7 +167,7 @@ def add_task(request):
         show = 0
         Task.objects.create(username=username, platform=platform, package=package, testcase=filename,
                             project=project, server=server, status=status, show=show)
-        return JsonResponse("添加自动化测试任务成功", safe=False)
+        return JsonResponse("成功添加自动化测试任务", safe=False)
     except:
         return JsonResponse("添加自动化测试任务失败\nError: %s" % traceback.format_exc(), safe=False)
 
@@ -178,87 +179,10 @@ def remove_task(request):
         print(identify)
         if identify == "remove":
             Task.objects.filter(Q(username=username) & Q(status="完成") & Q(show=0)).update(show=1)
-        return JsonResponse("移除已完成的自动化测试任务成功", safe=False)
+        return JsonResponse("成功移除已完成的自动化测试任务", safe=False)
     except:
         return JsonResponse("移除已完成的自动化测试任务失败\nError: %s" % traceback.format_exc(), safe=False)
 
-    
-def execute_tasks(task_ids):
-    """
-    根据任务id list去执行对应的测试任务
-    服务于execute方法中的多线程thread
-    """
-    database = DataBaseManage()
-    for task_id in task_ids:
-        # 每次except都需要将任务状态置回空闲
-        try:
-            # 开始前更新任务状态为执行
-            Task.objects.filter(id=task_id).update(status="执行")
-            # 获取任务的相关数据并提取
-            out = database.select("autotest_task", keywords="id=%s" % task_id)
-            id, username, project, platform, package, filename, server, _, _ = out[0]
-            project = AppSettings.PROJECTS[project]
-            #获取测试用例文件并解析成规定格式的数据
-            file = os.path.join(AppSettings.TESTERFOLDER, _hash_encrypted(username), project, filename)
-            testcase = parse_csv(file)
-
-            try:
-                _, server = server.split(' - ')
-            except:
-                Task.objects.filter(id=task_id).update(status="空闲")
-                continue
-            try:
-                requests.get(server)
-            except:
-                # 如果子服务器无法连接, 则表明服务器已经关闭, 中断测试并将该数据删除
-                SubServer.objects.filter(server=server).delete()
-                Task.objects.filter(id=task_id).update(status="空闲")
-                continue
-            # 生成数据并发送给子服务器以唤起自动化任务
-            data = {
-                "id": id,
-                "username": username,
-                "project": project,
-                "platform": platform,
-                "package": package,
-                "testcase": testcase
-            }
-            headers = {"Content-Type": "application/x-www-form-urlencoded;charset=utf-8"}
-            response = requests.post(server, data=json.dumps(data), headers=headers)
-            # 执行自动化测试期间需要将子服务器状态设置为不可见
-            SubServer.objects.filter(server=server).update(status=1)
-            while True:
-                time.sleep(10)
-                status = database.select("autotest_task", "status", "id=%s" % task_id)[0][0]
-                if status != "执行":
-                    # 执行完成, 将服务器状态设置为可见
-                    SubServer.objects.filter(server=server).update(status=0)
-                    break
-        except:
-            Task.objects.filter(id=task_id).update(status="空闲")
-
-
-def split_tasks_by_server(task_ids):
-    """
-    根据服务器拆分任务列表
-    returns:
-        tasks -> {服务器名 : 对应该服务器的任务List}
-    """
-    database = DataBaseManage()
-    tasks = {}
-    for id in task_ids:
-        try:
-            out = database.select("autotest_task", "server", "id=%s" % id)
-            server = out[0][0]
-            if server not in tasks:
-                tasks[server] = list()
-            tasks[server].append(id)
-        except:
-            traceback.print_exc()
-            Task.objects.filter(id=task_id).update(status="空闲")
-    return tasks
-
-            
 
 @login_required(login_url="/login/")
 def execute(request):
@@ -268,27 +192,7 @@ def execute(request):
         # 将所有申请执行的状态都改为队列
         for task_id in task_ids:
             Task.objects.filter(id=task_id).update(status="队列")
-        # 根据子服务器拆分任务
-        tasks = split_tasks_by_server(task_ids)
-        for i, v in tasks.items():
-            thread = threading.Thread(target=execute_tasks, args=(v,))
-            thread.setDaemon(False)
-            thread.start()
-        return JsonResponse("开始自动化测试", safe=False)
-
-
-@login_required(login_url="/login/")
-def stop(request):
-    username = request.session.get("user")
-    if request.is_ajax():
-        stop = request.POST.get("stop")
-        if stop == "stop":
-            if username not in Management.INUSE.keys():
-                return JsonResponse("没有正在执行的自动测试任务!!!", safe=False)
-            Management.clear_inuse_status(username)
-            return JsonResponse("自动化测试已停止!!!", safe=False)
-        else:
-            return JsonResponse("中断失败, 请联系管理员查找原因!!!", safe=False)
+        return JsonResponse("自动化测试已经开始", safe=False)
 
 
 def share(request):
@@ -303,8 +207,8 @@ def share(request):
     port = request.POST.get("port")
     try:
         server = "http://%s:%s" % (host, port)
-        database = DataBaseManage()
-        out = database.select("autotest_subserver", "id","server='%s'" % server)
+        
+        out = dbmanage.select("autotest_subserver", "id","server='%s'" % server)
         if out:
             SubServer.objects.filter(id=out[0][0]).update(server=server, single=single, status=status)
         else:
