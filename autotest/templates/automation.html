@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>{{ title }}</title>
+    <!-- plugins:css -->
+    <link rel="stylesheet" href="{% static 'vendors/iconfonts/mdi/css/materialdesignicons.css' %}">
+    <!-- endinject -->
+    <!-- vendor css for this page -->
+    <!-- End vendor css for this page -->
+    <!-- inject:css -->
+    <link rel="stylesheet" href="{% static 'css/shared/style.css' %}">
+    <!-- endinject -->
+    <!-- Layout style -->
+    <link rel="stylesheet" href="{% static 'css/demo_1/style.css' %}">
+    <!-- Layout style -->
+    <link rel="shortcut icon" href="{% static 'images/favicon.ico' %}" />
+    <script type="text/javascript">
+      window.onload = function(){
+        $("#project").val("{{ project }}");
+        $("#platform").val("{{ platform }}");
+      }
+    </script>
+  </head>
+  <body class="header-fixed" id="thebody">
+    <!-- partial:partials/_header.html -->
+    <nav class="t-header">
+      <div class="t-header-brand-wrapper">
+        <a>
+          <img class="logo" src="{% static 'images/logo.png' %}" alt="">
+          <img class="logo-mini" src="{% static 'images/logo_mini.png' %}" alt="">
+        </a>
+      </div>
+      <div class="t-header-content-wrapper">
+        <div class="t-header-content">
+          <button class="t-header-toggler t-header-mobile-toggler d-block d-lg-none">
+            <i class="mdi mdi-menu"></i>
+          </button>
+          <form action="#" class="t-header-search-box">
+            <div class="input-group">
+              <input type="text" class="form-control" id="inlineFormInputGroup" placeholder="Search" autocomplete="off">
+              <button class="btn btn-primary" type="submit"><i class="mdi mdi-arrow-right-thick"></i></button>
+            </div>
+          </form>
+          <ul class="nav ml-auto">
+            <li class="nav-item dropdown">
+              <a class="nav-link" href="#" id="notificationDropdown" data-toggle="dropdown" aria-expanded="false">
+                <i class="mdi mdi-account mdi-1x">{{ username }}</i>
+              </a>
+              <div class="dropdown-menu navbar-dropdown dropdown-menu-right" aria-labelledby="notificationDropdown" style="width: 130px;">
+                <div class="dropdown-body">
+                  <div class="dropdown-list">
+                    <div class="rounded-circle bg-inverse-primary text-primary">
+                    </div>
+                    <div class="content-wrapper" onclick="location.href='/user/';">
+                      <small class="content-text">My information</small>
+                    </div>
+                  </div>
+                  <div class="dropdown-list" onclick="location.href='/login/';">
+                    <div class="rounded-circle bg-inverse-warning text-warning">
+                    </div>
+                    <div class="content-wrapper">
+                      <small class="content-text">Logout</small>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+    <!-- partial -->
+    <div class="page-body">
+      <!-- partial:partials/_sidebar.html -->
+      <div class="sidebar">
+        <div class="user-profile">
+          <div class="display-avatar animated-avatar">
+            <img class="profile-img img-lg rounded-circle" src="{% static 'images/image.png' %}" alt="profile image">
+          </div>
+          <div class="info-wrapper">
+            <h3 class="user-name">{{ company }}</h3>
+          </div>
+        </div>
+        <ul class="navigation-menu">
+          <li class="nav-category-divider">HOME</li>
+          <li>
+            <a href="/home/">
+              <span class="link-title">主页</span>
+              <i class="mdi mdi-home link-icon"></i>
+            </a>
+          </li>
+          <li class="nav-category-divider">AUTOMATED TESTING</li>
+          <li>
+            <a>
+              <span class="link-title">自动化测试</span>
+              <i class="mdi mdi-application link-icon"></i>
+            </a>
+          </li>
+          <li>
+            <a href="/result/">
+              <span class="link-title">结果</span>
+              <i class="mdi mdi-application link-icon"></i>
+            </a>
+          </li>
+          <li class="nav-category-divider">USER</li>
+          <li>
+            <a href="/user/">
+              <span class="link-title">My Information</span>
+              <i class="mdi mdi-account link-icon"></i>
+            </a>
+          </li>
+        </ul>
+      </div>
+      <!-- partial -->
+      <div class="page-content-wrapper">
+        <div class="page-content-wrapper-inner">
+          <div class="content-viewport" style="float: left;">
+            <div class="row">
+              <div class="modal" id="uploadTestCases" data-backdrop="true" style="position: fixed;">
+                <div class="modal-dialog">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h6 class="modal-title" style="font-size: 20px">
+                        <strong>Upload Test Cases</strong>
+                      </h6>
+                    </div>
+                    <div class="modal-body">
+                      <form class="form-group" method="POST" id="uploadTestCasesForm" enctype="multipart/form-data">
+                        <label style="color: #778899">Choose your project.</label>
+                        <select class="custom-select" id="caseProject" name="caseProject" style="width: 120px;padding: 0 15px;height: 30px;width: 360px;">
+                          {% for project in projects %}
+                          <option>{{ project }}</option>
+                          {% endfor %}
+                        </select>
+                        <ul></ul>
+                        <label style="color: #778899">Choose the case file.</label>
+                        <ul>
+                          <input type="file" id="caseFile" name="caseFile">
+                        </ul>
+                        <ul></ul>
+                        <label style="color: #787879">NOTICE!! You can only upload one file.</label>
+                        <div class="modal-footer">
+                          <a class="btn btn-success btn-sm" data-dismiss="modal" id="uploadTestCasesButton">
+                            <i class="mdi mdi-cloud-upload"></i>
+                            UPLOAD
+                          </a>
+                        </div>
+                        {% csrf_token %}
+                      </form>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-12" style="height: 200px">
+                <div class="grid">
+                  <p class="grid-header"><font size="5"><b>上传测试用例</b></font></p>
+                  <div class="grid-body">
+                    <div class="item-wrapper">
+                      <div class="row" style="width: 750px;">
+                        <div class="col-md-8 mx-auto">
+                          <div class="form-group row showcase_row_area">
+                            <div class="col-md-3 showcase_text_area"></div>
+                            <div class="col-md-9 showcase_content_area">
+                              <button class="btn btn-secondary has-icon btn-block mt-0" data-toggle="modal" data-target="#uploadTestCases" style="height: 30px;padding: 0 15px;">
+                                <i class="mdi mdi-cloud-upload"></i>
+                                上传自动化用例
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-12" style="height: 450px">
+                <div class="grid">
+                  <p class="grid-header"><font size="5"><b>配置测试信息</b></font></p>
+                  <div class="grid-body">
+                    <div class="item-wrapper">
+                      <div class="row mb-3" style="width: 750px;">
+                        <div class="col-md-8 mx-auto">
+                          <form role="form" class="form-group" method="GET" id="projects">
+                            <div class="form-group row showcase_row_area">
+                              <div class="col-md-3 showcase_text_area">
+                                <label for="project" style="color: #787879;"><b>Project</b></label>
+                              </div>
+                              <div class="col-md-9 showcase_content_area">
+                                <select class="custom-select" id="project" name="project" style="width: 120px;padding: 0 15px;height: 30px;width: 360px;">
+                                  {% for project in projects %}
+                                  <option>{{ project }}</option>
+                                  {% endfor %}
+                                </select>
+                              </div>
+                            </div>
+                            {% csrf_token %}
+                          </form>
+                          <div class="form-group row showcase_row_area">
+                            <div class="col-md-3 showcase_text_area">
+                              <label for="choosePlatform" style="color: #787879;"><b>Platform</b></label>
+                            </div>
+                            <div class="col-md-9 showcase_content_area">
+                              <select class="custom-select" id="platform" name="platform" style="width: 120px;padding: 0 15px;height: 30px;width: 360px;">
+                                {% for platform in platforms %}
+                                <option>{{ platform }}</option>
+                                {% endfor %}
+                              </select>
+                            </div>
+                          </div>
+                          <div class="form-group row showcase_row_area">
+                            <div class="col-md-3 showcase_text_area">
+                              <label for="app" style="color: #787879;"><b>Packeage</b></label>
+                            </div>
+                            <div class="col-md-9 showcase_content_area">
+                              <select class="custom-select" id="app" name="app" style="padding: 0 15px;height: 30px;width: 360px;">
+                                {% for package in packages %}
+                                <option>{{ package }}</option>
+                                {% endfor %}
+                              </select>
+                            </div>
+                          </div>
+                          <div class="form-group row showcase_row_area">
+                            <div class="col-md-3 showcase_text_area">
+                              <label for="chooseCaseFile" style="color: #787879;"><b>Test Case</b></label>
+                            </div>
+                            <div class="col-md-9 showcase_content_area">
+                              <select class="custom-select" id="files" name="files" style="padding: 0 15px;height: 30px;width: 360px;">
+                                {% for file in files %}
+                                <option>{{ file }}</option>
+                                {% endfor %}
+                              </select>
+                            </div>
+                          </div>
+                          <div class="form-group row showcase_row_area">
+                            <div class="col-md-3 showcase_text_area">
+                              <label for="chooseServer" style="color: #787879;"><b>SubServer</b></label>
+                            </div>
+                            <div class="col-md-9 showcase_content_area">
+                              <select class="custom-select" id="server" name="server" style="padding: 0 15px;height: 30px;width: 360px;">
+                                {% for server in subservers %}
+                                <option>{{ server }}</option>
+                                {% endfor %}
+                              </select>
+                            </div>
+                          </div>
+                          <div class="form-group row showcase_row_area"></div>
+                          <div class="form-group row showcase_row_area">
+                            <div class="col-md-3 showcase_text_area"></div>
+                            <div class="col-md-9 showcase_text_area">
+                              <button class="btn btn-secondary has-icon btn-block mt-0" id="addTask" name="addTask" style="height: 30px;padding: 0 15px;">
+                                <i class="mdi mdi-file-document"></i>
+                                添加自动化任务
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              {% ifnotequal tasksnum 0 %}
+              <div class="col-lg-12" id="myTasks">
+                <div class="grid">
+                  <p class="grid-header"><font size="5"><b>我的测试任务</b></font></p>
+                  <div class="grid-body">
+                    <table id="table" name="table" class="table table-hover">
+                        <thead>
+                          <tr>
+                            <th style="width: 50px;">Select</th>
+                            <th style="width: 170px;">Project</th>
+                            <th style="width: 30px;">Platform</th>
+                            <th style="width: 200px;">Package</th>
+                            <th style="width: 150px;">Test Case</th>
+                            <th style="width: 150px;">SubServer</th>
+                            {% ifequal status 0 %}
+                            <th style="width: 50px;">Status<a class="mdi mdi-chevron-double-down" href="/automation/?n={{ shownum }}&s=1"></a></th>
+                            {% else %}
+                            <th style="width: 50px;">Status<a class="mdi mdi-chevron-double-up" href="/automation/?n={{ shownum }}&s=0"></a></th>
+                            {% endifequal %}
+                          </tr>
+                        </thead>
+                        <tbody id="tasksPool" name="tasksPool">
+                          {% for task in tasks %}
+                          <tr id="trId">
+                            <td style = "word-wrap:break-word;white-space:normal;"><input type="checkbox" id="{{ task.id }}"></td>
+                            <td style = "word-wrap:break-word;white-space:normal;">{{ task.project }}</td>
+                            <td style = "word-wrap:break-word;white-space:normal;">{{ task.platform }}</td>
+                            <td style = "word-wrap:break-word;white-space:normal;">{{ task.package }}</td>
+                            <td style = "word-wrap:break-word;white-space:normal;">{{ task.testcase }}</td>
+                            <td style = "word-wrap:break-word;white-space:normal;">{{ task.server }}</td>
+                            <td style = "word-wrap:break-word;white-space:normal;">{{ task.status }}</td>
+                          {% endfor %}
+                        </tbody>
+                      </table>
+                    <div class="item-wrapper">
+                      <div class="row" style="width: 750px;">
+                        <div class="col-md-8 mx-auto">
+                          {% ifnotequal tasksnum shownum %}
+                          <div class="form-group row showcase_row_area">
+                            <div class="col-md-3 showcase_text_area"></div>
+                            <div class="col-md-9 showcase_content_area">
+                              <a class="mdi" style="height: 30px;padding: 0 150px;" href="/automation/?n={{ shownum }}+3">加载更多</a>
+                            </div>
+                          </div>
+                          {% endifnotequal %}
+                          <div class="form-group row showcase_row_area">
+                            <div class="col-md-3 showcase_text_area"></div>
+                            <div class="col-md-9 showcase_content_area">
+                              <button class="btn btn-success has-icon btn-block mt-0" id="startTest" name="startTest" style="height: 30px;padding: 0 15px;">
+                                <i class="mdi mdi-file-document"></i>
+                                开始自动化测试
+                              </button>
+                            </div>
+                          </div>
+                          <div class="form-group row showcase_row_area">
+                            <div class="col-md-3 showcase_text_area"></div>
+                            <div class="col-md-9 showcase_content_area">
+                              <button class="btn btn-danger has-icon btn-block mt-0" id="removeTask" name="removeTask" style="height: 30px;padding: 0 15px;">
+                                <i class="mdi mdi-file-document"></i>
+                                移除已完成测试
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              {% endifnotequal %}
+              {% ifnotequal totaltasksnum 0 %}
+              <div class="col-lg-12" style="height: 200px">
+                <div class="grid">
+                  <p class="grid-header"><font size="5"><b>任务池</b></font></p>
+                  <div class="grid-body">
+                    <table id="table" name="table" class="table table-hover">
+                        <thead>
+                          <tr>
+                            <th style="width: 50px;">Tester</th>
+                            <th style="width: 170px;">Project</th>
+                            <th style="width: 30px;">Platform</th>
+                            <th style="width: 200px;">Package</th>
+                            <th style="width: 150px;">Test Case</th>
+                            <th style="width: 150px;">SubServer</th>
+                            <th style="width: 50px;">Status</th>
+                          </tr>
+                        </thead>
+                        <tbody id="tasksPool" name="tasksPool">
+                          {% for task in totaltasks %}
+                          <tr id="trId">
+                            <td style = "word-wrap:break-word;white-space:normal;">{{ task.username }}</td>
+                            {% if user.is_superuser %}
+                            <td style = "word-wrap:break-word;white-space:normal;">{{ task.project }}</td>
+                            <td style = "word-wrap:break-word;white-space:normal;">{{ task.platform }}</td>
+                            <td style = "word-wrap:break-word;white-space:normal;">{{ task.package }}</td>
+                            <td style = "word-wrap:break-word;white-space:normal;">{{ task.testcase }}</td>
+                            {% else %}
+                            <td style = "word-wrap:break-word;white-space:normal;">******</td>
+                            <td style = "word-wrap:break-word;white-space:normal;">***</td>
+                            <td style = "word-wrap:break-word;white-space:normal;">***.*****.***</td>
+                            <td style = "word-wrap:break-word;white-space:normal;">*****.***</td>
+                            {% endif %}
+                            <td style = "word-wrap:break-word;white-space:normal;">{{ task.server }}</td>
+                            <td style = "word-wrap:break-word;white-space:normal;">{{ task.status }}</td>
+                          {% endfor %}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              {% endifnotequal %}
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- page content ends -->
+    </div>
+    <!--page body ends -->
+    <!-- SCRIPT LOADING START FORM HERE /////////////-->
+    <!-- plugins:js -->
+    <script src="{% static 'vendors/js/core.js' %}"></script>
+    <!-- endinject -->
+    <!-- Vendor Js For This Page Ends-->
+    <script src="{% static 'vendors/apexcharts/apexcharts.min.js' %}"></script>
+    <script src="{% static 'vendors/chartjs/Chart.min.js' %}"></script>
+    <script src="{% static 'js/charts/chartjs.addon.js' %}"></script>
+    <!-- Vendor Js For This Page Ends-->
+    <!-- build:js -->
+    <script src="{% static 'js/template.js' %}"></script>
+    <script src="{% static 'js/dashboard.js' %}"></script>
+    <!-- endbuild -->
+    <script type="text/javascript">
+      $(window).on("load", function(){
+        $("#myTasks").css("height", 280 + {{ shownum }} * $("#trId").height())
+        $("table tr").each(function(){
+          var checkbox = $(this).find("input[type=checkbox]");
+          var status = $(this).find("td:eq(6)");
+          if (status.text() == "队列"){
+            checkbox.attr("disabled","disabled");
+            // status.css("color", "#333333");
+          }
+          else if (status.text() == "执行"){
+            checkbox.attr("disabled","disabled");
+            // status.css("color", "#0099CC");
+          }
+          else if (status.text() == "完成"){
+            checkbox.attr("checked", false);
+            // status.css("color", "#4CCEAC");
+          }
+          else if (status.text() == "空闲"){
+            checkbox.attr("checked", true);
+            // status.css("color", "#CCCCFF")
+          }
+        });
+        if ("{{ message }}" == "None"){
+          return;
+        }
+        else {
+          alert("{{ message }}");
+        }
+      });
+      $("#uploadTestCasesButton").click(function(){
+        var caseFile = $("#caseFile").val();
+        if (caseFile == ""){
+          alert("请选择测试用例文件!!!");
+          return;
+        }
+        else if ((caseFile.slice(-4) == ".csv") != true){
+          alert("测试用例需以.csv结尾!!!");
+          return;
+        }
+        var sentence = "  再次确认上传内容:\n  测试用例: " + caseFile;
+        if(confirm(sentence)){
+          $("#uploadTestCasesForm").submit();
+        }
+      });
+      $("#project").change(function(){
+        $("#projects").submit();
+      });
+      $("#uploadTestCases").on("show.bs.modal", function(e){
+        $(this).css("display", "block");
+        $(this).find(".modal-dialog").css({
+          "margin-top": $(window).height() / 2 - 200
+        });
+      });
+      $("#addTask").click(function(){
+        var server = $("#server").val()
+        var project = $("#project").val();
+        var platform = $("#platform").val();
+        var app = $("#app").val();
+        var files = $("#files").val();
+        if (app == ""){
+          alert("请输入测试包名!!!");
+          return
+        }
+        else if (platform == ""){
+          alert("请选择对应平台!!!");
+          return;
+        }
+        else if (files == ""){
+          alert("请选择对应测试用例!!!");
+          return;
+        }
+        $.ajax({
+          cache: false,
+          url: "addtask/",
+          dataType: "text",
+          type: "POST",
+          async: true,
+          data: {
+            "server": server,
+            "project": project,
+            "platform": platform,
+            "package" : app,
+            "caseFile": files,
+          },
+          success: function(data){
+            if (confirm(JSON.parse(data))){
+              location.reload(true);
+            }
+          }
+        })
+      });
+      $("#removeTask").click(function(){
+        $.ajax({
+          cache: false,
+          url: "removetask/",
+          dataType: "text",
+          type: "POST",
+          async: true,
+          data: {
+            "identify": "remove",
+          },
+          success: function(data){
+            if (confirm(JSON.parse(data))){
+              location.reload(true);
+            }
+          }
+        })
+      });
+      $("#startTest").click(function(){
+        var inputs = $("input[type=checkbox]")
+        var ids = new Array();
+        for (i=0; i<inputs.length; i++){
+          if (inputs[i].checked == true){
+            ids.push(inputs[i].id);
+          }
+        }
+        $.ajax({
+          cache: false,
+          url: "execute/",
+          dataType: 'text',
+          type: 'POST',
+          async: true,
+          data: {
+            "ids": JSON.stringify(ids),
+          },
+          success: function(data){
+            if (confirm(JSON.parse(data))){
+              location.reload(true);
+            }
+          }
+        });
+      });
+      $("#stopTest").click(function(){
+        if (confirm("确定中断自动化测试?")){
+          $.ajax({
+            cache: false,
+            url: "stop/",
+            dataType: 'text',
+            type: 'POST',
+            async: true,
+            data: {
+              "stop": "stop",
+              "project": $("#project").val(),
+            },
+            success: function(data){
+              if (confirm(JSON.parse(data))){
+                location.reload(true);
+              }
+            }
+          });
+        }
+      });
+    </script>
+  </body>
+</html>

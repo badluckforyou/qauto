@@ -1,16 +1,7 @@
-#!/usr/bin/env python
-# -*- coding:utf-8 -*- 
-# @Author: luzhiqi
-# @Email: luzhiqi@ijunhai.com
-# @Date: 2020-02-15 21:32:10
-# @LastEditor: luzhiqi
-# @LastEditTime: 2020-02-15 23:12:35
-
-
 import pymysql
 import traceback
 
-from autotestofgamequality import settings
+from qauto import settings
 
 
 # db = {
@@ -61,21 +52,21 @@ class DataBaseManage:
     如果需要连接后执行多个行为, 需要传入connection=False
     """
 
-    def __init__(self):
-        pass
+    def __init__(self, database=None):
+        self.database = database or db
 
     def connect(self):
         """连接数据库"""
         try:
-            self.conn = pymysql.Connect(host=db["HOST"], 
-                                        port=db["PORT"],
-                                        user=db["USER"], 
-                                        passwd=db["PASSWORD"],
-                                        db=db["DBNAME"], 
+            self.conn = pymysql.Connect(host=self.database["HOST"], 
+                                        port=int(self.database["PORT"]),
+                                        user=self.database["USER"], 
+                                        passwd=self.database["PASSWORD"],
+                                        db=self.database["NAME"], 
                                         charset="utf8", 
                                         autocommit=True)
         except:
-            raise ConnectionError("Can't connect to MySQL server on '%s'" % db["HOST"])
+            raise ConnectionError("Can't connect to MySQL server on '%s'" % self.database["HOST"])
         else:
             self.curs = self.conn.cursor()
 

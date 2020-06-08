@@ -19,7 +19,8 @@
     <link rel="shortcut icon" href="{% static 'images/favicon.ico' %}" />
     <script type="text/javascript">
       window.onload = function(){
-        $('#game').val('{{ game }}');
+        $("#project").val("{{ project }}");
+        $("#date").val("{{ date }}");
       }
     </script>
   </head>
@@ -43,6 +44,7 @@
               <button class="btn btn-primary" type="submit"><i class="mdi mdi-arrow-right-thick"></i></button>
             </div>
           </form>
+          {% if user.is_authenticated %}
           <ul class="nav ml-auto">
             <li class="nav-item dropdown">
               <a class="nav-link" href="#" id="notificationDropdown" data-toggle="dropdown" aria-expanded="false">
@@ -53,11 +55,11 @@
                   <div class="dropdown-list">
                     <div class="rounded-circle bg-inverse-primary text-primary">
                     </div>
-                    <div class="content-wrapper" onclick="location.href='/user';">
+                    <div class="content-wrapper" onclick="location.href='/user/';">
                       <small class="content-text">My information</small>
                     </div>
                   </div>
-                  <div class="dropdown-list" onclick="location.href='/login';">
+                  <div class="dropdown-list" onclick="location.href='/login/';">
                     <div class="rounded-circle bg-inverse-warning text-warning">
                     </div>
                     <div class="content-wrapper">
@@ -68,6 +70,15 @@
               </div>
             </li>
           </ul>
+          {% else %}
+          <ul class="nav ml-auto">
+            <li class="nav-item dropdown">
+              <a class="nav-link" href="/login/">
+                <i class="mdi-1x">Go to Login</i>
+              </a>
+            </li>
+          </ul>
+          {% endif %}
         </div>
       </div>
     </nav>
@@ -80,10 +91,10 @@
             <img class="profile-img img-lg rounded-circle" src="{% static 'images/image.png' %}" alt="profile image">
           </div>
           <div class="info-wrapper">
-            <p class="user-name">{{ company }}</p>
-            <h6 class="display-income"></h6>
+            <h3 class="user-name">{{ company }}</h3>
           </div>
         </div>
+        {% if user.is_authenticated %}
         <ul class="navigation-menu">
           <li class="nav-category-divider">HOME</li>
           <li>
@@ -92,10 +103,10 @@
               <i class="mdi mdi-home link-icon"></i>
             </a>
           </li>
-          <li class="nav-category-divider">STRESSTEST</li>
+          <li class="nav-category-divider">AUTOMATED TESTING</li>
           <li>
-            <a href="/stresstest/">
-              <span class="link-title">压力测试</span>
+            <a href="/automation/">
+              <span class="link-title">自动化测试</span>
               <i class="mdi mdi-application link-icon"></i>
             </a>
           </li>
@@ -107,39 +118,99 @@
           </li>
           <li class="nav-category-divider">USER</li>
           <li>
-            <a href="/user">
+            <a href="/user/">
               <span class="link-title">My Information</span>
               <i class="mdi mdi-account link-icon"></i>
             </a>
           </li>
         </ul>
+        {% endif %}
       </div>
       <!-- partial -->
       <div class="page-content-wrapper">
         <div class="page-content-wrapper-inner">
           <div class="content-viewport" style="float: left;">
             <div class="row">
+              <div class="modal" id="newUrl" data-backdrop="true" style="position: fixed; ">
+                <div class="modal-dialog modal-lg">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h6 class="modal-title" style="font-size: 20px;">
+                        <strong>Url</strong>
+                      </h6>
+                    </div>
+                    <div class="modal-body">
+                      <span class="text-gray" style="font-size: 14px; white-space: pre-wrap;" id="url"></span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="modal" id="log" data-backdrop="true" style="position: fixed; ">
+                <div class="modal-dialog modal-lg">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h6 class="modal-title" style="font-size: 20px;">
+                        <strong>Log</strong>
+                      </h6>
+                    </div>
+                    <div class="modal-body">
+                      <span class="text-gray" style="font-size: 14px; white-space: pre-wrap;" id="logMessage"></span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="modal" id="report" data-backdrop="true" style="position: fixed;">
+                <div class="modal-dialog modal-lg">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h6 class="modal-title" style="font-size: 20px">
+                        <strong>Report</strong>
+                      </h6>
+                    </div>
+                    <div class="modal-body">
+                      <label style="font-size: 18px;">Case Information</label>
+                      <div>
+                        <span class="text-gray" style="font-size: 12px; white-space : pre-wrap;" id="caseInfomation"></span>
+                      </div>
+                      <label>&nbsp;</label>
+                      <div></div>
+                      <label style="font-size: 18px;">Screenshot</label>
+                      <div id="screenshot"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              {% if user.is_authenticated %}
               <div class="col-12">
                 <div class="grid" style="height: 60px;">
                   <div class="grid-body text-gray">
                     <div class="header">
-                      <form method="GET" id="games" name="games">
-                        <select class="custom-select" id="game" name="game" style="width: 200px;float: left;padding: 0 15px;height: 30px">
-                          {% for game in games %}
-                          <option>{{ game }}</option>
+                      <form method="GET" id="projects" name="projects">
+                        <select class="custom-select" id="project" name="project" style="width: 250px;float: left;padding: 0 15px;height: 30px">
+                          {% for project in projects %}
+                          <option>{{ project }}</option>
                           {% endfor %}
                         </select>
+                        {% ifnotequal project 'All' %}
+                        <select class="custom-select" id="date" name="date" style="width: 250px;float: left;padding: 0 15px;height: 30px">
+                          {% for date in dates %}
+                          <option>{{ date }}</option>
+                          {% endfor %}
+                        </select>
+                        {% endifnotequal %}
+                        {% csrf_token %}
                       </form>
                     </div>
                   </div>
                 </div>
               </div>
+              {% endif %}
               <div class="col-md-5">
-                <div class="grid" style="height: 350px;">
+                <div class="grid" style="height: 400px;">
                   <div class="grid-body">
                     <h2 class="grid-title">Doughnut Chart</h2>
                     <div class="item-wrapper">
-                      <canvas id="doughnutChart" width="600" height="400">
+                      <canvas id="doughnutChart" width="600px;" height="400px;">
                         此浏览器不支持canvas, 无法显示结果数据图!!!
                       </canvas>
                     </div>
@@ -147,7 +218,7 @@
                 </div>
               </div>
               <div class="col-md-7">
-                <div class="grid" style="height: 350px;">
+                <div class="grid" style="height: 400px;">
                   <div class="grid-body">
                     <h2 class="grid-title">Summary</h2>
                     <div class="item-wrapper">
@@ -156,19 +227,17 @@
                     <div class="item-wrapper">
                       <label><br></label>
                     </div>
+                    {% if user.is_authenticated %}
                     <div class="item-wrapper">
-                      <button class="btn btn-secondary" id="delbtn" onclick="delRow('{{ grandchildrow.Id }}')">
-                        下载失败报告
-                      </button>
-                      <label>&nbsp;</label>
-                      <button class="btn btn-secondary" id="delbtn" onclick="delRow('{{ grandchildrow.Id }}')">
-                        发送失败报告
+                      <button class="btn btn-secondary" onclick="generateUrl()" data-toggle="modal" data-target="#newUrl">
+                        分享给他人
                       </button>
                     </div>
+                    {% endif %}
                   </div>
                 </div>
               </div>
-              <!-- <img src="media/luzhiqi/fight2/report/1581940089199.jpg" alt="图片无法显示"> -->
+              <!-- <img src="/images/9538ca37fafb1baa106a3fbd87935947/k7701/log/202005131507.png" alt="图片无法显示"> -->
               <div class="col-12">
                 <div class="grid">
                   <div class="grid-body text-gray">
@@ -176,27 +245,35 @@
                       <table id="table" name="table" class="table table-hover">
                         <thead>
                           <tr>
-                            <th style="width: 210px;">设备编号</th>
-                            <th style="width: 100px;">测试游戏</th>
-                            <th style="width: 80px;">游戏安装</th>
-                            <th style="width: 80px;">当前状态</th>
-                            <th style="width: 80px;">角色等级</th>
+                            <th style="width: 250px;">用例名称</th>
+                            <th style="width: 100px;">执行时间</th>
+                            <th style="width: 100px;">预期结果</th>
+                            <th style="width: 100px;">实际结果</th>
                             <th style="width: 80px;">测试结果</th>
-                            <th style="width: 150px;">运行日志</th>
-                            <th style="width: 240px;">详细报告</th>
+                            <th style="width: 80px;">用例耗时</th>
+                            <th style="width: 100px;">运行日志</th>
+                            <th style="width: 100px;">详细报告</th>
                           </tr>
                         </thead>
                         <tbody id="result" name="result">
                           {% for item in data %}
                           <tr id="trid">
-                            <td style = "word-wrap:break-word;white-space:normal;">{{ item.SERIALNUMBER }}</td>
-                            <td style = "word-wrap:break-word;white-space:normal;">{{ item.GAME }}</td>
-                            <td style = "word-wrap:break-word;white-space:normal;">{{ item.INSTALL }}</td>
-                            <td style = "word-wrap:break-word;white-space:normal;">{{ item.ACTIVITY }}</td>
-                            <td style = "word-wrap:break-word;white-space:normal;">Lv.{{ item.LEVEL }}</td>
-                            <td style = "word-wrap:break-word;white-space:normal;">{{ item.RESULT }}</td>
-                            <td style = "word-wrap:break-word;white-space:normal;"><a href="/log/?game={{ item.GAME }}&log={{ item.LOG }}">查看详细过程</a></td>
-                            <td style = "word-wrap:break-word;white-space:normal;"><a href="/report/?game={{ item.GAME }}&report={{ item.REPORT }}" target="_blank">查看测试报告</a></td>
+                            <td style = "word-wrap:break-word;white-space:normal;">{{ item.casename }}</td>
+                            <td style = "word-wrap:break-word;white-space:normal;">{{ item.runtime }}</td>
+                            <td style = "word-wrap:break-word;white-space:normal;">{{ item.resultwanted }}</td>
+                            <td style = "word-wrap:break-word;white-space:normal;">{{ item.resultinfact }}</td>
+                            <td style = "word-wrap:break-word;white-space:normal;">{{ item.testresult }}</td>
+                            <td style = "word-wrap:break-word;white-space:normal;">{{ item.costtime }}</td>
+                            <td style = "word-wrap:break-word;white-space:normal;">
+                              <button class="btn btn-secondary has-icon btn-block mt-0" onclick="showLog('{{ item.log }}')" style="height: 25px;padding: 0 15px;" data-toggle="modal" data-target="#log">
+                                查看
+                              </button>
+                            </td>
+                            <td style = "word-wrap:break-word;white-space:normal;">
+                              <button class="btn btn-secondary has-icon btn-block mt-0" onclick="showReport('{{ item.report }}', '{{ item.image }}')" style="height: 25px;padding: 0 15px;" data-toggle="modal" data-target="#report">
+                                查看
+                              </button>
+                            </td>
                             <!-- <td style = "word-wrap:break-word;white-space:normal;">
                               <button class="btn btn-inverse-info btn-xs" id="delbtn" onclick="goToNewHtml('{{ item.GAME }}','{{ item.REPORT }}' )">
                                 查看
@@ -218,24 +295,40 @@
                       {% if not data.has_previous%}
                       <span><a>First </a></span>&nbsp;|
                       {% else %}
-                      <span><a href="?game={{ game }}&page=1">First </a></span>&nbsp;|
+                      {% if user.is_authenticated %}
+                      <span><a href="?project={{ project }}&page=1">First </a></span>&nbsp;|
+                      {% else %}
+                      <span id="firstPage">1</span>&nbsp;|
+                      {% endif %}
                       {% endif %}
                       {% if data.has_previous %}
-                      <span><a href="?game={{ game }}&page={{ data.previous_page_number }}">Previous </a></span>&nbsp;|
+                      {% if user.is_authenticated %}
+                      <span><a href="?project={{ project }}&page={{ data.previous_page_number }}">Previous </a></span>&nbsp;|
+                      {% else %}
+                      <span id="previousPage">{{ data.previous_page_number }}</span>&nbsp;|
+                      {% endif%}
                       {% else %}
                       <span>Previous </span>&nbsp;|
                       {% endif %}
                       {% if data.has_next %}
-                      <span id="nextpage"><a href="?game={{ game }}&page={{ data.next_page_number }}">Next </a></span>&nbsp;|
+                      {% if user.is_authenticated %}
+                      <span><a href="?project={{ project }}&page={{ data.next_page_number }}">Next </a></span>&nbsp;|
+                      {% else %}
+                      <span id="nextPage">{{ data.next_page_number }}</span>&nbsp;|
+                      {% endif %}
                       {% else %}
                       <span><a>Next </a></span>&nbsp;|
                       {% endif %}
-                      {% if not data.has_next %}
-                      <span><a>Last </a></span>&nbsp;|
+                      {% if data.has_next %}
+                      {% if user.is_authenticated %}
+                      <span><a href="?project={{ project }}&page={{ data.paginator.num_pages }}">Last </a></span>&nbsp;|
                       {% else %}
-                      <span><a href="?game={{ game }}&page={{ data.paginator.num_pages }}">Last </a></span>&nbsp;|
+                      <span id="lastPage">{{ data.paginator.num_pages }}</span>&nbsp;|
                       {% endif %}
-                      &nbsp;Page&nbsp;<span><a>{{ data.number }}</a></span>/<span><a>{{ data.paginator.num_pages }}</a></span>
+                      {% else %}
+                      <span><a>Last </a></span>&nbsp;|
+                      {% endif %}
+                      &nbsp;Page&nbsp;<span><a id="thisPage">{{ data.number }}</a></span>/<span><a id="totalPage">{{ data.paginator.num_pages }}</a></span>
                     </div>
                   </div>
                 </div>
@@ -258,68 +351,81 @@
     <!-- Vendor Js For This Page Ends-->
     <!-- build:js -->
     <script src="{% static 'js/template.js' %}"></script>
-    <script src="{% static 'js/dashboard.js' %}"></script>
+    <!-- <script src="{% static 'js/dashboard.js' %}"></script> -->
     <!-- endbuild -->
     <script type="text/javascript">
       $(window).on("load", function(){
         $("table tr").each(function(){
-          var fourTd = $(this).find("td:eq(4)");
-          if (fourTd.text() == "Lv.None"){
-            fourTd.html("None");
-          }
-          var fiveTd = $(this).find("td:eq(5)");
+          // 每列的测试结果都需要进行调色
+          var fiveTd = $(this).find("td:eq(4)");
           if (fiveTd.text() == "失败"){
             fiveTd.css("color", "#f5003a");
           }
-          else if (fiveTd.text() == "成功"){
-            fiveTd.css("color", "#20E33B");
-          } 
+          else if (fiveTd.text() == "通过"){
+            fiveTd.css("color", "#4CCEAC");
+          }
+           // 用例名的省略
+          var caseName = $(this).find("td:eq(0)");
+          caseName.attr("title", caseName.text());
+          var length = caseName.text().length;
+          if (length >= 30) {
+            var front = caseName.text().substring(0, 25);
+            var offside = caseName.text().substring(length - 5, length);
+            var content = front + "&nbsp;&nbsp;...&nbsp;&nbsp;" + offside;
+            caseName.html(content);
+          }
+          caseName.mouseover(function(){
+            $(this).tooltip;
+          });
         });
-        $("#game").change(function(){
-          $("#games").submit();
+        $("#projects").change(function(){
+          $("#projects").submit();
         });
+        // doughnut chart
         var succ = 0;
         var fail = 0;
-        var result = "{{ result }}"
-        var data = JSON.parse(result.replace(/&quot;/g, '"'));
+        var data = JSON.parse("{{ result }}".replace(/&#x27;/g, '"'));
         for (i=0; i<data.length; i++){
-          if (data[i]["RESULT"] == "成功"){
+          if (data[i] == "通过"){
             succ++;
           }
-          else if (data[i]["RESULT"] == "失败"){
+          else if (data[i] == "失败"){
             fail++;
           }
         }
         var total = succ + fail;
         if ($("#doughnutChart").length) {
           var doughnutChartCanvas = $("#doughnutChart").get(0).getContext("2d");
-          var DoughnutData = {
+          var doughnutData = {
             datasets: [{
               data: [succ, fail],
-              backgroundColor: ["#20E33B", "#f5003a"],
-              borderColor: ["#20E33B", "#f5003a"],
-              borderWidth: ["#20E33B", "#f5003a"]
+              backgroundColor: ["#4CCEAC", "#f5003a"],
+              borderColor: ["#4CCEAC", "#f5003a"],
+              borderWidth: ["#4CCEAC", "#f5003a"]
             }],
             labels: [
-              "成功",
+              "通过",
               "失败",
             ],
           };
-          var DoughnutOptions = {
+          var doughnutOptions = {
             responsive: true,
+            showTooltips: false,
+            cutoutPercentage: 40, //内部白色区域所占的百分比
+            segmentShowStroke: false,
             animation: {
-              animateScale: true,
-              animateRotate: true,
+              animateScale: true, // doughnut chart动画从中心向外扩张
+              animateRotate: true, // doughnut chart使用旋转动画
               onComplete: function(){
-                console.log("😠 Please do not keep your mouse moving on the doughnut chart!!!");
+                // console.log("😠 Please do not keep your mouse moving on the doughnut chart!!!");
                 // console.log("😊 If you don't, leave and let me alone ~~");
               }
-            }
+            },
           };
           var doughnutChart = new Chart(doughnutChartCanvas, {
-            type: 'doughnut',
-            data: DoughnutData,
-            options: DoughnutOptions,
+            type: "doughnut",
+            data: doughnutData,
+            options: doughnutOptions,
           });
           Chart.pluginService.register({
             beforeDraw: function(chart){
@@ -349,12 +455,105 @@
             }
           });
         }
-        var message = "<br>INFORMATION OF THE RESULT<br>——————————————<br><br>游戏:&nbsp;&nbsp;" + "{{ game }}" + "<br><br>成功终端数:&nbsp;&nbsp;&nbsp;<span style='color:#20E33B'>" + succ + "</span><br>失败终端数:&nbsp;&nbsp;&nbsp;<span style='color:#f5003a'>" + fail + "</span><br>所有终端数:&nbsp;&nbsp;&nbsp;<span style='color:#696ffb'>" + total + "</span>&nbsp;";
+        //结果统计的生成
+        var message = "<br>INFORMATION OF THE RESULT<br>——————————————<br><br>Cases:&nbsp;&nbsp;" + "{{ game }}" + "<br><br>成功用例:&nbsp;&nbsp;&nbsp;<span style='color:#4CCEAC'>" + succ + "</span><br>失败用例:&nbsp;&nbsp;&nbsp;<span style='color:#f5003a'>" + fail + "</span><br>所有用例:&nbsp;&nbsp;&nbsp;<span style='color:#696ffb'>" + total + "</span>&nbsp;";
         $("#summary").html(message);
       });
+      /****** 跳转到新的页面 ******/
       function goToNewHtml(game, report){
         window.open("/report/?game=" + game + "&report=" + report, "_blank");
+      }
+      // $("#report").on("show.bs.modal", function(e){
+      //   $(this).css("display", "block");
+      //   $(this).find(".modal-dialog").css({
+      //     "margin-top": $(window).height() / 2 - 400
+      //   });
+      // });
+      /****** 设置modal newUrl 显示的坐标 ******/
+      $("#newUrl").on("show.bs.modal", function(e){
+        $(this).css("display", "block");
+        $(this).find(".modal-dialog").css({
+          "margin-top": $(window).height() / 2 - 100,
+        });
+      });
+      /****** 设置modal log 显示的坐标 ******/
+      $("#log").on("show.bs.modal", function(e){
+        $(this).css("display", "block");
+        $(this).find(".modal-dialog").css({
+          "margin-top": $(window).height() / 2 - 200
+        });
+      });
+      /****** 设置modal log 显示的内容 ******/
+      function showLog(log){
+        $("#logMessage").html(log.replace(/"/g, ""));
+      }
+      /****** 设置modal report 显示的内容 ******/
+      function showReport(report, image){
+        $("#caseInfomation").html(report.replace(/"/g, ""));
+        $("#screenshot").html('<img src="' + image +'" alt="图片无法显示" style="width: 100%; height: auto;">')
+      }
+      /****** 生成table的路转url ******/
+      function getNewHtml(page, keyWord){
+        var url = this.location.search;
+        var pageEqual = url.indexOf("&page=");
+        if (pageEqual > 0) {
+          url = url.replace(url.substring(pageEqual, url.length), "&page=" + page);
+        }
+        else {
+          url += '&project={{ project }}&page=' + page
+        }
+        var newHtml = '<a href="' + url + '">' + keyWord + ' </a>';
+        return newHtml
+      }
+      $("#firstPage").html(getNewHtml($("#firstPage").text(), "First"));
+      $("#previousPage").html(getNewHtml($("#previousPage").text(), "Previous"));
+      $("#nextPage").html(getNewHtml($("#nextPage").text(), "Next"));
+      $("#lastPage").html(getNewHtml($("#lastPage").text(), "Last"));
+      /****** 生成供他人查看自己用例的url ******/
+      function generateUrl(){
+        var scheme = this.location.protocol;
+        var host   = this.location.host;
+        var path   = this.location.pathname;
+        var query  = this.location.search;
+        if (query == "") {
+          var newQuery = "&project=" + $("#project").val() + "&page=" + $("#thisPage").html();
+        }
+        else if (query.indexOf("&time=") > 0) {
+          var newQuery = query.substring(0, query.indexOf("&time=")) + "&page=" + $("#thisPage").html();
+        }
+        else if (query.indexOf("&time=") == -1 && query.indexOf("&csrfmiddlewaretoken=") > 0) {
+          var newQuery = query.substring(0, query.indexOf("&csrfmiddlewaretoken=")) + "&page=" + $("#thisPage").html();
+        }
+        else if (query.indexOf("&time=") > 0) {
+          var newQuery = query + "&page=" + $("#thisPage").html();
+        }
+        else {
+          var newQuery = query;
+        }
+        var finalQuery = newQuery.substring(newQuery.indexOf("&project"), newQuery.length);
+        var url = scheme + "//" + host + path + "?u={{ username }}&" + finalQuery.substring(1, finalQuery.length)
+        $("#url").html(url);
       }
     </script>
   </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

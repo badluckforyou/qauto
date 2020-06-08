@@ -48,11 +48,11 @@
                   <div class="dropdown-list">
                     <div class="rounded-circle bg-inverse-primary text-primary">
                     </div>
-                    <div class="content-wrapper" onclick="location.href='/user';">
+                    <div class="content-wrapper" onclick="location.href='/user/';">
                       <small class="content-text">My information</small>
                     </div>
                   </div>
-                  <div class="dropdown-list" onclick="location.href='/login';">
+                  <div class="dropdown-list" onclick="location.href='/login/';">
                     <div class="rounded-circle bg-inverse-warning text-warning">
                     </div>
                     <div class="content-wrapper">
@@ -75,8 +75,7 @@
             <img class="profile-img img-lg rounded-circle" src="{% static 'images/image.png' %}" alt="profile image">
           </div>
           <div class="info-wrapper">
-            <p class="user-name">{{ company }}</p>
-            <h6 class="display-income"></h6>
+            <h3 class="user-name">{{ company }}</h3>
           </div>
         </div>
         <ul class="navigation-menu">
@@ -87,10 +86,10 @@
               <i class="mdi mdi-home link-icon"></i>
             </a>
           </li>
-          <li class="nav-category-divider">STRESSTEST</li>
+          <li class="nav-category-divider">AUTOMATED TESTING</li>
           <li>
-            <a href="/stresstest/">
-              <span class="link-title">压力测试</span>
+            <a href="/automation/">
+              <span class="link-title">自动化测试</span>
               <i class="mdi mdi-application link-icon"></i>
             </a>
           </li>
@@ -102,7 +101,7 @@
           </li>
           <li class="nav-category-divider">User</li>
           <li>
-            <a href="/user">
+            <a href="/user/">
               <span class="link-title">My Information</span>
               <i class="mdi mdi-account link-icon"></i>
             </a>
