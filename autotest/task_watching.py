@@ -104,7 +104,7 @@ def execute_tasks(id):
 
 def watching():
     """
-    任务监控, 定时去获取任务池, 如果没有任务, 测去执行任务
+    任务监控, 定时去获取任务池
     如果有任务则去执行任务
     """
     sys.stdout.write("Start watching tasks ... \n")

@@ -54,6 +54,7 @@ def remove_file(filepath, key):
 
 
 def get_sub_servers(username):
+    """从数据库中获取sub-server列表"""
     sub_servers = list()
     _sub_servers = dbmanage.select("autotest_subserver", "username, server", "single=0 and status=0")
     if _sub_servers:
@@ -87,7 +88,10 @@ def automated_testing(request):
     message = None
     if request.POST:
         message = upload_file(request)
+
     filepath = os.path.join(AppSettings.TESTERFOLDER, _hash_encrypted(username), AppSettings.PROJECTS[project])
+    testfiles = list(get_specified_files(filepath, ".csv"))
+    testfiles.sort()
 
     sub_servers = get_sub_servers(username)
 
@@ -119,7 +123,7 @@ def automated_testing(request):
                     "message": message,
                     "projects": AppSettings.PROJECTS.keys(),
                     "platforms": AppSettings.PLATFORMS,
-                    "files": list(get_specified_files(filepath, ".csv")),
+                    "files": testfiles,
                     "subservers": sub_servers,
                     "status": status,
                     "tasks": tasks,
@@ -250,5 +254,9 @@ def update_task(request):
     if id is not None:
         status = request.POST.get("status")
         Task.objects.filter(id=int(id)).update(status=status)
+        out = dbmanage.select("autotest_task", "server", "id=%s" % id)
+        if out:
+            _, server = out[0][0].split("-")
+            SubServer.objects.filter(server=server.strip()).update(status=0)
     return JsonResponse("Update task status success", safe=False)
 

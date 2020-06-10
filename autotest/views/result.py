@@ -30,9 +30,16 @@ def get_true_username(request):
         return sharer
 
 
-def generate_image(file, image):
-    with open(file, "wb") as f:
-        f.write(base64.b64decode(image))
+def generate_images(files, images):
+    if isinstance(files, list):
+        for i, v in enumerate(files):
+            v = os.path.join(AppSettings.TESTERFOLDER, v)
+            with open(v, "wb") as f:
+                f.write(base64.b64decode(images[i]))
+    else:
+        files = os.path.join(AppSettings.TESTERFOLDER, files)
+        with open(files, "wb") as f:
+            f.write(base64.b64decode(images))
 
 
 def get_dates(query):
@@ -91,29 +98,53 @@ def result(request):
 
 
 def insert(request):
+    """
+    Sub-server 在每条用例执行完后会将结果传送过来, 数据包含以下
+        date: 整个自动化测试执行的时间, 用以在result.html上进行自动化测试结果的拆分
+        username: 执行测试人员的名称, str
+        project: 测试用例所属的项目, str
+        casename: 测试用例的名称, str
+        runtime: 测试用例执行的时间, str
+        resultwanted: 测试用例中的期望结果, str
+        resultinfact: 测试的实际结果, str
+        testresult: 测试用例的结果, str
+        costtime: 测试用例执行耗时, str
+        log: 测试用例执行时生成的log日志, str
+        report: 测试用例的详细信息, str
+        images: 测试中产生的截图, list
+    """
     try:
-        date = request.POST.get("date")
         username = request.POST.get("username")
         project = request.POST.get("project")
-        casename = request.POST.get("casename")
-        runtime = request.POST.get("runtime")
-        resultwanted = request.POST.get("resultwanted")
-        resultinfact = request.POST.get("resultinfact")
-        testresult = request.POST.get("testresult")
-        costtime = request.POST.get("costtime")
-        log = request.POST.get("log")
-        report = request.POST.get("report")
-        image = request.POST.get("image")
-        filename = "%s%s.png" % (project, int(time.time()))
-        filepath = os.path.join(AppSettings.TESTERFOLDER, _hash_encrypted(username), project, "images")
-        file = os.path.join(filepath, filename)
-        thread = threading.Thread(target=generate_image, args=(file, image))
+        images = request.POST.get("image")
+        filepath = os.path.join(_hash_encrypted(username), project, "images")
+        if isinstance(images, list):
+            files = []
+            for image in images:
+                filename = "%s.png" % int(time.time() * 100000)
+                files.append(os.path.join(filepath, filename))
+        else:
+            filename = "%s.png" % int(time.time() * 100000)
+            files = os.path.join(filepath, filename)
+        thread = threading.Thread(target=generate_images, args=(files, images))
         thread.setDaemon(False)
         thread.start()
+        data = {
+            "username": username,
+            "project": project,
+            "casename": request.POST.get("casename"),
+            "runtime": request.POST.get("runtime"),
+            "resultwanted": request.POST.get("resultwanted"),
+            "resultinfact": request.POST.get("resultinfact"),
+            "testresult": request.POST.get("testresult"),
+            "costtime": request.POST.get("costtime"),
+            "report": request.POST.get("report"),
+            "date": request.POST.get("date"),
+            "log": request.POST.get("log"),
+            "image": ",".join(files) if isinstance(files, list) else files
+        }
         image = os.path.join(_hash_encrypted(username), project, "images", filename)
-        AutoUITestResult.objects.create(username=username, project=project, casename=casename, date=date,
-                                        runtime=runtime, resultwanted=resultwanted, resultinfact=resultinfact,
-                                        testresult=testresult, costtime=costtime, log=log, report=report, image=image)
+        AutoUITestResult.objects.create(**data)
         return JsonResponse("Update test result success.", safe=False)
     except:
         traceback.print_exc()

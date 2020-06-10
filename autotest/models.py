@@ -12,9 +12,9 @@ class AutoUITestResult(models.Model):
     resultinfact = models.CharField(max_length=100)
     testresult = models.CharField(max_length=100)
     costtime = models.CharField(max_length=100)
-    log = models.CharField(max_length=1999)
+    log = models.TextField()
     report = models.CharField(max_length=1000)
-    image = models.CharField(max_length=100)
+    image = models.CharField(max_length=1000)
     date = models.CharField(max_length=100)
 
     def __str__(self):

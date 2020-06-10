@@ -145,10 +145,10 @@
                   </div>
                 </div>
               </div>
-              <div class="modal" id="log" data-backdrop="true" style="position: fixed; ">
-                <div class="modal-dialog modal-lg">
-                  <div class="modal-content">
-                    <div class="modal-header">
+              <div class="modal" data-backdrop="true" id="log" style="position: fixed; ">
+                <div class="modal-dialog modal-lg" id="log_dialog">
+                  <div class="modal-content" id="log_content">
+                    <div class="modal-header" id="log_header">
                       <h6 class="modal-title" style="font-size: 20px;">
                         <strong>Log</strong>
                       </h6>
@@ -161,7 +161,7 @@
               </div>
               <div class="modal" id="report" data-backdrop="true" style="position: fixed;">
                 <div class="modal-dialog modal-lg">
-                  <div class="modal-content">
+                  <div class="modal-content" id="report_content">
                     <div class="modal-header">
                       <h6 class="modal-title" style="font-size: 20px">
                         <strong>Report</strong>
@@ -296,14 +296,14 @@
                       <span><a>First </a></span>&nbsp;|
                       {% else %}
                       {% if user.is_authenticated %}
-                      <span><a href="?project={{ project }}&page=1">First </a></span>&nbsp;|
+                      <span><a href="?project={{ project }}&date={{ date }}&page=1">First </a></span>&nbsp;|
                       {% else %}
                       <span id="firstPage">1</span>&nbsp;|
                       {% endif %}
                       {% endif %}
                       {% if data.has_previous %}
                       {% if user.is_authenticated %}
-                      <span><a href="?project={{ project }}&page={{ data.previous_page_number }}">Previous </a></span>&nbsp;|
+                      <span><a href="?project={{ project }}&date={{ date }}&page={{ data.previous_page_number }}">Previous </a></span>&nbsp;|
                       {% else %}
                       <span id="previousPage">{{ data.previous_page_number }}</span>&nbsp;|
                       {% endif%}
@@ -312,7 +312,7 @@
                       {% endif %}
                       {% if data.has_next %}
                       {% if user.is_authenticated %}
-                      <span><a href="?project={{ project }}&page={{ data.next_page_number }}">Next </a></span>&nbsp;|
+                      <span><a href="?project={{ project }}&date={{ date }}&page={{ data.next_page_number }}">Next </a></span>&nbsp;|
                       {% else %}
                       <span id="nextPage">{{ data.next_page_number }}</span>&nbsp;|
                       {% endif %}
@@ -321,7 +321,7 @@
                       {% endif %}
                       {% if data.has_next %}
                       {% if user.is_authenticated %}
-                      <span><a href="?project={{ project }}&page={{ data.paginator.num_pages }}">Last </a></span>&nbsp;|
+                      <span><a href="?project={{ project }}&date={{ date }}&page={{ data.paginator.num_pages }}">Last </a></span>&nbsp;|
                       {% else %}
                       <span id="lastPage">{{ data.paginator.num_pages }}</span>&nbsp;|
                       {% endif %}
@@ -463,36 +463,56 @@
       function goToNewHtml(game, report){
         window.open("/report/?game=" + game + "&report=" + report, "_blank");
       }
-      // $("#report").on("show.bs.modal", function(e){
-      //   $(this).css("display", "block");
-      //   $(this).find(".modal-dialog").css({
-      //     "margin-top": $(window).height() / 2 - 400
-      //   });
-      // });
+      function setModalHeight(modal, height){
+        modal.css("display", "block");
+        modal.find(".modal-dialog").css({
+          "margin-top": height,
+        });
+      }
+      var halfWindowHeight = $(window).height() / 2;
       /****** 设置modal newUrl 显示的坐标 ******/
       $("#newUrl").on("show.bs.modal", function(e){
-        $(this).css("display", "block");
-        $(this).find(".modal-dialog").css({
-          "margin-top": $(window).height() / 2 - 100,
-        });
+        setModalHeight($(this), halfWindowHeight)
       });
       /****** 设置modal log 显示的坐标 ******/
       $("#log").on("show.bs.modal", function(e){
-        $(this).css("display", "block");
-        $(this).find(".modal-dialog").css({
-          "margin-top": $(window).height() / 2 - 200
-        });
+        setModalHeight($(this), halfWindowHeight)
       });
       /****** 设置modal log 显示的内容 ******/
       function showLog(log){
         $("#logMessage").html(log.replace(/"/g, ""));
+        $("#log").on("show.bs.modal", function(e){
+          var modalHeight = $(this).find(".modal-dialog").height();
+          var windowHeight = $(window).height();
+          if (modalHeight < windowHeight) {
+            setModalHeight($(this), (windowHeight - modalHeight) / 2)
+          }
+        });
       }
+      /****** 设置modal report 显示的坐标 ******/
+      $("#report").on("show.bs.modal", function(e){
+        setModalHeight($(this), 150)
+      });
       /****** 设置modal report 显示的内容 ******/
       function showReport(report, image){
         $("#caseInfomation").html(report.replace(/"/g, ""));
-        $("#screenshot").html('<img src="' + image +'" alt="图片无法显示" style="width: 100%; height: auto;">')
+        // image可能包含很多张图片, 因此需要进行切片检测
+        var images = image.split(",");
+        var imgsrc = "";
+        for (const image of images) {
+          imgsrc += '<img src="' + image +'" alt="图片无法显示" style="width: 100%; height: auto;">';
+        }
+        $("#screenshot").html(imgsrc);
+        // $("#report").on("show.bs.modal", function(e){
+        //   var modalHeight = $(this).find(".modal-dialog").height();
+        //   var windowHeight = $(window).height();
+        //   console.log("report", modalHeight, windowHeight)
+        //   if (modalHeight < windowHeight) {
+        //     setModalHeight($(this), (windowHeight - modalHeight) / 2)
+        //   }
+        // });
       }
-      /****** 生成table的路转url ******/
+      /****** 生成table的前后页等的跳转url ******/
       function getNewHtml(page, keyWord){
         var url = this.location.search;
         var pageEqual = url.indexOf("&page=");
