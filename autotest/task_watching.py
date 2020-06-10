@@ -19,16 +19,17 @@ def get_tasks():
     """
     从数据库中获取tasks数据
     returns:
-        None or tasks: {
-                    "执行": {
-                        "子服务器": ["任务id"],
-                        ...
-                    },
-                    "队列": {
-                        "子服务器": ["任务id"],
-                        ...
-                    }
-                }
+        None or 
+        tasks: {
+            "执行": {
+                "子服务器": ["任务id"],
+                ...
+            },
+            "队列": {
+                "子服务器": ["任务id"],
+                ...
+            }
+        }
     """
     init_tasks = {
         "队列": {},
@@ -107,11 +108,12 @@ def watching():
     任务监控, 定时去获取任务池
     如果有任务则去执行任务
     """
-    sys.stdout.write("Start watching tasks ... \n")
+    # sys.stdout.write("Start watching tasks ... \n")
     while True:
+        # 请求不能过于频繁, 因此增加delay
         delay(15)
         tasks = get_tasks()
-        # 没有任务则直接延迟30秒, 并且跳过后续操作
+        # 没有任务则多延迟15秒, 并且跳过后续操作
         if tasks is None:
             delay(15)
             continue

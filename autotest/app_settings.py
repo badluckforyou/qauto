@@ -23,4 +23,3 @@ class AppSettings:
     TESTERFOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), "testersinfo")
     LOGPATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "log")
 
-print(520 * 0.9)

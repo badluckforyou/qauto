@@ -1,3 +1,6 @@
+##############################################
+# 以下接口暂未被使用, 优先使用django自带的modles #
+##############################################
 import ujson as json
 
 from contextlib import suppress

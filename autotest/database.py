@@ -1,18 +1,18 @@
 import pymysql
 import traceback
 
-# from qauto import settings
+from qauto import settings
 
 
-db = {
-    "HOST": "127.0.0.1",
-    "PORT": 3306,
-    "USER": "root",
-    "PASSWORD": "0987abc123",
-    "NAME": "qauto"
-}
+# db = {
+#     "HOST": "127.0.0.1",
+#     "PORT": 3306,
+#     "USER": "root",
+#     "PASSWORD": "0987abc123",
+#     "NAME": "qauto"
+# }
 
-# db = settings.DATABASES["default"]
+db = settings.DATABASES["default"]
 
 
 
