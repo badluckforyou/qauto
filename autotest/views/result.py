@@ -15,7 +15,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from autotest.app_settings import AppSettings
 from autotest.models import AutoUITestResult
 from autotest.helper import _hash_encrypted, get_files
-from autotest.database import dbmanage
+from autotest.query import select_uitestresult
 
 
 
@@ -42,8 +42,9 @@ def generate_images(files, images):
             f.write(base64.b64decode(images))
 
 
-def get_dates(query):
-    dates = dbmanage.select("autotest_autouitestresult", "date", query)
+def get_dates(condition):
+    date_query = {"wants": "date", "condition": condition}
+    dates = select_uitestresult(**date_query)
     dates =  list(set([d[0] for d in dates])) if dates else []
     dates.sort()
     return ["All"] + dates
@@ -54,24 +55,24 @@ def result(request):
     username = get_true_username(request)
     project = request.GET.get("project") or "All"
     date = request.GET.get("date") or "All"
-
+    result_query = {"wants": "testresult", "condition": "username='%s'" % username}
     if project == "All":
         data = AutoUITestResult.objects.filter(username=username)
-        result = dbmanage.select("autotest_autouitestresult", "testresult", "username='%s'" % username)
+        result = select_uitestresult(**result_query)
         dates = ["All"]
     elif project != "All" and date == "All":
         data = AutoUITestResult.objects.filter(Q(username=username) & Q(project=AppSettings.PROJECTS[project]))
-        query = "username='%s' and project='%s'" % (username, AppSettings.PROJECTS[project])
-        result = dbmanage.select("autotest_autouitestresult", "testresult", query)
-        dates = get_dates(query)
+        result_query["condition"] = "username='%s' and project='%s'" % (username, AppSettings.PROJECTS[project])
+        result = select_uitestresult(**result_query)
+        dates = get_dates(result_query["condition"])
     else:
         data = AutoUITestResult.objects.filter(Q(username=username) & 
                                                 Q(project=AppSettings.PROJECTS[project]) &
                                                 Q(date=date))
-        query = "username='%s' and project='%s' and date='%s'" % (username, AppSettings.PROJECTS[project], date)
-        result = dbmanage.select("autotest_autouitestresult", "testresult", query)
-        query = "username='%s' and project='%s'" % (username, AppSettings.PROJECTS[project])
-        dates = get_dates(query)    
+        result_query["condition"] = "username='%s' and project='%s' and date='%s'" % (username, AppSettings.PROJECTS[project], date)
+        result = select_uitestresult(**result_query)
+        condition = "username='%s' and project='%s'" % (username, AppSettings.PROJECTS[project])
+        dates = get_dates(condition)
 
     if result:
         result = [r[0] for r in result]

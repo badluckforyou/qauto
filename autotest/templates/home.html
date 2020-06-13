@@ -119,34 +119,52 @@
               </div>
             </div>
             <div class="row">
-              <div class="col-lg-12 col-md-12 equel-grid">
+              <div class="col-lg-12 equel-grid">
                 <div class="grid">
-                  <div class="grid-body d-flex flex-column h-100">
-                    <div class="wrapper">
-                      <div class="d-flex justify-content-between">
-                        <div class="split-header">
-                          <img class="img-ss mt-1 mb-1 mr-2" src="{% static 'images/social-icons/instagram.svg' %}" alt="instagram">
-                          <h5 class="card-title">CSDN</h5>
-                        </div>
+                  <div class="grid-body py-3">
+                    <div class="d-flex justify-content-between">
+                      <div class="split-header">
+                        <img class="img-ss mt-1 mb-1 mr-2" src="{% static 'images/social-icons/instagram.svg' %}" alt="instagram">
+                        <h5 class="card-title">TESTERHOME</h5>
                       </div>
-                        <pre class="text-gray" style="font-size: 14px;"><h6><br><br>     Empty data.<h6></pre>
+                    </div>
+                    <div class="vertical-timeline-wrapper">
+                      {% ifequal testerhome None %}
+                      <pre class="text-gray" style="font-size: 14px;"><h6><br><br>     Empty data.</h6></pre>
+                      {% else %}
+                      {% for data in testerhome %}
+                      <div class="d-flex justify-content-between border-bottom py-2">
+                        <a href="{{ data.url }}" target="_blank" style="color: #3d3d3d">
+                          <h6 class="text-gray"> {{ data.title }} ...</h6>
+                        </a>
+                      </div>
+                      {% endfor %}
+                      {% endifequal %}
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
-            <div class="row">
-              <div class="col-lg-12 col-md-12 equel-grid">
+              <div class="col-lg-12 equel-grid">
                 <div class="grid">
-                  <div class="grid-body d-flex flex-column h-100">
-                    <div class="wrapper">
-                      <div class="d-flex justify-content-between">
-                        <div class="split-header">
-                          <img class="img-ss mt-1 mb-1 mr-2" src="{% static 'images/social-icons/instagram.svg' %}" alt="instagram">
-                          <h5 class="card-title">TESTERHOME</h5>
-                        </div>
+                  <div class="grid-body py-3">
+                    <div class="d-flex justify-content-between">
+                      <div class="split-header">
+                        <img class="img-ss mt-1 mb-1 mr-2" src="{% static 'images/social-icons/instagram.svg' %}" alt="instagram">
+                        <h5 class="card-title">CSDN</h5>
                       </div>
-                        <pre class="text-gray" style="font-size: 14px;"><h6><br><br>     Empty data.<h6></pre>
+                    </div>
+                    <div class="vertical-timeline-wrapper">
+                      {% ifequal csdn None %}
+                      <pre class="text-gray" style="font-size: 14px;"><h6><br><br>     Empty data.</h6></pre>
+                      {% else %}
+                      {% for data in csdn %}
+                      <div class="d-flex justify-content-between border-bottom py-2">
+                        <a href="{{ data.url }}" target="_blank" style="color: #3d3d3d">
+                          <h6 class="text-gray"> {{ data.title }} ...</h6>
+                        </a>
+                      </div>
+                      {% endfor %}
+                      {% endifequal %}
                     </div>
                   </div>
                 </div>

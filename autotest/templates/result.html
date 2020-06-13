@@ -205,46 +205,66 @@
                 </div>
               </div>
               {% endif %}
-              <div class="col-md-5">
-                <div class="grid" style="height: 400px;">
-                  <div class="grid-body">
-                    <h2 class="grid-title">Doughnut Chart</h2>
-                    <div class="item-wrapper">
-                      <canvas id="doughnutChart" width="600px;" height="400px;">
-                        此浏览器不支持canvas, 无法显示结果数据图!!!
-                      </canvas>
+              <div class="col-md-5 equal-gird">
+                <div class="grid">
+                  <div class="grid-body py-3">
+                    <div class="split-header">
+                      <p class="card-title">Statistics</p>
                     </div>
                   </div>
+                  <div id="radial-chart"></div>
+                  <!-- <canvas class="apexcharts-canvas resultCanvas" id="doughnutChart" width="600px;" height="400px;">
+                    此浏览器不支持canvas, 无法显示结果数据图!!!
+                  </canvas> -->
                 </div>
               </div>
-              <div class="col-md-7">
-                <div class="grid" style="height: 400px;">
-                  <div class="grid-body">
-                    <h2 class="grid-title">Summary</h2>
-                    <div class="item-wrapper">
-                      <label id="summary" name="summary"></label>
+              <div class="col-md-7 equal-gird">
+                <div class="grid">
+                  <div class="grid-body py-3">
+                    <div class="split-header">
+                      <p class="card-title">Summary</p>
+                    </div>
+                    <br>
+                    <div class="d-flex justify-content-between border-bottom py-2">
+                      <h5>INFORMATION OF THE RESULT</h5>
+                    </div><br>
+                    <div class="d-flex justify-content-between border-bottom py-2">
+                      Project:&nbsp;&nbsp;{{ project }}
+                    </div><br>
+                    <div class="d-flex justify-content-between border-bottom py-2">
+                      Runtime:&nbsp;&nbsp;{{ date }}
+                    </div><br>
+                    <div class="d-flex mt-2">
+                      所有用例:&nbsp;&nbsp;&nbsp;<span style="color:#696ffb" id="totalNum"></span>
+                    </div>
+                    <div class="d-flex mt-2">
+                      成功用例:&nbsp;&nbsp;&nbsp;<span style="color:#4CCEAC" id="successNum"></span>
+                    </div>
+                    <div class="d-flex mt-2">
+                      失败用例:&nbsp;&nbsp;&nbsp;<span style="color:#f5003a" id="failNum"></span>
                     </div>
                     <div class="item-wrapper">
                       <label><br></label>
                     </div>
-                    {% if user.is_authenticated %}
                     <div class="item-wrapper">
+                      {% if user.is_authenticated %}
                       <button class="btn btn-secondary" onclick="generateUrl()" data-toggle="modal" data-target="#newUrl">
                         分享给他人
                       </button>
+                      {% else %}
+                      <br><br>
+                      {% endif %}
                     </div>
-                    {% endif %}
                   </div>
                 </div>
               </div>
-              <!-- <img src="/images/9538ca37fafb1baa106a3fbd87935947/k7701/log/202005131507.png" alt="图片无法显示"> -->
               <div class="col-12">
                 <div class="grid">
                   <div class="grid-body text-gray">
-                    <div>
+                    <div class="table-responsive">
                       <table id="table" name="table" class="table table-hover">
                         <thead>
-                          <tr>
+                          <tr class="solid-header">
                             <th style="width: 250px;">用例名称</th>
                             <th style="width: 100px;">执行时间</th>
                             <th style="width: 100px;">预期结果</th>
@@ -381,7 +401,6 @@
         $("#projects").change(function(){
           $("#projects").submit();
         });
-        // doughnut chart
         var succ = 0;
         var fail = 0;
         var data = JSON.parse("{{ result }}".replace(/&#x27;/g, '"'));
@@ -394,6 +413,8 @@
           }
         }
         var total = succ + fail;
+        var percent = ((succ / total) * 100).toFixed(1);
+        // doughnut chart
         if ($("#doughnutChart").length) {
           var doughnutChartCanvas = $("#doughnutChart").get(0).getContext("2d");
           var doughnutData = {
@@ -443,7 +464,7 @@
               var msgPosY = Math.round(height / 2 + 5);
               doughnut.fillText(msg, msgPosX, msgPosY);
 
-              var percent = ((succ / total) * 100).toFixed(2) + "%";
+              percent = percent + "%";
               if (total == 0){
                 percent = "0.00%";
               }
@@ -455,9 +476,64 @@
             }
           });
         }
-        //结果统计的生成
-        var message = "<br>INFORMATION OF THE RESULT<br>——————————————<br><br>Cases:&nbsp;&nbsp;" + "{{ game }}" + "<br><br>成功用例:&nbsp;&nbsp;&nbsp;<span style='color:#4CCEAC'>" + succ + "</span><br>失败用例:&nbsp;&nbsp;&nbsp;<span style='color:#f5003a'>" + fail + "</span><br>所有用例:&nbsp;&nbsp;&nbsp;<span style='color:#696ffb'>" + total + "</span>&nbsp;";
-        $("#summary").html(message);
+        if ($("#radial-chart").length) {
+          data = {
+            chart: {
+              height: 360,
+              type: "radialBar"
+            },
+            series: [percent],
+            colors: ["#4CCEAC"],
+            plotOptions: {
+              radialBar: {
+                hollow: {
+                    margin: 0,
+                    size: "70%",
+                    background: "rgba(255,255,255,0.1)"
+                },
+                track: {
+                  dropShadow: {
+                      enabled: !0,
+                      top: 2,
+                      left: 0,
+                      blur: 4,
+                      opacity: .02
+                  }
+                },
+                dataLabels: {
+                    name: {
+                        offsetY: -10,
+                        color: "#adb5bd",
+                        fontSize: "15px"
+                    },
+                    value: {
+                        offsetY: 5,
+                        color: "#000000",
+                        fontSize: "18px",
+                        show: !0
+                    }
+                }
+              }
+            },
+            fill: {
+              type: "gradient",
+              gradient: {
+                shade: "dark",
+                type: "vertical",
+                gradientToColors: ["#87D4F9"],
+                stops: [0, 100]
+              }
+            },
+            stroke: {
+              lineCap: "round"
+            },
+            labels: ["通过率"]
+          };
+          (r = new ApexCharts(document.querySelector("#radial-chart"), data)).render()
+        }
+        $("#totalNum").html(total);
+        $("#successNum").html(succ);
+        $("#failNum").html(fail);
       });
       /****** 跳转到新的页面 ******/
       function goToNewHtml(game, report){
@@ -485,7 +561,10 @@
           var modalHeight = $(this).find(".modal-dialog").height();
           var windowHeight = $(window).height();
           if (modalHeight < windowHeight) {
-            setModalHeight($(this), (windowHeight - modalHeight) / 2)
+            setModalHeight($(this), (windowHeight - modalHeight) / 2);
+          }
+          else {
+            setModalHeight($(this), 100);
           }
         });
       }

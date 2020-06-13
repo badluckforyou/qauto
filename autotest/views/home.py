@@ -1,5 +1,7 @@
+import re
 import os
-import json
+import ujson as json
+import requests
 
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
@@ -8,9 +10,69 @@ from autotest.helper import _hash_encrypted as _
 from autotest.app_settings import AppSettings
 
 
+def get_csdn_data():
+    data = []
+    headers = {"Content-Type": "application/x-www-form-urlencoded;charset=utf-8"}
+    response = requests.get("https://www.csdn.net/", headers=headers)
+    if response.status_code == 200:
+        csdn_html = "".join(response.text.splitlines())
+        main = re.findall(r"<main>.*?</main>", csdn_html)
+        if not main:
+            return
+        essay = re.findall(r"<h2>.*?</h2>", main[0])
+        if not essay:
+            return
+        for e in essay:
+            d = {}
+            fuzzy_title = re.findall(r"&request_id='.*?</a>", e)
+            if not fuzzy_title:
+                continue
+            exact_title = re.findall(r">.*?<", fuzzy_title[0])
+            if not exact_title:
+                continue
+            title = exact_title[-1].replace(">", "").replace("<", "").replace(" ", "")
+            url = re.findall(r'[a-zA-z]+://[^\s]*"', e)
+            if not url:
+                continue
+            d.setdefault("title", title)
+            d.setdefault("url", url[0].replace('"', ""))
+            data.append(d)
+    return data
 
 
-# @login_required(login_url="/login/"")表示需要登录才有权限进到这个页面
+def get_testerhome_data():
+    data = []
+    headers = {"Content-Type": "application/x-www-form-urlencoded;charset=utf-8"}
+    response = requests.get("https://testerhome.com/topics/excellent", headers=headers)
+    if response.status_code == 200:
+        testerhome_html = "".join(response.text.splitlines())
+        main = re.findall(r'<div class="panel-body item-list">.*?<div class="panel-footer clearfix">', testerhome_html)
+        if not main:
+            return
+        essay = re.findall(r"<a title=.*?</a>", main[0])
+        pattern = re.compile(r"<a title=.*?<span")
+        for e in essay:
+            d = {}
+            if not pattern.match(e):
+                continue
+            e = pattern.findall(e)[0]
+            fuzzy_title = re.findall(r"=.*? href=", e)
+            if not fuzzy_title:
+                continue
+            exact_title = re.findall(r'".*?"', fuzzy_title[0])
+            if not exact_title:
+                continue
+            title = "".join(exact_title[0])
+            url = re.findall(r'/[^\s]*/\d+', e)
+            if not url:
+                continue
+            d.setdefault("title", title.replace('"', ""))
+            d.setdefault("url", "https://testerhome.com%s" % url[0])
+            data.append(d)
+    return data
+
+
+# @login_required(login_url="/login/")表示需要登录才有权限进到这个页面
 # 无权限者将被踢出到/login/界面
 @login_required(login_url="/login/")
 def home(request):
@@ -32,13 +94,10 @@ def home(request):
         child_folder = os.path.join(folder, "images")
         if value and not os.path.exists(child_folder):
             os.mkdir(child_folder)
-    # manual_of_folders = [l.replace(" ", " ") for l in Document.manual_of_folders()]
-
-
     return render(request, "templates/home.html", {
+                    "username": username,
                     "title": AppSettings.TITLE,
                     "company": AppSettings.COMPANY, 
-                    "username": username,
-                    # "manual_of_folders":  Document.manual_of_folders(),
-                    # "common_issues": Document.common_issues(),
+                    "csdn": get_csdn_data() or None,
+                    "testerhome": get_testerhome_data() or None,
                     })

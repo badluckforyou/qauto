@@ -117,213 +117,303 @@
       <!-- partial -->
       <div class="page-content-wrapper">
         <div class="page-content-wrapper-inner">
-          <div class="content-viewport" style="float: left;">
+          <div class="content-viewport">
             <div class="row">
-              <div class="modal" id="uploadTestCases" data-backdrop="true" style="position: fixed;">
-                <div class="modal-dialog">
+              <div class="modal" id="setExecuteTime" data-backdrop="true" style="position: fixed; ">
+                <div class="modal-dialog modal-sm">
                   <div class="modal-content">
                     <div class="modal-header">
-                      <h6 class="modal-title" style="font-size: 20px">
-                        <strong>Upload Test Cases</strong>
+                      <h6 class="modal-title">
+                        <strong>执行时间</strong>
                       </h6>
                     </div>
                     <div class="modal-body">
-                      <form class="form-group" method="POST" id="uploadTestCasesForm" enctype="multipart/form-data">
-                        <label style="color: #778899">Choose your project.</label>
-                        <select class="custom-select" id="caseProject" name="caseProject" style="width: 120px;padding: 0 15px;height: 30px;width: 360px;">
-                          {% for project in projects %}
-                          <option>{{ project }}</option>
-                          {% endfor %}
-                        </select>
-                        <ul></ul>
-                        <label style="color: #778899">Choose the case file.</label>
-                        <ul>
-                          <input type="file" id="caseFile" name="caseFile">
-                        </ul>
-                        <ul></ul>
-                        <label style="color: #787879">NOTICE!! You can only upload one file.</label>
-                        <div class="modal-footer">
-                          <a class="btn btn-success btn-sm" data-dismiss="modal" id="uploadTestCasesButton">
-                            <i class="mdi mdi-cloud-upload"></i>
-                            UPLOAD
-                          </a>
-                        </div>
-                        {% csrf_token %}
-                      </form>
+                      <input type="datetime-local" name="executeTime" id="executeTime" min="{{ servertime }}" value="{{ servertime }}">
+                    </div>
+                    <div class="modal-footer">
+                      <a class="btn btn-success btn-sm" data-dismiss="modal" id="addCrontab" name="addCrontab">
+                        添加
+                      </a>
                     </div>
                   </div>
                 </div>
               </div>
-              <div class="col-lg-12" style="height: 200px">
-                <div class="grid">
-                  <p class="grid-header"><font size="5"><b>上传测试用例</b></font></p>
-                  <div class="grid-body">
-                    <div class="item-wrapper">
-                      <div class="row" style="width: 750px;">
-                        <div class="col-md-8 mx-auto">
-                          <div class="form-group row showcase_row_area">
-                            <div class="col-md-3 showcase_text_area"></div>
-                            <div class="col-md-9 showcase_content_area">
-                              <button class="btn btn-secondary has-icon btn-block mt-0" data-toggle="modal" data-target="#uploadTestCases" style="height: 30px;padding: 0 15px;">
-                                <i class="mdi mdi-cloud-upload"></i>
-                                上传自动化用例
-                              </button>
-                            </div>
-                          </div>
+              <div class="modal" id="showActivityLog" data-backdrop="true" style="position: fixed; ">
+                <div class="modal-dialog">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h6 class="modal-title">
+                        <strong>Activity Log</strong>
+                      </h6>
+                    </div>
+                    <div class="modal-body">
+                      <div class="timeline-vertical">
+                        {% for log in morelogs %}
+                        <div class="activity-log">
+                          <p class="log-name">{{ log.logname }}</p>
+                          <div class="log-details"><span class="text-black">[{{ log.recordtime }}]</span> {{ username }} {{ log.data }}</div>
+                          <small class="log-time">{{ log.pasttime}}</small>
                         </div>
+                        {% empty %}
+                        <pre class="text-gray" style="font-size: 14px;">Empty data.<h6></pre>
+                        {% endfor %}
                       </div>
                     </div>
+                    <div class="modal-footer">
+                    </div>
                   </div>
                 </div>
               </div>
-              <div class="col-lg-12" style="height: 450px">
+              <div class="modal" id="editTask" data-backdrop="true" style="position: fixed; ">
+                <div class="modal-dialog">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h6 class="modal-title">
+                        <strong>Operation of Task</strong>
+                      </h6>
+                    </div>
+                    <div class="modal-body">
+                      <div class="timeline-vertical">
+                        <pre class="text-gray" style="font-size: 14px;">Not support yet.<h6></pre>
+                      </div>
+                    </div>
+                    <div class="modal-footer">
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-7 equel-grid">
                 <div class="grid">
-                  <p class="grid-header"><font size="5"><b>配置测试信息</b></font></p>
-                  <div class="grid-body">
-                    <div class="item-wrapper">
-                      <div class="row mb-3" style="width: 750px;">
-                        <div class="col-md-8 mx-auto">
-                          <form role="form" class="form-group" method="GET" id="projects">
-                            <div class="form-group row showcase_row_area">
-                              <div class="col-md-3 showcase_text_area">
-                                <label for="project" style="color: #787879;"><b>Project</b></label>
-                              </div>
-                              <div class="col-md-9 showcase_content_area">
-                                <select class="custom-select" id="project" name="project" style="width: 120px;padding: 0 15px;height: 30px;width: 360px;">
-                                  {% for project in projects %}
-                                  <option>{{ project }}</option>
-                                  {% endfor %}
-                                </select>
-                              </div>
+                  <div class="grid-body py-3">
+                    <div class="split-header">
+                      <p class="card-title">Upload</p>
+                    </div>
+                  </div>
+                  <div class="vertical-timeline-wrapper" >
+                    <div class="row">
+                      <div class="col-md-6 mx-auto">
+                        <div class="form-group row">
+                          <form class="form-group" method="POST" id="uploadTestCasesForm" enctype="multipart/form-data">
+                            <label style="color: #778899">Project</label>
+                            <select class="custom-select" id="caseProject" name="caseProject" style="width: 120px;padding: 0 15px;height: 30px;width: 400px;">
+                              {% for project in projects %}
+                              <option>{{ project }}</option>
+                              {% endfor %}
+                            </select>
+                            <ul></ul>
+                            <div class="custom-file">
+                              <input type="file" class="custom-file-input" id="caseFile" name="caseFile">
+                              <label class="custom-file-label" for="caseFile">Choose File</label>
+                            </div>
+                            <ul></ul>
+                            <label style="color: #787879">NOTICE!! You can only upload one file.</label>
+                            <div class="modal-footer">
+                              <a class="btn btn-success btn-sm" data-dismiss="modal" id="uploadTestCasesButton">
+                                <i class="mdi mdi-cloud-upload"></i>
+                                UPLOAD
+                              </a>
                             </div>
                             {% csrf_token %}
                           </form>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="grid-body py-3">
+                    <div class="split-header">
+                      <p class="card-title">Setup</p>
+                    </div>
+                  </div>
+                  <div class="vertical-timeline-wrapper">
+                    <div class="row mb-3">
+                      <div class="col-md-8 mx-auto">
+                        <form role="form" class="form-group" method="GET" id="projects">
                           <div class="form-group row showcase_row_area">
                             <div class="col-md-3 showcase_text_area">
-                              <label for="choosePlatform" style="color: #787879;"><b>Platform</b></label>
+                              <label for="project"><b class="text-black font-weight-medium d-block">Project</b></label>
                             </div>
-                            <div class="col-md-9 showcase_content_area">
-                              <select class="custom-select" id="platform" name="platform" style="width: 120px;padding: 0 15px;height: 30px;width: 360px;">
-                                {% for platform in platforms %}
-                                <option>{{ platform }}</option>
+                            <div class="col-md-8">
+                              <select class="custom-select" id="project" name="project" style="padding: 0 15px;height: 30px;width: 300px;">
+                                {% for project in projects %}
+                                <option>{{ project }}</option>
                                 {% endfor %}
                               </select>
                             </div>
                           </div>
-                          <div class="form-group row showcase_row_area">
-                            <div class="col-md-3 showcase_text_area">
-                              <label for="app" style="color: #787879;"><b>Packeage</b></label>
-                            </div>
-                            <div class="col-md-9 showcase_content_area">
-                              <select class="custom-select" id="app" name="app" style="padding: 0 15px;height: 30px;width: 360px;">
-                                {% for package in packages %}
-                                <option>{{ package }}</option>
-                                {% endfor %}
-                              </select>
-                            </div>
+                          {% csrf_token %}
+                        </form>
+                        <div class="form-group row showcase_row_area">
+                          <div class="col-md-3 showcase_text_area">
+                            <label for="choosePlatform"><b class="text-black font-weight-medium d-block">Platform</b></label>
                           </div>
-                          <div class="form-group row showcase_row_area">
-                            <div class="col-md-3 showcase_text_area">
-                              <label for="chooseCaseFile" style="color: #787879;"><b>Test Case</b></label>
-                            </div>
-                            <div class="col-md-9 showcase_content_area">
-                              <select class="custom-select" id="files" name="files" style="padding: 0 15px;height: 30px;width: 360px;">
-                                {% for file in files %}
-                                <option>{{ file }}</option>
-                                {% endfor %}
-                              </select>
-                            </div>
+                          <div class="col-md-8 showcase_content_area">
+                            <select class="custom-select" id="platform" name="platform" style="padding: 0 15px;height: 30px;width: 300px;">
+                              {% for platform in platforms %}
+                              <option>{{ platform }}</option>
+                              {% endfor %}
+                            </select>
                           </div>
-                          <div class="form-group row showcase_row_area">
-                            <div class="col-md-3 showcase_text_area">
-                              <label for="chooseServer" style="color: #787879;"><b>SubServer</b></label>
-                            </div>
-                            <div class="col-md-9 showcase_content_area">
-                              <select class="custom-select" id="server" name="server" style="padding: 0 15px;height: 30px;width: 360px;">
-                                {% for server in subservers %}
-                                <option>{{ server }}</option>
-                                {% endfor %}
-                              </select>
-                            </div>
+                        </div>
+                        <div class="form-group row showcase_row_area">
+                          <div class="col-md-3 showcase_text_area">
+                            <label for="app"><b class="text-black font-weight-medium d-block">Packeage</b></label>
                           </div>
-                          <div class="form-group row showcase_row_area"></div>
-                          <div class="form-group row showcase_row_area">
-                            <div class="col-md-3 showcase_text_area"></div>
-                            <div class="col-md-9 showcase_text_area">
-                              <button class="btn btn-secondary has-icon btn-block mt-0" id="addTask" name="addTask" style="height: 30px;padding: 0 15px;">
-                                <i class="mdi mdi-file-document"></i>
-                                添加自动化任务
-                              </button>
-                            </div>
+                          <div class="col-md-8 showcase_content_area">
+                            <select class="custom-select" id="app" name="app" style="padding: 0 15px;height: 30px;width: 300px;">
+                              {% for package in packages %}
+                              <option>{{ package }}</option>
+                              {% endfor %}
+                            </select>
                           </div>
+                        </div>
+                        <div class="form-group row showcase_row_area">
+                          <div class="col-md-3 showcase_text_area">
+                            <label for="chooseCaseFile"><b class="text-black font-weight-medium d-block">Test Case</b></label>
+                          </div>
+                          <div class="col-md-8 showcase_content_area">
+                            <select class="custom-select" id="files" name="files" style="padding: 0 15px;height: 30px;width: 300px;">
+                              {% for file in files %}
+                              <option>{{ file }}</option>
+                              {% endfor %}
+                            </select>
+                          </div>
+                        </div>
+                        <div class="form-group row showcase_row_area">
+                          <div class="col-md-3 showcase_text_area">
+                            <label for="chooseServer"><b class="text-black font-weight-medium d-block">SubServer</b></label>
+                          </div>
+                          <div class="col-md-8 showcase_content_area">
+                            <select class="custom-select" id="server" name="server" style="padding: 0 15px;height: 30px;width: 300px;">
+                              {% for server in subservers %}
+                              <option>{{ server }}</option>
+                              {% endfor %}
+                            </select>
+                          </div>
+                        </div>
+                        <div class="form-group row showcase_row_area"></div>
+                        <div class="d-flex flex-row mt-4 mb-4">
+                          <button class="btn btn-inverse-primary component-flat w-50 mr-2" type="button" id="addRealTimeTask" name="addRealTimeTask">添加任务</button>
+                          <button class="btn btn-primary w-50 ml-2" type="button" data-toggle="modal" data-target="#setExecuteTime">定时任务</button>
                         </div>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
-              {% ifnotequal tasksnum 0 %}
-              <div class="col-lg-12" id="myTasks">
+              <div class="col-md-5 equel-grid">
                 <div class="grid">
-                  <p class="grid-header"><font size="5"><b>我的测试任务</b></font></p>
-                  <div class="grid-body">
-                    <table id="table" name="table" class="table table-hover">
-                        <thead>
-                          <tr>
-                            <th style="width: 50px;">Select</th>
-                            <th style="width: 170px;">Project</th>
-                            <th style="width: 30px;">Platform</th>
-                            <th style="width: 200px;">Package</th>
-                            <th style="width: 150px;">Test Case</th>
-                            <th style="width: 150px;">SubServer</th>
-                            {% ifequal status 0 %}
-                            <th style="width: 50px;">Status<a class="mdi mdi-chevron-double-down" href="/automation/?n={{ shownum }}&s=1"></a></th>
-                            {% else %}
-                            <th style="width: 50px;">Status<a class="mdi mdi-chevron-double-up" href="/automation/?n={{ shownum }}&s=0"></a></th>
-                            {% endifequal %}
-                          </tr>
-                        </thead>
-                        <tbody id="tasksPool" name="tasksPool">
-                          {% for task in tasks %}
-                          <tr id="trId">
-                            <td style = "word-wrap:break-word;white-space:normal;"><input type="checkbox" id="{{ task.id }}"></td>
-                            <td style = "word-wrap:break-word;white-space:normal;">{{ task.project }}</td>
-                            <td style = "word-wrap:break-word;white-space:normal;">{{ task.platform }}</td>
-                            <td style = "word-wrap:break-word;white-space:normal;">{{ task.package }}</td>
-                            <td style = "word-wrap:break-word;white-space:normal;">{{ task.testcase }}</td>
-                            <td style = "word-wrap:break-word;white-space:normal;">{{ task.server }}</td>
-                            <td style = "word-wrap:break-word;white-space:normal;">{{ task.status }}</td>
-                          {% endfor %}
-                        </tbody>
-                      </table>
-                    <div class="item-wrapper">
-                      <div class="row" style="width: 750px;">
-                        <div class="col-md-8 mx-auto">
-                          {% ifnotequal tasksnum shownum %}
-                          <div class="form-group row showcase_row_area">
-                            <div class="col-md-3 showcase_text_area"></div>
-                            <div class="col-md-9 showcase_content_area">
-                              <a class="mdi" style="height: 30px;padding: 0 150px;" href="/automation/?n={{ shownum }}+3">加载更多</a>
+                  <div class="grid-body py-3">
+                    <div class="split-header">
+                      <p class="card-title">Activity Log <i class="text-gray" style="font-size: 8px;"> in 7 days</i></p>
+                      <div class="btn-group">
+                        <button class="btn action-btn btn-refresh btn-xs component-flat" onclick="refresh()">
+                          <i class="mdi mdi-autorenew text-muted mdi-2x"></i>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="vertical-timeline-wrapper">
+                    <div class="timeline-vertical">
+                      {% for log in logs %}
+                      <div class="activity-log">
+                        <p class="log-name">{{ log.logname }}</p>
+                        <div class="log-details"><span class="text-black">[{{ log.recordtime }}]</span> {{ username }} {{ log.data }}</div>
+                        <small class="log-time">{{ log.pasttime}}</small>
+                      </div>
+                      {% endfor %}
+                    </div>
+                  </div>
+                  <button class="btn component-flat text-gray" data-toggle="modal" data-target="#showActivityLog">
+                    <small class="font-weight-medium"><i class="mdi mdi-chevron-down mr-2"></i> View More </small>
+                  </button>
+                </div>
+              </div>
+              {% ifnotequal tasksnum 0 %}
+              <div class="col-lg-12 equel-grid" id="myTasks">
+                <div class="grid">
+                  <div class="grid-body py-3">
+                    <div class="split-header">
+                      <p class="card-title">Personal Task Pool</p>
+                    </div>
+                  </div>
+                  <table id="table" name="table" class="table table-hover table-sm">
+                    <thead>
+                      <tr class="solid-header">
+                        <th style="width: 50px;">Select</th>
+                        <th style="width: 50px;">Task Id</th>
+                        <th style="width: 170px;">Project</th>
+                        <th style="width: 30px;">Platform</th>
+                        <th style="width: 200px;">Package</th>
+                        <th style="width: 150px;">Test Case</th>
+                        <th style="width: 150px;">SubServer</th>
+                        {% ifequal status 0 %}
+                        <th style="width: 50px;">Status</th>
+                        {% else %}
+                        <th style="width: 50px;">Status<a class="mdi mdi-chevron-double-up" href="?n={{ shownum }}&s=0"></a></th>
+                        {% endifequal %}
+                        <th style="width: 50px;">Exec Time
+                          <span class="btn btn-trasnparent action-btn btn-xs component-flat pr-0" data-toggle="tooltip" data-placement="right" title="若执行时间早于当前时间, 即表明其会被尽快执行">
+                            <i class="mdi mdi-information-outline text-muted mdi-2x"></i>
+                          </span>
+                        </th>
+                        <th style="width: 50px;"></th>
+                      </tr>
+                    </thead>
+                    <tbody id="tasksPool" name="tasksPool">
+                      {% for task in tasks %}
+                      <tr class="solid-header" id="trId">
+                        <td style = "word-wrap:break-word;white-space:normal;"><input type="checkbox" id="{{ task.id }}"></td>
+                        <td style = "word-wrap:break-word;white-space:normal;">{{ task.id }}</td>
+                        <td style = "word-wrap:break-word;white-space:normal;">{{ task.project }}</td>
+                        <td style = "word-wrap:break-word;white-space:normal;">{{ task.platform }}</td>
+                        <td style = "word-wrap:break-word;white-space:normal;">{{ task.package }}</td>
+                        <td style = "word-wrap:break-word;white-space:normal;">{{ task.testcase }}</td>
+                        <td style = "word-wrap:break-word;white-space:normal;">{{ task.server }}</td>
+                        <td style = "word-wrap:break-word;white-space:normal;">{{ task.status }}</td>
+                        <td style = "word-wrap:break-word;white-space:normal;">{{ task.executetime }}</td>
+                        <td >
+                          <div class="btn-group">
+                            <button type="button" class="btn btn-trasnparent action-btn btn-xs component-flat pr-0" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                              <i class="mdi mdi-dots-vertical"></i>
+                            </button>
+                            <div class="dropdown-menu dropdown-menu-right">
+                              <button class="dropdown-item" data-toggle="modal" data-target="#editTask">Delete</button>
+                              <button class="dropdown-item" data-toggle="modal" data-target="#editTask">Edit</button>
                             </div>
                           </div>
-                          {% endifnotequal %}
-                          <div class="form-group row showcase_row_area">
-                            <div class="col-md-3 showcase_text_area"></div>
-                            <div class="col-md-9 showcase_content_area">
-                              <button class="btn btn-success has-icon btn-block mt-0" id="startTest" name="startTest" style="height: 30px;padding: 0 15px;">
-                                <i class="mdi mdi-file-document"></i>
-                                开始自动化测试
-                              </button>
-                            </div>
+                        </td>
+                      {% endfor %}
+                    </tbody>
+                  </table>
+                  <div class="item-wrapper">
+                    <div class="row">
+                      <div class="col-md-8 mx-auto">
+                        {% ifnotequal tasksnum shownum %}
+                        <div class="form-group row showcase_row_area">
+                          <div class="col-md-3 showcase_text_area"></div>
+                          <div class="col-md-6 showcase_content_area">
+                            <button class="btn d-block component-flat text-gray" onclick="loadMoreTasks()">
+                              <small class="font-weight-medium" style="padding: 0 120px;"><i class="mdi mdi-chevron-down mr-2"></i>加载更多</small>
+                            </button>
                           </div>
-                          <div class="form-group row showcase_row_area">
-                            <div class="col-md-3 showcase_text_area"></div>
-                            <div class="col-md-9 showcase_content_area">
-                              <button class="btn btn-danger has-icon btn-block mt-0" id="removeTask" name="removeTask" style="height: 30px;padding: 0 15px;">
-                                <i class="mdi mdi-file-document"></i>
-                                移除已完成测试
-                              </button>
-                            </div>
+                        </div>
+                        {% endifnotequal %}
+                        <div class="form-group row showcase_row_area">
+                          <div class="col-md-3 showcase_text_area"></div>
+                          <div class="col-md-6 showcase_content_area">
+                            <button class="btn btn-success has-icon btn-block mt-0" id="startTest" name="startTest" style="height: 30px;padding: 0 15px;">
+                              <!-- <i class="mdi mdi-file-document"></i> -->
+                              执行选中的任务
+                            </button>
+                          </div>
+                        </div>
+                        <div class="form-group row showcase_row_area">
+                          <div class="col-md-3 showcase_text_area"></div>
+                          <div class="col-md-6 showcase_content_area">
+                            <button class="btn btn-danger has-icon btn-block mt-0" id="removeTask" name="removeTask" style="height: 30px;padding: 0 15px;">
+                              <!-- <i class="mdi mdi-file-document"></i> -->
+                              移除选中的任务
+                            </button>
                           </div>
                         </div>
                       </div>
@@ -333,43 +423,47 @@
               </div>
               {% endifnotequal %}
               {% ifnotequal totaltasksnum 0 %}
-              <div class="col-lg-12" style="height: 200px">
+              <div class="col-lg-12 equel-grid">
                 <div class="grid">
-                  <p class="grid-header"><font size="5"><b>任务池</b></font></p>
-                  <div class="grid-body">
-                    <table id="table" name="table" class="table table-hover">
-                        <thead>
-                          <tr>
-                            <th style="width: 50px;">Tester</th>
-                            <th style="width: 170px;">Project</th>
-                            <th style="width: 30px;">Platform</th>
-                            <th style="width: 200px;">Package</th>
-                            <th style="width: 150px;">Test Case</th>
-                            <th style="width: 150px;">SubServer</th>
-                            <th style="width: 50px;">Status</th>
-                          </tr>
-                        </thead>
-                        <tbody id="tasksPool" name="tasksPool">
-                          {% for task in totaltasks %}
-                          <tr id="trId">
-                            <td style = "word-wrap:break-word;white-space:normal;">{{ task.username }}</td>
-                            {% if user.is_superuser %}
-                            <td style = "word-wrap:break-word;white-space:normal;">{{ task.project }}</td>
-                            <td style = "word-wrap:break-word;white-space:normal;">{{ task.platform }}</td>
-                            <td style = "word-wrap:break-word;white-space:normal;">{{ task.package }}</td>
-                            <td style = "word-wrap:break-word;white-space:normal;">{{ task.testcase }}</td>
-                            {% else %}
-                            <td style = "word-wrap:break-word;white-space:normal;">******</td>
-                            <td style = "word-wrap:break-word;white-space:normal;">***</td>
-                            <td style = "word-wrap:break-word;white-space:normal;">***.*****.***</td>
-                            <td style = "word-wrap:break-word;white-space:normal;">*****.***</td>
-                            {% endif %}
-                            <td style = "word-wrap:break-word;white-space:normal;">{{ task.server }}</td>
-                            <td style = "word-wrap:break-word;white-space:normal;">{{ task.status }}</td>
-                          {% endfor %}
-                        </tbody>
-                      </table>
+                  <div class="grid-body py-3">
+                    <div class="split-header">
+                      <p class="card-title">Task Pool</p>
                     </div>
+                  </div>
+                  <table id="table" name="table" class="table table-hover table-sm">
+                      <thead>
+                        <tr class="solid-header">
+                          <th style="width: 50px;">Tester</th>
+                          <th style="width: 170px;">Project</th>
+                          <th style="width: 30px;">Platform</th>
+                          <th style="width: 200px;">Package</th>
+                          <th style="width: 150px;">Test Case</th>
+                          <th style="width: 150px;">SubServer</th>
+                          <th style="width: 50px;">Status</th>
+                          <th style="width: 50px;">Exec Time</th>
+                        </tr>
+                      </thead>
+                      <tbody id="tasksPool" name="tasksPool">
+                        {% for task in totaltasks %}
+                        <tr id="trId">
+                          <td style = "word-wrap:break-word;white-space:normal;">{{ task.username }}</td>
+                          {% if user.is_superuser %}
+                          <td style = "word-wrap:break-word;white-space:normal;">{{ task.project }}</td>
+                          <td style = "word-wrap:break-word;white-space:normal;">{{ task.platform }}</td>
+                          <td style = "word-wrap:break-word;white-space:normal;">{{ task.package }}</td>
+                          <td style = "word-wrap:break-word;white-space:normal;">{{ task.testcase }}</td>
+                          {% else %}
+                          <td style = "word-wrap:break-word;white-space:normal;">******</td>
+                          <td style = "word-wrap:break-word;white-space:normal;">***</td>
+                          <td style = "word-wrap:break-word;white-space:normal;">***.*****.***</td>
+                          <td style = "word-wrap:break-word;white-space:normal;">*****.***</td>
+                          {% endif %}
+                          <td style = "word-wrap:break-word;white-space:normal;">{{ task.server }}</td>
+                          <td style = "word-wrap:break-word;white-space:normal;">{{ task.status }}</td>
+                          <td style = "word-wrap:break-word;white-space:normal;">{{ task.executetime }}</td>
+                        {% endfor %}
+                      </tbody>
+                    </table>
                   </div>
                 </div>
               </div>
@@ -396,10 +490,9 @@
     <!-- endbuild -->
     <script type="text/javascript">
       $(window).on("load", function(){
-        $("#myTasks").css("height", 280 + {{ shownum }} * $("#trId").height())
         $("table tr").each(function(){
           var checkbox = $(this).find("input[type=checkbox]");
-          var status = $(this).find("td:eq(6)");
+          var status = $(this).find("td:eq(7)");
           if (status.text() == "队列"){
             checkbox.attr("disabled","disabled");
             // status.css("color", "#333333");
@@ -424,6 +517,43 @@
           alert("{{ message }}");
         }
       });
+      function refresh(){
+        location.reload(true);
+      }
+      function loadMoreTasks(){
+        var tasksNumberNow = {{ shownum }};
+        // 每次加载数量为3
+        var tasksNumberWanted = tasksNumberNow + 3;
+        var url = this.location.href;
+        var query = this.location.search;
+        // 如果已经存在&n=, 则将其删除
+        if (url.indexOf("&n=") > 0) {
+          url = url.substring(0, url.indexOf("&n"));
+        }
+        // 祼地址需要补充?
+        if (query.startsWith("?") == false){
+          url += "?"
+        }
+        url += "&n=" + tasksNumberWanted;
+        window.location.replace(url);
+      }
+      var halfWindowHeight = $(window).height() / 2;
+      /****** 设置modal setExecuteTime 显示的坐标 ******/
+      function setModalHeight(modal, height){
+        modal.css("display", "block");
+        modal.find(".modal-dialog").css({
+          "margin-top": height,
+        });
+      }
+      $("#setExecuteTime").on("show.bs.modal", function(e){
+        setModalHeight($(this), halfWindowHeight);
+      });
+      $("#showActivityLog").on("show.bs.modal", function(e){
+        setModalHeight($(this), 100);
+      });
+      $("#editTask").on("show.bs.modal", function(e){
+        setModalHeight($(this), halfWindowHeight);
+      });
       $("#uploadTestCasesButton").click(function(){
         var caseFile = $("#caseFile").val();
         if (caseFile == ""){
@@ -442,27 +572,22 @@
       $("#project").change(function(){
         $("#projects").submit();
       });
-      $("#uploadTestCases").on("show.bs.modal", function(e){
-        $(this).css("display", "block");
-        $(this).find(".modal-dialog").css({
-          "margin-top": $(window).height() / 2 - 200
-        });
-      });
-      $("#addTask").click(function(){
+      function addTask(exectime){
         var server = $("#server").val()
         var project = $("#project").val();
         var platform = $("#platform").val();
         var app = $("#app").val();
-        var files = $("#files").val();
-        if (app == ""){
-          alert("请输入测试包名!!!");
+        var file = $("#files").val();
+        console.log(file);
+        if (app == null){
+          alert("请选择测试包名!!!");
           return
         }
-        else if (platform == ""){
+        else if (platform == null){
           alert("请选择对应平台!!!");
           return;
         }
-        else if (files == ""){
+        else if (file == null){
           alert("请选择对应测试用例!!!");
           return;
         }
@@ -477,7 +602,8 @@
             "project": project,
             "platform": platform,
             "package" : app,
-            "caseFile": files,
+            "casefile": file,
+            "exectime": exectime,
           },
           success: function(data){
             if (confirm(JSON.parse(data))){
@@ -485,8 +611,21 @@
             }
           }
         })
+      }
+      $("#addRealTimeTask").click(function(){
+        addTask("early");
+      });
+      $("#addCrontab").click(function(){
+        addTask($("#executeTime").val());
       });
       $("#removeTask").click(function(){
+        var inputs = $("input[type=checkbox]")
+        var ids = new Array();
+        for (i=0; i<inputs.length; i++){
+          if (inputs[i].checked == true){
+            ids.push(inputs[i].id);
+          }
+        }
         $.ajax({
           cache: false,
           url: "removetask/",
@@ -494,7 +633,7 @@
           type: "POST",
           async: true,
           data: {
-            "identify": "remove",
+            "ids": JSON.stringify(ids),
           },
           success: function(data){
             if (confirm(JSON.parse(data))){
@@ -526,26 +665,6 @@
             }
           }
         });
-      });
-      $("#stopTest").click(function(){
-        if (confirm("确定中断自动化测试?")){
-          $.ajax({
-            cache: false,
-            url: "stop/",
-            dataType: 'text',
-            type: 'POST',
-            async: true,
-            data: {
-              "stop": "stop",
-              "project": $("#project").val(),
-            },
-            success: function(data){
-              if (confirm(JSON.parse(data))){
-                location.reload(true);
-              }
-            }
-          });
-        }
       });
     </script>
   </body>

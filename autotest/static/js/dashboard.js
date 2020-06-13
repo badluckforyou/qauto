@@ -166,11 +166,11 @@ $(function () {
     if ($("#radial-chart").length) {
         a = {
             chart: {
-                height: 230,
+                height: 400,
                 type: "radialBar"
             },
-            series: [67],
-            colors: ["#696ffb"],
+            series: [percent],
+            colors: ["#4CCEAC"],
             plotOptions: {
                 radialBar: {
                     hollow: {
@@ -191,12 +191,12 @@ $(function () {
                         name: {
                             offsetY: -10,
                             color: "#adb5bd",
-                            fontSize: "13px"
+                            fontSize: "15px"
                         },
                         value: {
                             offsetY: 5,
-                            color: "#000",
-                            fontSize: "20px",
+                            color: "#000000",
+                            fontSize: "18px",
                             show: !0
                         }
                     }
@@ -214,7 +214,7 @@ $(function () {
             stroke: {
                 lineCap: "round"
             },
-            labels: ["Progress"]
+            labels: ["通过率"]
         };
         (r = new ApexCharts(document.querySelector("#radial-chart"), a)).render()
     }
