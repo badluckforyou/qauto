@@ -15,7 +15,8 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, re_path
-from autotest.views import login, home, automation, result, report, error
+from autotest.views import login, home, error
+from autotest.views import automation, api
 from django.conf import settings
 from django.conf.urls import handler404
 from django.conf.urls.static import static
@@ -36,12 +37,13 @@ urlpatterns = [
     path("automation/removetask/", automation.remove_task),
     path("automation/update/", automation.update_task),
     path("automation/share/", automation.share),
+    path("automation/result/", automation.result),
+    path("automation/result/insert/", automation.insert),
 
-    path("result/", result.result),
-    path("result/insert/", result.insert),
+    path("api/", api.api_testing),
+    path("api/request/", api.request),
 
-    path("report/", report.report),
-    re_path(r'^result/(?P<path>.*)$', serve, {"document_root": AppSettings.TESTERFOLDER})
+    re_path(r'^automation/result/(?P<path>.*)$', serve, {"document_root": AppSettings.TESTERFOLDER})
 ]
 
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

@@ -13,7 +13,10 @@ from autotest.app_settings import AppSettings
 def get_csdn_data():
     data = []
     headers = {"Content-Type": "application/x-www-form-urlencoded;charset=utf-8"}
-    response = requests.get("https://www.csdn.net/", headers=headers)
+    try:
+        response = requests.get("https://www.csdn.net/", headers=headers)
+    except:
+        return
     if response.status_code == 200:
         csdn_html = "".join(response.text.splitlines())
         main = re.findall(r"<main>.*?</main>", csdn_html)
@@ -43,7 +46,10 @@ def get_csdn_data():
 def get_testerhome_data():
     data = []
     headers = {"Content-Type": "application/x-www-form-urlencoded;charset=utf-8"}
-    response = requests.get("https://testerhome.com/topics/excellent", headers=headers)
+    try:
+        response = requests.get("https://testerhome.com/topics/excellent", headers=headers)
+    except:
+        return
     if response.status_code == 200:
         testerhome_html = "".join(response.text.splitlines())
         main = re.findall(r'<div class="panel-body item-list">.*?<div class="panel-footer clearfix">', testerhome_html)

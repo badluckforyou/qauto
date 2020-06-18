@@ -121,7 +121,7 @@ def automated_testing(request):
 
     log_query = {"condition": "username='%s'" % username}
     total_logs = select_log(**log_query)
-    return render(request, "templates/automation.html", {
+    return render(request, "templates/automation/automation.html", {
                     "title": AppSettings.TITLE,
                     "company": AppSettings.COMPANY,
                     "username": username,

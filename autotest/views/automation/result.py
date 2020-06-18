@@ -86,7 +86,7 @@ def result(request):
     except EmptyPage:
         data = paginator.page(paginator.num_pages)
 
-    return render(request, "templates/result.html", {
+    return render(request, "templates/automation/result.html", {
                     "title": AppSettings.TITLE,
                     "company": AppSettings.COMPANY,
                     "username": username,

@@ -24,14 +24,16 @@ SECRET_KEY = '9e8#y@a+cge_ck4dk=ej-19piq7!9(+$5d4y50=!tu5-3ww5)h'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-APPEND_SLASH = False
+# APPEND_SLASH = False
 
 ALLOWED_HOSTS = [
     '127.0.0.1',
     "0.0.0.0",
     "localhost",
     "192.168.1.37",
-    "192.168.191.249"
+    "192.168.191.249",
+    "qauto.qicp.vip",
+    "bindo1111dembp.localdomain:8888",
 ]
 
 

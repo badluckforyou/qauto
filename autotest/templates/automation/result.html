@@ -116,6 +116,33 @@
               <i class="mdi mdi-application link-icon"></i>
             </a>
           </li>
+          <li class="nav-category-divider">API TESTING</li>
+          <li>
+            <a href="/api/">
+              <span class="link-title">接口测试</span>
+              <i class="mdi mdi-application link-icon"></i>
+            </a>
+          </li>
+          <li>
+            <a href="/api/result/">
+              <span class="link-title">结果</span>
+              <i class="mdi mdi-application link-icon"></i>
+            </a>
+          </li>
+          <li class="nav-category-divider">STRESS TESTING</li>
+          <li>
+            <a href="/stress/">
+              <span class="link-title">压力测试</span>
+              <i class="mdi mdi-application link-icon"></i>
+            </a>
+          </li>
+          <li>
+            <a href="/stress/result/">
+              <span class="link-title">结果</span>
+              <i class="mdi mdi-application link-icon"></i>
+            </a>
+          </li>
+
           <li class="nav-category-divider">USER</li>
           <li>
             <a href="/user/">
@@ -260,96 +287,111 @@
               </div>
               <div class="col-12">
                 <div class="grid">
-                  <div class="grid-body text-gray">
-                    <div class="table-responsive">
-                      <table id="table" name="table" class="table table-hover">
-                        <thead>
-                          <tr class="solid-header">
-                            <th style="width: 250px;">用例名称</th>
-                            <th style="width: 100px;">执行时间</th>
-                            <th style="width: 100px;">预期结果</th>
-                            <th style="width: 100px;">实际结果</th>
-                            <th style="width: 80px;">测试结果</th>
-                            <th style="width: 80px;">用例耗时</th>
-                            <th style="width: 100px;">运行日志</th>
-                            <th style="width: 100px;">详细报告</th>
-                          </tr>
-                        </thead>
-                        <tbody id="result" name="result">
-                          {% for item in data %}
-                          <tr id="trid">
-                            <td style = "word-wrap:break-word;white-space:normal;">{{ item.casename }}</td>
-                            <td style = "word-wrap:break-word;white-space:normal;">{{ item.runtime }}</td>
-                            <td style = "word-wrap:break-word;white-space:normal;">{{ item.resultwanted }}</td>
-                            <td style = "word-wrap:break-word;white-space:normal;">{{ item.resultinfact }}</td>
-                            <td style = "word-wrap:break-word;white-space:normal;">{{ item.testresult }}</td>
-                            <td style = "word-wrap:break-word;white-space:normal;">{{ item.costtime }}</td>
-                            <td style = "word-wrap:break-word;white-space:normal;">
-                              <button class="btn btn-secondary has-icon btn-block mt-0" onclick="showLog('{{ item.log }}')" style="height: 25px;padding: 0 15px;" data-toggle="modal" data-target="#log">
-                                查看
-                              </button>
-                            </td>
-                            <td style = "word-wrap:break-word;white-space:normal;">
-                              <button class="btn btn-secondary has-icon btn-block mt-0" onclick="showReport('{{ item.report }}', '{{ item.image }}')" style="height: 25px;padding: 0 15px;" data-toggle="modal" data-target="#report">
-                                查看
-                              </button>
-                            </td>
-                            <!-- <td style = "word-wrap:break-word;white-space:normal;">
-                              <button class="btn btn-inverse-info btn-xs" id="delbtn" onclick="goToNewHtml('{{ item.GAME }}','{{ item.REPORT }}' )">
-                                查看
-                              </button>
-                              <button class="btn btn-inverse-info btn-xs" data-toggle="modal" data-target="#the_grandchild_case" class="button button-rounded button-tiny fontstyle fontsize" onclick="editRow(this)">
-                                下载
-                              </button>
-                              <button class="btn btn-inverse-info btn-xs" id="delbtn" onclick="delRow('{{ grandchildrow.Id }}')">
-                                邮箱
-                              </button>
-                            </td> -->
-                          </tr>
-                          {% endfor %}
-                        </tbody>
-                      </table>
+                  <div class="grid-body py-3">
+                    <div class="split-header">
+                      <p class="card-title">Result</p>
                     </div>
-                    <!-- <div style="position: absolute; right: 100px;bottom: 30px;"> -->
-                    <div style="float: right; margin-right: 150px;">
-                      {% if not data.has_previous%}
-                      <span><a>First </a></span>&nbsp;|
-                      {% else %}
-                      {% if user.is_authenticated %}
-                      <span><a href="?project={{ project }}&date={{ date }}&page=1">First </a></span>&nbsp;|
-                      {% else %}
-                      <span id="firstPage">1</span>&nbsp;|
-                      {% endif %}
-                      {% endif %}
-                      {% if data.has_previous %}
-                      {% if user.is_authenticated %}
-                      <span><a href="?project={{ project }}&date={{ date }}&page={{ data.previous_page_number }}">Previous </a></span>&nbsp;|
-                      {% else %}
-                      <span id="previousPage">{{ data.previous_page_number }}</span>&nbsp;|
-                      {% endif%}
-                      {% else %}
-                      <span>Previous </span>&nbsp;|
-                      {% endif %}
-                      {% if data.has_next %}
-                      {% if user.is_authenticated %}
-                      <span><a href="?project={{ project }}&date={{ date }}&page={{ data.next_page_number }}">Next </a></span>&nbsp;|
-                      {% else %}
-                      <span id="nextPage">{{ data.next_page_number }}</span>&nbsp;|
-                      {% endif %}
-                      {% else %}
-                      <span><a>Next </a></span>&nbsp;|
-                      {% endif %}
-                      {% if data.has_next %}
-                      {% if user.is_authenticated %}
-                      <span><a href="?project={{ project }}&date={{ date }}&page={{ data.paginator.num_pages }}">Last </a></span>&nbsp;|
-                      {% else %}
-                      <span id="lastPage">{{ data.paginator.num_pages }}</span>&nbsp;|
-                      {% endif %}
-                      {% else %}
-                      <span><a>Last </a></span>&nbsp;|
-                      {% endif %}
-                      &nbsp;Page&nbsp;<span><a id="thisPage">{{ data.number }}</a></span>/<span><a id="totalPage">{{ data.paginator.num_pages }}</a></span>
-                    </div>
+                  </div>
+                  <div class="table-responsive">
+                    <table id="table" name="table" class="table table-hover">
+                      <thead>
+                        <tr class="solid-header">
+                          <th style="width: 250px;">Case Name</th>
+                          <th style="width: 100px;">Exec Time</th>
+                          <th style="width: 100px;">Result Wanted</th>
+                          <th style="width: 100px;">Result Infact</th>
+                          <th style="width: 80px;">Test Result</th>
+                          <th style="width: 80px;">Cost Time</th>
+                          <th style="width: 20px;">Operation</th>
+                          <!-- <th style="width: 100px;">运行日志</th> -->
+                          <!-- <th style="width: 100px;">详细报告</th> -->
+                        </tr>
+                      </thead>
+                      <tbody id="result" name="result">
+                        {% for item in data %}
+                        <tr id="trid">
+                          <td style = "word-wrap:break-word;white-space:normal;">{{ item.casename }}</td>
+                          <td style = "word-wrap:break-word;white-space:normal;">{{ item.runtime }}</td>
+                          <td style = "word-wrap:break-word;white-space:normal;">{{ item.resultwanted }}</td>
+                          <td style = "word-wrap:break-word;white-space:normal;">{{ item.resultinfact }}</td>
+                          <td style = "word-wrap:break-word;white-space:normal;">{{ item.testresult }}</td>
+                          <td style = "word-wrap:break-word;white-space:normal;">{{ item.costtime }}</td>
+                          <td >
+                            <div class="btn-group">
+                              <button type="button" class="btn btn-trasnparent action-btn btn-xs component-flat pr-0" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <i class="mdi mdi-dots-vertical"></i>
+                              </button>
+                              <div class="dropdown-menu dropdown-menu-right">
+                                <button class="dropdown-item" data-toggle="modal" data-target="#log" onclick="showLog('{{ item.log }}')">View Exec-log</button>
+                                <button class="dropdown-item" data-toggle="modal" data-target="#report" onclick="showReport('{{ item.report }}', '{{ item.image }}')">View Report</button>
+                              </div>
+                            </div>
+                          </td>
+                          <!-- <td style = "word-wrap:break-word;white-space:normal;">
+                            <button class="btn btn-secondary has-icon btn-block mt-0" onclick="showLog('{{ item.log }}')" style="height: 25px;padding: 0 15px;" data-toggle="modal" data-target="#log">
+                              查看
+                            </button>
+                          </td>
+                          <td style = "word-wrap:break-word;white-space:normal;">
+                            <button class="btn btn-secondary has-icon btn-block mt-0" onclick="showReport('{{ item.report }}', '{{ item.image }}')" style="height: 25px;padding: 0 15px;" data-toggle="modal" data-target="#report">
+                              查看
+                            </button>
+                          </td> -->
+                          <!-- <td style = "word-wrap:break-word;white-space:normal;">
+                            <button class="btn btn-inverse-info btn-xs" id="delbtn" onclick="goToNewHtml('{{ item.GAME }}','{{ item.REPORT }}' )">
+                              查看
+                            </button>
+                            <button class="btn btn-inverse-info btn-xs" data-toggle="modal" data-target="#the_grandchild_case" class="button button-rounded button-tiny fontstyle fontsize" onclick="editRow(this)">
+                              下载
+                            </button>
+                            <button class="btn btn-inverse-info btn-xs" id="delbtn" onclick="delRow('{{ grandchildrow.Id }}')">
+                              邮箱
+                            </button>
+                          </td> -->
+                        </tr>
+                        {% endfor %}
+                      </tbody>
+                    </table>
+                  </div>
+                  <!-- <div style="position: absolute; right: 100px;bottom: 30px;"> -->
+                  <div style="float: right; margin-right: 150px;">
+                    {% if not data.has_previous%}
+                    <span><a>First </a></span>&nbsp;|
+                    {% else %}
+                    {% if user.is_authenticated %}
+                    <span><a href="?project={{ project }}&date={{ date }}&page=1">First </a></span>&nbsp;|
+                    {% else %}
+                    <span id="firstPage">1</span>&nbsp;|
+                    {% endif %}
+                    {% endif %}
+                    {% if data.has_previous %}
+                    {% if user.is_authenticated %}
+                    <span><a href="?project={{ project }}&date={{ date }}&page={{ data.previous_page_number }}">Previous </a></span>&nbsp;|
+                    {% else %}
+                    <span id="previousPage">{{ data.previous_page_number }}</span>&nbsp;|
+                    {% endif%}
+                    {% else %}
+                    <span>Previous </span>&nbsp;|
+                    {% endif %}
+                    {% if data.has_next %}
+                    {% if user.is_authenticated %}
+                    <span><a href="?project={{ project }}&date={{ date }}&page={{ data.next_page_number }}">Next </a></span>&nbsp;|
+                    {% else %}
+                    <span id="nextPage">{{ data.next_page_number }}</span>&nbsp;|
+                    {% endif %}
+                    {% else %}
+                    <span><a>Next </a></span>&nbsp;|
+                    {% endif %}
+                    {% if data.has_next %}
+                    {% if user.is_authenticated %}
+                    <span><a href="?project={{ project }}&date={{ date }}&page={{ data.paginator.num_pages }}">Last </a></span>&nbsp;|
+                    {% else %}
+                    <span id="lastPage">{{ data.paginator.num_pages }}</span>&nbsp;|
+                    {% endif %}
+                    {% else %}
+                    <span><a>Last </a></span>&nbsp;|
+                    {% endif %}
+                    &nbsp;Page&nbsp;<span><a id="thisPage">{{ data.number }}</a></span>/<span><a id="totalPage">{{ data.paginator.num_pages }}</a></span>
                   </div>
                 </div>
               </div>
@@ -527,7 +569,7 @@
             stroke: {
               lineCap: "round"
             },
-            labels: ["通过率"]
+            labels: ["Pass Rate"]
           };
           (r = new ApexCharts(document.querySelector("#radial-chart"), data)).render()
         }

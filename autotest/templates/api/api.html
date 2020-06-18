@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>{{ title }}</title>
+    <!-- plugins:css -->
+    <link rel="stylesheet" href="{% static 'vendors/iconfonts/mdi/css/materialdesignicons.css' %}">
+    <!-- endinject -->
+    <!-- vendor css for this page -->
+    <!-- End vendor css for this page -->
+    <!-- inject:css -->
+    <link rel="stylesheet" href="{% static 'css/shared/style.css' %}">
+    <!-- endinject -->
+    <!-- Layout style -->
+    <link rel="stylesheet" href="{% static 'css/demo_1/style.css' %}">
+    <!-- Layout style -->
+    <link rel="shortcut icon" href="{% static 'images/favicon.ico' %}" />
+    <script type="text/javascript">
+      window.onload = function(){
+        $("#project").val("{{ project }}");
+        $("#platform").val("{{ platform }}");
+      }
+    </script>
+  </head>
+  <body class="header-fixed" id="thebody">
+    <!-- partial:partials/_header.html -->
+    <nav class="t-header">
+      <div class="t-header-brand-wrapper">
+        <a>
+          <img class="logo" src="{% static 'images/logo.png' %}" alt="">
+          <img class="logo-mini" src="{% static 'images/logo_mini.png' %}" alt="">
+        </a>
+      </div>
+      <div class="t-header-content-wrapper">
+        <div class="t-header-content">
+          <button class="t-header-toggler t-header-mobile-toggler d-block d-lg-none">
+            <i class="mdi mdi-menu"></i>
+          </button>
+          <form action="#" class="t-header-search-box">
+            <div class="input-group">
+              <input type="text" class="form-control" id="inlineFormInputGroup" placeholder="Search" autocomplete="off">
+              <button class="btn btn-primary" type="submit"><i class="mdi mdi-arrow-right-thick"></i></button>
+            </div>
+          </form>
+          <ul class="nav ml-auto">
+            <li class="nav-item dropdown">
+              <a class="nav-link" href="#" id="notificationDropdown" data-toggle="dropdown" aria-expanded="false">
+                <i class="mdi mdi-account mdi-1x">{{ username }}</i>
+              </a>
+              <div class="dropdown-menu navbar-dropdown dropdown-menu-right" aria-labelledby="notificationDropdown" style="width: 130px;">
+                <div class="dropdown-body">
+                  <div class="dropdown-list">
+                    <div class="rounded-circle bg-inverse-primary text-primary">
+                    </div>
+                    <div class="content-wrapper" onclick="location.href='/user/';">
+                      <small class="content-text">My information</small>
+                    </div>
+                  </div>
+                  <div class="dropdown-list" onclick="location.href='/login/';">
+                    <div class="rounded-circle bg-inverse-warning text-warning">
+                    </div>
+                    <div class="content-wrapper">
+                      <small class="content-text">Logout</small>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+    <!-- partial -->
+    <div class="page-body">
+      <!-- partial:partials/_sidebar.html -->
+      <div class="sidebar">
+        <div class="user-profile">
+          <div class="display-avatar animated-avatar">
+            <img class="profile-img img-lg rounded-circle" src="{% static 'images/image.png' %}" alt="profile image">
+          </div>
+          <div class="info-wrapper">
+            <h3 class="user-name">{{ company }}</h3>
+          </div>
+        </div>
+        <ul class="navigation-menu">
+          <li class="nav-category-divider">HOME</li>
+          <li>
+            <a href="/home/">
+              <span class="link-title">主页</span>
+              <i class="mdi mdi-home link-icon"></i>
+            </a>
+          </li>
+          <li class="nav-category-divider">AUTOMATED TESTING</li>
+          <li>
+            <a href="/automation/">
+              <span class="link-title">自动化测试</span>
+              <i class="mdi mdi-application link-icon"></i>
+            </a>
+          </li>
+          <li>
+            <a href="/automation/result/">
+              <span class="link-title">结果</span>
+              <i class="mdi mdi-application link-icon"></i>
+            </a>
+          </li>
+          <li class="nav-category-divider">API TESTING</li>
+          <li>
+            <a>
+              <span class="link-title">接口测试</span>
+              <i class="mdi mdi-application link-icon"></i>
+            </a>
+          </li>
+          <li>
+            <a href="/api/result/">
+              <span class="link-title">结果</span>
+              <i class="mdi mdi-application link-icon"></i>
+            </a>
+          </li>
+          <li class="nav-category-divider">STRESS TESTING</li>
+          <li>
+            <a href="/stress/">
+              <span class="link-title">压力测试</span>
+              <i class="mdi mdi-application link-icon"></i>
+            </a>
+          </li>
+          <li>
+            <a href="/stress/result/">
+              <span class="link-title">结果</span>
+              <i class="mdi mdi-application link-icon"></i>
+            </a>
+          </li>
+          <li class="nav-category-divider">USER</li>
+          <li>
+            <a href="/user/">
+              <span class="link-title">My Information</span>
+              <i class="mdi mdi-account link-icon"></i>
+            </a>
+          </li>
+        </ul>
+      </div>
+      <!-- partial -->
+      <div class="page-content-wrapper">
+        <div class="page-content-wrapper-inner">
+          <div class="content-viewport">
+            <div class="row">
+              <div class="col-lg-6 equel-grid">
+                <div class="grid">
+                  <div class="grid-body py-3">
+                    <div class="split-header">
+                      <p class="card-title">Send Data</p>
+                    </div>
+                  </div>
+                  <div class="vertical-timeline-wrapper">
+                    <div class="row mb-3">
+                      <div class="col-md-11 mx-auto">
+                        <div class="form-group row showcase_row_area">
+                          <!-- <div class="col-md-2 showcase_text_area">
+                            <select class="custom-select" id="methods" name="methods" style="padding: 0 15px;height: 30px;">
+                              {% for method in methods %}
+                              <option>{{ method }}</option>
+                              {% endfor %}
+                            </select>
+                          </div> -->
+                          <div class="col-md-10 showcase_text_area">
+                            <input type="text" class="form-control" name="targetUrl" id="targetUrl" value="http://192.168.1.37:8080/">
+                          </div>
+                          <div class="col-md-2 showcase_text_area">
+                            <button class="btn btn-inverse-primary component-flat" id="startTest" style="padding: 0 15px;height: 30px; width: 90px;">
+                              发送
+                            </button>
+                          </div>
+                          <!-- <div class="col-md-1 showcase_text_area">
+                            <button class="btn action-btn btn-xs component-flat" onclick="refresh()">
+                              <i class="mdi mdi-settings text-muted mdi-2x"></i>
+                            </button>
+                          </div> -->
+                        </div>
+                        <div class="form-group row showcase_row_area">
+                          <div class="col-md-12 showcase_content_area">
+                            <textarea class="form-control" rows="20" id="requestData" style="font-size: 15px; color: #000000; font-family:courier;">{
+    // 不填请求方式则默认get
+    'method': 'post',
+    // 不填请求头则采用默认请求头
+    'headers': {
+        'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8'
+    },
+    // 协议具体内容
+    'data':{
+        'opera': 'test',
+        'userid': 10000,
+        'username': 'tester',
+        'password': 'password for test',
+        'remember': false,
+    }
+}</textarea>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="grid-body py-3" id="randomTitle">
+                    <div class="split-header">
+                      <p class="card-title">Random Test</p>
+                        <button type="button" class="btn btn-trasnparent action-btn btn-xs component-flat pr-0" id="removeRandom">
+                          <i class="mdi mdi-window-close text-muted mdi-2x"></i>
+                        </button>
+                    </div>
+                  </div>
+                  <div class="vertical-timeline-wrapper" id="randomWrapper">
+                    <div class="row mb-3">
+                      <div class="col-md-11 mx-auto">
+                        <div class="form-group row showcase_row_area">
+                          <div class="col-md-3 showcase_text_area">
+                            <label for="randomTimes" style="padding: auto;"><b class="text-black font-weight-medium d-block" style="font-family:courier">Execute Times</b></label>
+                          </div>
+                          <div class="col-md-2 showcase_text_area">
+                            <input class="form-control" type="" name="randomTimes" id="randomTimes" value="1" style="width: 70px;">
+                          </div>
+                          <span class="btn btn-trasnparent action-btn btn-xs component-flat pr-0" data-toggle="tooltip" data-placement="right" title="执行x次api测试">
+                            <i class="mdi mdi-information-outline text-muted mdi-2x"></i>
+                          </span>
+                        </div>
+                        <div class="form-group row showcase_row_area">
+                          <div class="col-md-12 showcase_content_area">
+                            <textarea class="form-control" rows="15" id="randomData" style="font-size: 15px; color: #000000; font-family:courier">// random_between, 从1至100随机取值, 仅用于int/float类型
+userid: random_between(1, 100)
+// random_in, 从各个值中随机取值
+username: random_in('t', 'te', 'tes', 'test', 'teste', 'tester')
+// random_in, 从各个值中随机取值
+password: random_in(null, 0, 't', 'password for test', false)
+// in_order, 按顺序取值
+remember: in_order(true, false)
+</textarea>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6 equel-grid">
+                <div class="grid">
+                  <div class="grid-body py-3">
+                    <div class="split-header">
+                      <p class="card-title">Receive Data</p>
+                      <div class="btn-group">
+                        <button class="btn action-btn btn-refresh btn-xs component-flat" onclick="refresh()">
+                          <i class="mdi mdi-autorenew text-muted mdi-2x"></i>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="vertical-timeline-wrapper">
+                    <div class="row mb-3">
+                      <div class="col-md-11 mx-auto">
+                        <div class="form-group row showcase_row_area">
+                          <div class="col-md-12 showcase_content_area">
+                            <textarea class="form-control" id="recvData" rows="43" style="font-size: 15px; color: #000000; font-family:courier" readonly>Empty data.</textarea>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- page content ends -->
+    </div>
+    <!--page body ends -->
+    <!-- SCRIPT LOADING START FORM HERE /////////////-->
+    <!-- plugins:js -->
+    <script src="{% static 'vendors/js/core.js' %}"></script>
+    <!-- endinject -->
+    <!-- Vendor Js For This Page Ends-->
+    <script src="{% static 'vendors/apexcharts/apexcharts.min.js' %}"></script>
+    <script src="{% static 'vendors/chartjs/Chart.min.js' %}"></script>
+    <script src="{% static 'js/charts/chartjs.addon.js' %}"></script>
+    <!-- Vendor Js For This Page Ends-->
+    <!-- build:js -->
+    <script src="{% static 'js/template.js' %}"></script>
+    <script src="{% static 'js/dashboard.js' %}"></script>
+    <!-- endbuild -->
+    <script type="text/javascript">
+      $(window).on("load", function(){
+      });
+      function refresh(){
+        showRecv("Empty Data.");
+      }
+      function showRecv(data){
+        $("#recvData").removeAttr("readonly");
+        $("#recvData").val(data);
+        $("#recvData").attr("readonly", "readonly");
+      }
+      $("#removeRandom").click(function(){
+        $("#randomWrapper").css("display", "none");
+        $("#randomTitle").css("display", "none");
+        $("#requestData").attr("rows", 41);
+      });
+      $("#startTest").click(function(){
+        var targetUrl = $("#targetUrl").val();
+        var requestData = $("#requestData").val();
+        if ($("#randomWrapper").css("display") == "block"){
+          var randomTimes = $("#randomTimes").val();
+          var randomData = $("#randomData").val();
+        }
+        else {
+          var randomTimes = "";
+          var randomData = "";
+        }
+        $.ajax({
+          cache: false,
+          url: "request/",
+          dataType: 'text',
+          type: 'POST',
+          async: true,
+          data: {
+            "url": targetUrl,
+            "data": requestData,
+            "randomData": randomData,
+            "randomTimes": randomTimes,
+          },
+          success: function(data){
+            showRecv(JSON.parse(data));
+          }
+        });
+      });
+    </script>
+  </body>
+</html>

@@ -18,6 +18,7 @@ class AppSettings:
         "Bindo Pos Store RETAIL-02": ["com.bindo.bindo-pos-dev"],
     }
     PLATFORMS = ["ios", "android", "web"]
+    METHODS = ["get", "post", "put", "delete"]
     RESOLUTIONS = []
     FILEPATH = os.path.dirname(os.path.abspath(__file__))
     TESTERFOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), "testersinfo")
