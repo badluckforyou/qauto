@@ -10,6 +10,16 @@ from autotest.helper import _hash_encrypted as _
 from autotest.app_settings import AppSettings
 
 
+def update_special_character(strings):
+    characters = {
+        "&ldquo": '“',
+        "&rdquo": '”',
+    }
+    for k, v in characters.items():
+        strings = strings.replace(k, v)
+    return strings
+
+
 def get_csdn_data():
     data = []
     headers = {"Content-Type": "application/x-www-form-urlencoded;charset=utf-8"}
@@ -37,7 +47,7 @@ def get_csdn_data():
             url = re.findall(r'[a-zA-z]+://[^\s]*"', e)
             if not url:
                 continue
-            d.setdefault("title", title)
+            d.setdefault("title", update_special_character(title))
             d.setdefault("url", url[0].replace('"', ""))
             data.append(d)
     return data

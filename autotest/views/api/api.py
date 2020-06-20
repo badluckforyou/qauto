@@ -2,6 +2,7 @@ import re
 import time
 import random
 import requests
+import datetime
 import traceback
 import ujson as json
 
@@ -33,19 +34,6 @@ def in_order(ident, *args):
     return len(args), args[ident]
 
 
-def parse_request_data(data):
-    try:
-        parse_data = []
-        for line in data.splitlines():
-            if not line or "// " in line:
-                continue
-            parse_data.append(line)
-        data = "".join(parse_data).replace("'", '"')
-        return json.loads(r"%s" % data.replace(",}", "}"))
-    except Exception as exc:
-        traceback.print_exc()
-
-
 def exec_code(ident, code):
     method = code.split("(")[0].strip(" ")
     if method not in RANDOM_METHODS:
@@ -64,22 +52,60 @@ def exec_code(ident, code):
     return globals()[method](ident, *args)
 
 
+def replace_special_character(data):
+    if isinstance(data, str):
+        special_characters = {
+            r"\&": "&amp;",
+            r"\,": "&#44;",
+            r"\'": "&#39;",
+            r'\"': "&quot;",
+            r"\ ": "&nbsp;",
+            r"\(": "&#40;",
+            r"\)": "&#41;",
+            r"\:": "&#58;",
+            r"\|": "&#124;",
+        }
+        for k, v in special_characters.items():
+            data = data.replace(k, v)
+    return data
+
+
+def reset_special_character(data):
+    if isinstance(data, str):
+        special_characters = {
+            "&amp;": "&",
+            "&#44;": ",",
+            "&#39;": "'",
+            "&quot;": '"',
+            "&nbsp;": " ",
+            "&#40;": "(",
+            "&#41;": ")",
+            "&lsb;": "[",
+            "&rsb;": "]",
+            "&#58;": ":",
+            "&#124;": "|",
+        }
+        for k, v in special_characters.items():
+            data = data.replace(k, v)
+    return data
+
+
 def parse_random_data(ident, data):
     parse_data = {}
     try:
         for line in data.splitlines():
-            if not line or "//" in line:
+            if not line or line.lstrip(" ").startswith("//"):
                 continue
+            line = replace_special_character(line)
             split_line = line.split(":")
             if len(split_line) == 1:
                 continue
-            elif len(split_line) > 2:
-                keyword, *code = split_line
-                code = ":".join(code)
-            else:
+            elif len(split_line) == 2:
                 keyword, code = split_line
+            else:
+                raise ValueError
             length, new_value = exec_code(ident, code)
-            parse_data.setdefault(keyword, new_value)
+            parse_data.setdefault(keyword, reset_special_character(new_value))
     except:
         traceback.print_exc()
     return length, parse_data
@@ -88,6 +114,7 @@ def parse_random_data(ident, data):
 def update_dict(dictionary, array, value):
     """递归给字典赋值"""
     item = array.pop(0)
+    item = reset_special_character(item)
     if item not in dictionary:
         raise ValueError("%s not in %s" % (item, dictionary.keys()))
     if not array:
@@ -99,8 +126,10 @@ def update_dict(dictionary, array, value):
 @login_required(login_url="/login/")
 def api_testing(request):
     return render(request, "templates/api/api.html", {
+                    "title": AppSettings.TITLE,
                     "company": AppSettings.COMPANY,
                     "methods": AppSettings.METHODS,
+                    "datatype": AppSettings.DATATYPE,
                     "username": request.session.get("user")})
 
 
@@ -108,7 +137,10 @@ def api_testing(request):
 def request(request):
     if request.is_ajax():
         url = request.POST.get("url")
-        request_data = request.POST.get("data")
+        method = request.POST.get("method")
+        headers = request.POST.get("headers")
+        data_type = request.POST.get("dataType")
+        data = request.POST.get("data")
         random_data = request.POST.get("randomData")
         random_times = request.POST.get("randomTimes")
         if random_times is None:
@@ -116,41 +148,62 @@ def request(request):
         elif not random_times.isdigit():
             return JsonResponse("The type of random times must be int.", safe=False)
         result = []
-        ident = 0
-        for _ in range(int(random_times)):
+        error = ""
+        try:
+            data = json.loads(data.replace("'", '"'))
+        except:
+            error += "Get wrong data  %s ." % data
+
+        try:
+            headers = json.loads(headers.replace("'", '"'))
+        except:
+            error += "Get wrong headers %s |" % headers
+
+        if int(random_times) == 0:
             d = {}
+            with suppress(Exception):
+                data = json.dumps(data) if data_type == "json" else data
+            
+            d.setdefault("run_time", datetime.datetime.now().strftime("%Y-%m-%d %X"))
+            start_time = time.time()
             try:
-                try:
-                    data = parse_request_data(request_data)
-                except:
-                    data = json.loads(request_data)
-                if data is None:
-                    d.setdefault("Message", "Wrong request data.")
-                    continue
-                length, _random_data = parse_random_data(ident, random_data)
-
-                for key, value in _random_data.items():
-                    with suppress(Exception):
-                        update_dict(data["data"], key.split("|"), value)
-
-                start_time = time.time()
-
-                if "data-type" in data and data["data-type"] == 'json':
-                    req_data = json.dumps(data["data"])
-                else:
-                    req_data = data["data"]
-                
-                response = requests.request(data["method"], url, headers=data["headers"], data=req_data)
-
-                d.setdefault("duration", "%.3fs" % (time.time() - start_time))
+                response = requests.request(method, url, headers=headers, data=data)
                 d.setdefault("status_code", response.status_code)
                 try:
                     d.setdefault("data", json.loads(response.text))
                 except:
                     d.setdefault("data", "%s ..." % response.text[:200])
+            except:
+                    d.setdefault("data", "%sSend request failed" % error)
+            d.setdefault("duration", "%.3fs" % (time.time() - start_time))
+            result.append(d)
+        else:
+            ident = 0
+            for _ in range(int(random_times)):
+                d = {}
+                length, _random_data = parse_random_data(ident, random_data)
+
+                if isinstance(data, dict):
+                    for key, value in _random_data.items():
+                        with suppress(Exception):
+                            update_dict(data, key.split("|"), value)
+
+                with suppress(Exception):
+                    data = json.dumps(data) if data_type == "json" else data
+
+                d.setdefault("run_time", datetime.datetime.now().strftime("%Y-%m-%d %X"))
+                start_time = time.time()
+                try:
+                    response = requests.request(method, url, headers=headers, data=data)
+                    d.setdefault("status_code", response.status_code)
+                    try:
+                        d.setdefault("data", json.loads(response.text))
+                    except:
+                        d.setdefault("data", "%s ..." % response.text[:200])
+                except:
+                    d.setdefault("data", "%sSend request failed" % error)
+                d.setdefault("duration", "%.3fs" % (time.time() - start_time))
                 if length is not None:
                     ident = (ident + 1) % length
-            except:
-                traceback.print_exc()
-            result.append(d)
+                result.append(d)
         return JsonResponse(json.dumps(result, indent=4, ensure_ascii=False), safe=False)

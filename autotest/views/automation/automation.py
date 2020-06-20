@@ -181,25 +181,19 @@ def add_task(request):
             exectime = exectime.replace("T", " ")
             logname = "定时任务"
             data = logname + "[%s]" % exectime
-        task = {
-            "username": request.session.get("user"),
-            "platform": request.POST.get("platform"),
-            "testcase": request.POST.get("casefile"),
-            "package": request.POST.get("package"),
-            "project": request.POST.get("project"),
-            "server": request.POST.get("server"),
-            "executetime": exectime,
-            "status": "空闲",
-            "show": 0,
-        }
-        Task.objects.create(**task)
-        log = {
-            "username": request.session.get("user"),
-            "logname": logname,
-            "recordtime": datetime.datetime.now().strftime("%Y-%m-%d %H:%M"),
-            "data": "添加%s进任务池" % data,
-        }
-        Log.objects.create(**log)
+        Task.objects.create(**{"username": request.session.get("user"),
+                                "platform": request.POST.get("platform"),
+                                "testcase": request.POST.get("casefile"),
+                                "package": request.POST.get("package"),
+                                "project": request.POST.get("project"),
+                                "server": request.POST.get("server"),
+                                "executetime": exectime,
+                                "status": "空闲",
+                                "show": 0,})
+        Log.objects.create(**{"username": request.session.get("user"),
+                                "logname": logname,
+                                "recordtime": datetime.datetime.now().strftime("%Y-%m-%d %H:%M"),
+                                "data": "添加%s进任务池" % data,})
         return JsonResponse("添加任务成功", safe=False)
     except:
         return JsonResponse("添加任务失败\nError: %s" % traceback.format_exc(), safe=False)
@@ -211,13 +205,10 @@ def remove_task(request):
         task_ids = json.loads(request.POST.get("ids"))
         for task_id in task_ids:
             Task.objects.filter(id=task_id).update(show=1)
-            log = {
-                "username": request.session.get("user"),
-                "logname": "移除任务",
-                "recordtime": datetime.datetime.now().strftime("%Y-%m-%d %H:%M"),
-                "data": "从任务池移除任务, 任务编号%s" % task_id,
-            }
-            Log.objects.create(**log)
+            Log.objects.create(**{"username": request.session.get("user"),
+                                    "logname": "移除任务",
+                                    "recordtime": datetime.datetime.now().strftime("%Y-%m-%d %H:%M"),
+                                    "data": "从任务池移除任务, 任务编号%s" % task_id,})
         return JsonResponse("移除任务成功", safe=False)
     except:
         return JsonResponse("移除任务失败\nError: %s" % traceback.format_exc(), safe=False)
@@ -231,13 +222,10 @@ def execute(request):
         # 将所有申请执行的状态都改为队列
         for task_id in task_ids:
             Task.objects.filter(id=task_id).update(status="队列")
-            log = {
-                "username": request.session.get("user"),
-                "logname": "执行任务",
-                "recordtime": datetime.datetime.now().strftime("%Y-%m-%d %H:%M"),
-                "data": "将任务添加至队列, 任务编号%s" % task_id,
-            }
-            Log.objects.create(**log)
+            Log.objects.create(**{"username": request.session.get("user"),
+                                    "logname": "执行任务",
+                                    "recordtime": datetime.datetime.now().strftime("%Y-%m-%d %H:%M"),
+                                    "data": "将任务添加至队列, 任务编号%s" % task_id,})
         return JsonResponse("成功", safe=False)
 
 
@@ -253,9 +241,7 @@ def share(request):
     port = request.POST.get("port")
     try:
         server = "http://%s:%s" % (host, port)
-        id_query = {"wants": "id",
-                    "condition": "server='%s'" % server}
-        id = select_subserver(**id_query)
+        id = select_subserver(**{"wants": "id", "condition": "server='%s'" % server})
         if id:
             SubServer.objects.filter(id=id[0][0]).update(server=server, single=single, status=status)
         else:
@@ -297,15 +283,12 @@ def update_task(request):
     if id is not None:
         status = request.POST.get("status")
         Task.objects.filter(id=int(id)).update(status=status)
-        server_query = {"wants": "server",
-                        "condition": "id=%s" % id}
-        server = select_task(**server_query)
+        server = select_task(**{"wants": "server", "condition": "id=%s" % id})
         if server:
             _, server = server[0][0].split("-")
             SubServer.objects.filter(server=server.strip()).update(status=0)
-        name_query = {"wants": "username", "condition": "id=%s" % id}
         log = {
-            "username": select_task(**name_query)[0][0],
+            "username": select_task(**{"wants": "username", "condition": "id=%s" % id})[0][0],
             "recordtime": datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
         }
         if status == "完成":
@@ -315,5 +298,6 @@ def update_task(request):
             log["logname"] = "任务失败"
             log["data"] = "的任务出错, 中断执行, 任务编号%s" % id
         Log.objects.create(**log)
-    return JsonResponse("Update task status success", safe=False)
+        return JsonResponse("Update task status success", safe=False)
+    return JsonResponse("Update task status failed", safe=False)
 

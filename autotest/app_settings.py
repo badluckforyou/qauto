@@ -19,6 +19,7 @@ class AppSettings:
     }
     PLATFORMS = ["ios", "android", "web"]
     METHODS = ["get", "post", "put", "delete"]
+    DATATYPE = ["json", "dict"]
     RESOLUTIONS = []
     FILEPATH = os.path.dirname(os.path.abspath(__file__))
     TESTERFOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), "testersinfo")

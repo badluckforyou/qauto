@@ -145,6 +145,31 @@
         <div class="page-content-wrapper-inner">
           <div class="content-viewport">
             <div class="row">
+              <div class="modal" id="requestHeaders" data-backdrop="true" style="position: fixed;">
+                <div class="modal-dialog modal-lg">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h6 class="modal-title">
+                        <strong>Request Headers</strong>
+                      </h6>
+                    </div>
+                    <div class="modal-body">
+                      <label>以字典的形式写入Headers</label>
+                      <textarea class="form-control" rows="10" cols="10" id="headers">{
+    "Content-Type": "application/x-www-form-urlencoded;charset=utf-8"
+}</textarea>
+                    </div>
+                    <div class="modal-footer">
+                      <a class="btn btn-success btn-sm" id="clearHeaders">
+                        Clear
+                      </a>
+                      <a class="btn btn-success btn-sm" data-dismiss="modal">
+                        Save
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
               <div class="col-lg-6 equel-grid">
                 <div class="grid">
                   <div class="grid-body py-3">
@@ -156,44 +181,47 @@
                     <div class="row mb-3">
                       <div class="col-md-11 mx-auto">
                         <div class="form-group row showcase_row_area">
-                          <!-- <div class="col-md-2 showcase_text_area">
+                          <div class="col-md-2 showcase_text_area">
                             <select class="custom-select" id="methods" name="methods" style="padding: 0 15px;height: 30px;">
                               {% for method in methods %}
                               <option>{{ method }}</option>
                               {% endfor %}
                             </select>
-                          </div> -->
-                          <div class="col-md-10 showcase_text_area">
+                          </div>
+                          <div class="col-md-7 showcase_text_area">
                             <input type="text" class="form-control" name="targetUrl" id="targetUrl" value="http://192.168.1.37:8080/">
                           </div>
                           <div class="col-md-2 showcase_text_area">
-                            <button class="btn btn-inverse-primary component-flat" id="startTest" style="padding: 0 15px;height: 30px; width: 90px;">
-                              发送
+                            <button class="btn btn-inverse-primary component-flat" id="startTest" style="padding: 0 15px;height: 30px;">
+                              Send Request
                             </button>
                           </div>
-                          <!-- <div class="col-md-1 showcase_text_area">
-                            <button class="btn action-btn btn-xs component-flat" onclick="refresh()">
+                          <div class="col-md-1 showcase_text_area">
+                            <button class="btn action-btn btn-xs component-flat" data-toggle="modal" data-target="#requestHeaders">
                               <i class="mdi mdi-settings text-muted mdi-2x"></i>
                             </button>
-                          </div> -->
+                          </div>
                         </div>
                         <div class="form-group row showcase_row_area">
                           <div class="col-md-12 showcase_content_area">
+                            <label style="width: 200px;">Request Data </label>
+                            <label style="width: 70px;">data type </label>
+                            <label>
+                              <select class="custom-select" id="dataType" name="dataType" style="padding: 0 15px;height: 30px;">
+                                {% for type in datatype %}
+                                <option>{{ type }}</option>
+                                {% endfor %}
+                              </select>
+                            </label>
                             <textarea class="form-control" rows="20" id="requestData" style="font-size: 15px; color: #000000; font-family:courier;">{
-    // 不填请求方式则默认get
-    'method': 'post',
-    // 不填请求头则采用默认请求头
-    'headers': {
-        'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8'
+    'opera': 'test',
+    'userid': 10000,
+    'username': 'tester',
+    'child|data': {
+        'info': true,
+        'return': false
     },
-    // 协议具体内容
-    'data':{
-        'opera': 'test',
-        'userid': 10000,
-        'username': 'tester',
-        'password': 'password for test',
-        'remember': false,
-    }
+    'remember': false
 }</textarea>
                           </div>
                         </div>
@@ -212,24 +240,24 @@
                     <div class="row mb-3">
                       <div class="col-md-11 mx-auto">
                         <div class="form-group row showcase_row_area">
-                          <div class="col-md-3 showcase_text_area">
-                            <label for="randomTimes" style="padding: auto;"><b class="text-black font-weight-medium d-block" style="font-family:courier">Execute Times</b></label>
-                          </div>
-                          <div class="col-md-2 showcase_text_area">
-                            <input class="form-control" type="" name="randomTimes" id="randomTimes" value="1" style="width: 70px;">
-                          </div>
-                          <span class="btn btn-trasnparent action-btn btn-xs component-flat pr-0" data-toggle="tooltip" data-placement="right" title="执行x次api测试">
-                            <i class="mdi mdi-information-outline text-muted mdi-2x"></i>
-                          </span>
-                        </div>
-                        <div class="form-group row showcase_row_area">
                           <div class="col-md-12 showcase_content_area">
-                            <textarea class="form-control" rows="15" id="randomData" style="font-size: 15px; color: #000000; font-family:courier">// random_between, 从1至100随机取值, 仅用于int/float类型
+                            <label>Execute Times</label>
+                            <label>
+                              <input class="form-control" type="" name="randomTimes" id="randomTimes" value="1" style="width: 70px;">
+                            </label>
+                            <label>
+                              <span class="btn btn-trasnparent action-btn btn-xs component-flat pr-0" data-toggle="tooltip" data-placement="right" title="执行x次api测试">
+                                <i class="mdi mdi-information-outline text-muted mdi-2x"></i>
+                              </span>
+                            </label>
+                            <textarea class="form-control" rows="15" id="randomData" style="font-size: 15px; color: #000000; font-family:courier">// 若要添加带有, ()'|\字符的测试数据, 需要在字符前添加\
+// string类型的测试数据, 需以''包裹
+// random_between, 从1至100随机取值, 仅用于int/float类型
 userid: random_between(1, 100)
 // random_in, 从各个值中随机取值
-username: random_in('t', 'te', 'tes', 'test', 'teste', 'tester')
-// random_in, 从各个值中随机取值
-password: random_in(null, 0, 't', 'password for test', false)
+username: random_in('t', 't\,e', 'tes', 'te\ st', 'te\(ste', 'tes\)ter','tes\[ter','tes\]ter')
+// x|y, {'x':{'y': z}}改变z的值; in_order, 按顺序取值
+child\|data|info: in_order(true, 'true', 'True', false, 'false', 'False')
 // in_order, 按顺序取值
 remember: in_order(true, false)
 </textarea>
@@ -288,22 +316,44 @@ remember: in_order(true, false)
     <script type="text/javascript">
       $(window).on("load", function(){
       });
-      function refresh(){
-        showRecv("Empty Data.");
+      var halfWindowHeight = $(window).height() / 2;
+      /****** 设置modal 显示的坐标 ******/
+      function setModalHeight(modal, height){
+        modal.css("display", "block");
+        modal.css({
+          "margin-top": height,
+        });
       }
+      $("#requestHeaders").on("show.bs.modal", function(e){
+        var modalHeight = $(this).height();
+        var windowHeight = $(window).height();
+        console.log(modalHeight);
+        console.log((modalHeight - windowHeight) / 2);
+        setModalHeight($(this), (modalHeight - windowHeight) / 2);
+      });
       function showRecv(data){
         $("#recvData").removeAttr("readonly");
         $("#recvData").val(data);
         $("#recvData").attr("readonly", "readonly");
+      }
+      function refresh(){
+        showRecv("Empty Data.");
       }
       $("#removeRandom").click(function(){
         $("#randomWrapper").css("display", "none");
         $("#randomTitle").css("display", "none");
         $("#requestData").attr("rows", 41);
       });
+      $("#clearHeaders").click(function(){
+        console.log($("#headers").val());
+        $("#headers").val("");
+      });
       $("#startTest").click(function(){
+        var method = $("#methods").val();
+        var dataType = $("#dataType").val();
         var targetUrl = $("#targetUrl").val();
         var requestData = $("#requestData").val();
+        var headers = $("#headers").val();
         if ($("#randomWrapper").css("display") == "block"){
           var randomTimes = $("#randomTimes").val();
           var randomData = $("#randomData").val();
@@ -319,8 +369,11 @@ remember: in_order(true, false)
           type: 'POST',
           async: true,
           data: {
+            "method": method,
             "url": targetUrl,
+            "headers": headers,
             "data": requestData,
+            "dataType": dataType,
             "randomData": randomData,
             "randomTimes": randomTimes,
           },
