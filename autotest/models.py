@@ -29,7 +29,7 @@ class SubServer(models.Model):
     status = models.CharField(max_length=1)
 
     def __str__(self):
-        return self.id
+        return str(self.id)
 
 
 class Task(models.Model):
@@ -45,7 +45,7 @@ class Task(models.Model):
     executetime = models.CharField(max_length=25)
 
     def __str__(self):
-        return self.id
+        return str(self.id)
 
 
 class Log(models.Model):
@@ -56,4 +56,4 @@ class Log(models.Model):
     data = models.CharField(max_length=1000)
 
     def __str__(self):
-        return self.id
+        return str(self.id)

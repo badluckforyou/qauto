@@ -150,14 +150,12 @@
                   <div class="modal-content">
                     <div class="modal-header">
                       <h6 class="modal-title">
-                        <strong>Request Headers</strong>
+                        <strong>Headers</strong>
                       </h6>
                     </div>
                     <div class="modal-body">
-                      <label>以字典的形式写入Headers</label>
-                      <textarea class="form-control" rows="10" cols="10" id="headers">{
-    "Content-Type": "application/x-www-form-urlencoded;charset=utf-8"
-}</textarea>
+                      <label>以JSON的形式写入Headers</label>
+                      <textarea class="form-control" rows="10" cols="10" id="headers"></textarea>
                     </div>
                     <div class="modal-footer">
                       <a class="btn btn-success btn-sm" id="clearHeaders">
@@ -174,45 +172,65 @@
                 <div class="grid">
                   <div class="grid-body py-3">
                     <div class="split-header">
-                      <p class="card-title">Send Data</p>
+                      <p class="card-title">Request</p>
                     </div>
                   </div>
                   <div class="vertical-timeline-wrapper">
                     <div class="row mb-3">
                       <div class="col-md-11 mx-auto">
                         <div class="form-group row showcase_row_area">
-                          <div class="col-md-2 showcase_text_area">
-                            <select class="custom-select" id="methods" name="methods" style="padding: 0 15px;height: 30px;">
+                          <!-- <div class="col-md-2 showcase_text_area">
+                            <select class="custom-select" id="" name="methods" style="padding: 0 15px;height: 30px;">
                               {% for method in methods %}
                               <option>{{ method }}</option>
                               {% endfor %}
                             </select>
-                          </div>
-                          <div class="col-md-7 showcase_text_area">
-                            <input type="text" class="form-control" name="targetUrl" id="targetUrl" value="http://192.168.1.37:8080/">
+                          </div> -->
+                          <div class="col-md-10 showcase_text_area">
+                            <select id="methods" name="methods" style="padding: 0 15px;height: 30px;width: 15%;float: left;border-right-style: none;">
+                              {% for method in methods %}
+                              <option>{{ method }}</option>
+                              {% endfor %}
+                            </select>
+                            <select id="dataType" name="dataType" style="padding: 0 15px;height: 30px;width: 15%;float: left;border-left-style: none;">
+                              {% for type in datatype %}
+                              <option>{{ type }}</option>
+                              {% endfor %}
+                            </select>
+                            <input type="text" name="targetUrl" id="targetUrl" placeholder="请输入目标地址, 如:http://www.baidu.com" style="padding: 0 15px;height: 30px;width: 69%;float: left;">
                           </div>
                           <div class="col-md-2 showcase_text_area">
-                            <button class="btn btn-inverse-primary component-flat" id="startTest" style="padding: 0 15px;height: 30px;">
-                              Send Request
+                            <button class="btn btn-success component-flat" id="startTest" style="padding: 0 15px;height: 30px;width: 99%">
+                              发送
                             </button>
                           </div>
-                          <div class="col-md-1 showcase_text_area">
+                          <!-- <div class="col-md-1 showcase_text_area">
                             <button class="btn action-btn btn-xs component-flat" data-toggle="modal" data-target="#requestHeaders">
                               <i class="mdi mdi-settings text-muted mdi-2x"></i>
+                            </button>
+                          </div> -->
+                        </div>
+                        <div class="form-group row showcase_row_area">
+                          <div class="col-md-12 showcase_content_area">
+                            <label>Headers</label>
+                          </div>
+                          <div class="col-md-10 showcase_content_area">
+                            <input id="headerType" name="headerType" value="Content-Type" style="width: 20%;" readonly>
+                            <select id="headerBody" name="headerBody" style="padding: 0 15px;height: 30px;width: 79%;">
+                              <option>application/json;charset=UTF-8</option>
+                              <option>application/x-www-form-urlencoded;charset=utf-8</option>
+                              <option>text/plain</option>
+                            </select>
+                          </div>
+                          <div class="col-md-2 showcase_text_area">
+                            <button class="btn btn-inverse-primary component-flat" data-toggle="modal" data-target="#requestHeaders" style="padding: 0 15px;height: 30px;width: 99%">
+                              自定义
                             </button>
                           </div>
                         </div>
                         <div class="form-group row showcase_row_area">
                           <div class="col-md-12 showcase_content_area">
-                            <label style="width: 200px;">Request Data </label>
-                            <label style="width: 70px;">data type </label>
-                            <label>
-                              <select class="custom-select" id="dataType" name="dataType" style="padding: 0 15px;height: 30px;">
-                                {% for type in datatype %}
-                                <option>{{ type }}</option>
-                                {% endfor %}
-                              </select>
-                            </label>
+                            <label>Data </label>
                             <textarea class="form-control" rows="20" id="requestData" style="font-size: 15px; color: #000000; font-family:courier;">{
     'opera': 'test',
     'userid': 10000,
@@ -230,7 +248,7 @@
                   </div>
                   <div class="grid-body py-3" id="randomTitle">
                     <div class="split-header">
-                      <p class="card-title">Random Test</p>
+                      <p class="card-title">Monkey Test</p>
                         <button type="button" class="btn btn-trasnparent action-btn btn-xs component-flat pr-0" id="removeRandom">
                           <i class="mdi mdi-window-close text-muted mdi-2x"></i>
                         </button>
@@ -241,9 +259,9 @@
                       <div class="col-md-11 mx-auto">
                         <div class="form-group row showcase_row_area">
                           <div class="col-md-12 showcase_content_area">
-                            <label>Execute Times</label>
+                            <label>随机次数</label>
                             <label>
-                              <input class="form-control" type="" name="randomTimes" id="randomTimes" value="1" style="width: 70px;">
+                              <input class="form-control" type="" name="randomTimes" id="randomTimes" value="0" style="width: 70px;">
                             </label>
                             <label>
                               <span class="btn btn-trasnparent action-btn btn-xs component-flat pr-0" data-toggle="tooltip" data-placement="right" title="执行x次api测试">
@@ -256,7 +274,7 @@
 userid: random_between(1, 100)
 // random_in, 从各个值中随机取值
 username: random_in('t', 't\,e', 'tes', 'te\ st', 'te\(ste', 'tes\)ter','tes\[ter','tes\]ter')
-// x|y, {'x':{'y': z}}改变z的值; in_order, 按顺序取值
+// x|y, 在{'x':{'y': z}}中改变z的值; in_order, 按顺序取值
 child\|data|info: in_order(true, 'true', 'True', false, 'false', 'False')
 // in_order, 按顺序取值
 remember: in_order(true, false)
@@ -268,28 +286,15 @@ remember: in_order(true, false)
                   </div>
                 </div>
               </div>
-              <div class="col-md-6 equel-grid">
+              <div class="col-lg-6 equel-grid">
                 <div class="grid">
                   <div class="grid-body py-3">
                     <div class="split-header">
-                      <p class="card-title">Receive Data</p>
-                      <div class="btn-group">
-                        <button class="btn action-btn btn-refresh btn-xs component-flat" onclick="refresh()">
-                          <i class="mdi mdi-autorenew text-muted mdi-2x"></i>
-                        </button>
-                      </div>
+                      <p class="card-title">Response</p>
                     </div>
                   </div>
-                  <div class="vertical-timeline-wrapper">
-                    <div class="row mb-3">
-                      <div class="col-md-11 mx-auto">
-                        <div class="form-group row showcase_row_area">
-                          <div class="col-md-12 showcase_content_area">
-                            <textarea class="form-control" id="recvData" rows="43" style="font-size: 15px; color: #000000; font-family:courier" readonly>Empty data.</textarea>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
+                  <div class="form-group row showcase_row_area" id="responseData">
+                    <pre class="text-gray" style="font-size: 14px;"><h6><br><br>     Empty data.</h6></pre>
                   </div>
                 </div>
               </div>
@@ -332,20 +337,45 @@ remember: in_order(true, false)
         setModalHeight($(this), (modalHeight - windowHeight) / 2);
       });
       function showRecv(data){
-        $("#recvData").removeAttr("readonly");
-        $("#recvData").val(data);
-        $("#recvData").attr("readonly", "readonly");
-      }
-      function refresh(){
-        showRecv("Empty Data.");
+        var html_data = `
+          <table id="table" name="table" class="table table-hover table-sm">
+            <thead>
+              <tr class="solid-header">
+                <th style="width: 50px;"></th>
+                <th style="width: 100px;">开始时间</th>
+                <th style="width: 50px;">状态码</th>
+                <th style="width: 50px;">耗时</th>
+                <th style="width: 150px;">发送数据</th>
+                <th style="width: 200px;">返回数据</th>
+              </tr>
+            </thead>
+            <tbody>`
+        for (var i=0; i<data.length; i++){
+          console.log(data[i]["run_time"]);
+          html_data += `
+              <tr class="solid-header" id="trId">
+                <td style = "word-wrap:break-word;white-space:normal;"><input type="checkbox"></td>
+                <td style = "word-wrap:break-word;white-space:normal;">`+ data[i]["run_time"] + `</td>
+                <td style = "word-wrap:break-word;white-space:normal;">`+ data[i]["status_code"] + `</td>
+                <td style = "word-wrap:break-word;white-space:normal;">`+ data[i]["duration"] + `</td>
+                <td style = "word-wrap:break-word;white-space:normal;">`+ data[i]["send_data"] + `</td>
+                <td style = "word-wrap:break-word;white-space:normal;">`+ data[i]["recv_data"] + `</td>
+              </tr>`
+        }
+        html_data += `
+            </tbody>
+          </table>`
+        console.log(html_data)
+        $("#responseData").html(html_data);
       }
       $("#removeRandom").click(function(){
+        $("#ramdomTimes").val("");
+        $("#randomData").val("");
         $("#randomWrapper").css("display", "none");
         $("#randomTitle").css("display", "none");
-        $("#requestData").attr("rows", 41);
+        // $("#requestData").attr("rows", 41);
       });
       $("#clearHeaders").click(function(){
-        console.log($("#headers").val());
         $("#headers").val("");
       });
       $("#startTest").click(function(){
@@ -353,7 +383,18 @@ remember: in_order(true, false)
         var dataType = $("#dataType").val();
         var targetUrl = $("#targetUrl").val();
         var requestData = $("#requestData").val();
-        var headers = $("#headers").val();
+        if (targetUrl == ""){
+          alert("请输入目标地址!")
+          return
+        }
+        if ($("#headers").val() != ""){
+          var headers = $("#headers").val();
+        }
+        else {
+          var dict = {};
+          dict[$("#headerType").val()] = $("#headerBody").val();
+          var headers = JSON.stringify(dict);
+        }
         if ($("#randomWrapper").css("display") == "block"){
           var randomTimes = $("#randomTimes").val();
           var randomData = $("#randomData").val();
@@ -362,6 +403,7 @@ remember: in_order(true, false)
           var randomTimes = "";
           var randomData = "";
         }
+        console.log(headers)
         $.ajax({
           cache: false,
           url: "request/",
@@ -379,6 +421,7 @@ remember: in_order(true, false)
           },
           success: function(data){
             showRecv(JSON.parse(data));
+            alert("Finished.");
           }
         });
       });

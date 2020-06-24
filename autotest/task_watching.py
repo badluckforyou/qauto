@@ -16,6 +16,10 @@ from autotest.helper import _hash_encrypted
 from autotest.csv import parse_csv
 
 
+QUEUEING = "队列"
+RUNNING = "执行"
+FREE = "空闲"
+
 
 def get_tasks():
     """
@@ -39,29 +43,30 @@ def get_tasks():
         }
     }
     """
-    init_tasks = {
-        "队列": {},
-        "执行": {}
-    }
-    tasks = deepcopy(init_tasks)
+
+
+    init = dict.fromkeys((QUEUEING, RUNNING), {})
+    result = deepcopy(init)
+
     tasks_query = {"wants": "id, server, status, executetime",
                     "condition": "status='执行' or status='队列'"}
-    out = select_task(**tasks_query)
-    if out:
-        servers = list(set([s[1] for s in out]))
-        for status in init_tasks.keys():
-            data = {}
-            for server in servers:
-                ids = []
-                for id, _server, _status, exectime in out:
-                    if status == _status and server == _server:
-                        # 执行时间需要转换成int类型
-                        exectime = time.mktime(time.strptime(exectime, "%Y-%m-%d %H:%M"))
-                        ids.append([id, exectime])
-                if ids:
-                    data.setdefault(server, ids)
-            tasks[status] = data
-    return tasks if tasks != init_tasks else None
+    tasks = select_task(**tasks_query)
+    
+    if tasks:
+        s = {}
+        for id, server, status, time in tasks:
+            t = []
+            t.append(id)
+            t.append(time)
+            if status == RUNNING:
+                result[RUNNING] = {server: [t]}
+                break
+            if server not in result[QUEUEING]:
+                t.setdefault(server, [t])
+            else:
+                t[server].append(t)
+            result[QUEUEING] = t
+    return result if result != init else None
 
 
 def delay(s):
@@ -74,7 +79,7 @@ def execute_task(id):
     """
     try:
         # 开始前更新任务状态为执行
-        Task.objects.filter(id=id).update(status="执行")
+        Task.objects.filter(id=id).update(status=RUNNING)
         # 获取任务的相关数据并提取
         star_query = {"condition": "id=%s" % id}
         _, username, project, platform, package, filename, server, _, _, _ = select_task(**star_query)[0]
@@ -83,18 +88,15 @@ def execute_task(id):
         file = os.path.join(AppSettings.TESTERFOLDER, _hash_encrypted(username), project, filename)
         testcase = parse_csv(file)
 
-        log = {
-            "username": username,
-            "logname": "任务开始",
-            "recordtime": datetime.datetime.now().strftime("%Y-%m-%d %H:%M"),
-            "data": "的任务开始执行, 任务编号%s" % id,
-        }
-        Log.objects.create(**log)
+        Log.objects.create(**{"username": username,
+                                "logname": "任务开始",
+                                "recordtime": datetime.datetime.now().strftime("%Y-%m-%d %X"),
+                                "data": "的任务开始执行, 任务编号%s" % id})
         try:
             _, server = server.split(' - ')
         except:
             traceback.print_exc()
-            Task.objects.filter(id=id).update(status="空闲")
+            Task.objects.filter(id=id).update(status=FREE)
             log["logname"] = "任务失败"
             log["data"] = "的任务出错, 中断执行, 任务编号%s" % id
             Log.objects.create(**log)
@@ -105,7 +107,7 @@ def execute_task(id):
             traceback.print_exc()
             # 如果子服务器无法连接, 则表明服务器已经关闭, 中断测试并将该子服务器删除
             SubServer.objects.filter(server=server).delete()
-            Task.objects.filter(id=id).update(status="空闲")
+            Task.objects.filter(id=id).update(status=FREE)
             log["logname"] = "任务失败"
             log["data"] = "的任务出错, 中断执行, 任务编号%s" % id
             Log.objects.create(**log)
@@ -125,7 +127,7 @@ def execute_task(id):
         SubServer.objects.filter(server=server).update(status=1)
     except:
         traceback.print_exc()
-        Task.objects.filter(id=id).update(status="空闲")
+        Task.objects.filter(id=id).update(status=FREE)
 
 
 def watching():
@@ -143,14 +145,14 @@ def watching():
             delay(15)
             continue
         # 如果没有队列数据, 则表明无需对现有任务进行改动, 直接跳过后续操作
-        if not tasks["队列"]:
+        if not tasks[QUEUEING]:
             continue
-        for server, ids in tasks["队列"].items():
+        for server, tasksinfo in tasks[QUEUEING].items():
             # 如果子服务器已经有正在执行的测试任务, 便直接跳过
-            if server in tasks["执行"].keys():
+            if server in tasks[RUNNING].keys():
                 continue
-            for id in ids:
-                # 如果任务执行时间大于当前时间, 便直接跳过
-                if id[1] - time.time() > 0:
+            for id, exectime in tasksinfo:
+                # 如果任务执行时间大于当前时间, 表明其为定时任务, 可直接跳过
+                if exectime - time.time() > 0:
                     continue
-                execute_task(id[0])
+                execute_task(id)

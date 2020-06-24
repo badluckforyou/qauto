@@ -2,6 +2,7 @@ from autotest.views.automation.automation import (
     automated_testing,
     execute,
     add_task,
+    reset_task,
     remove_task,
     update_task,
     share,

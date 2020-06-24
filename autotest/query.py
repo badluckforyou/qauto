@@ -36,10 +36,13 @@ def select_log(**kwargs):
     data = []
     ret = _select_data_from_table("autotest_log", **kwargs)
     for r in ret:
-        recordtime = time.mktime(time.strptime(r["recordtime"], "%Y-%m-%d %H:%M"))
+        recordtime = time.mktime(time.strptime(r["recordtime"], "%Y-%m-%d %X"))
         now = time.time()
+        # 取秒
         m, s = divmod(now - recordtime, 60)
+        # 取分
         h, m = divmod(m, 60)
+        # 取天、时
         d, h = divmod(h, 24)
         if d != 0:
             r["pasttime"] = "%s Days Ago" % int(d)

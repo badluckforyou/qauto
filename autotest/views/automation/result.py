@@ -5,7 +5,7 @@ import base64
 import traceback
 import threading
 
-from django.db.models import Q
+from django.db.models import Q, Count
 from django.shortcuts import render
 from django.http import JsonResponse
 from django.contrib import messages
@@ -13,7 +13,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 from autotest.app_settings import AppSettings
-from autotest.models import AutoUITestResult
+from autotest.models import AutoUITestResult, Task
 from autotest.helper import _hash_encrypted, get_files
 from autotest.query import select_uitestresult
 
@@ -55,28 +55,20 @@ def result(request):
     username = get_true_username(request)
     project = request.GET.get("project") or "All"
     date = request.GET.get("date") or "All"
-    result_query = {"wants": "testresult", "condition": "username='%s'" % username}
+    tasks = data = []
+    success = failure = {"testresult__count": 0}
     if project == "All":
-        data = AutoUITestResult.objects.filter(username=username)
-        result = select_uitestresult(**result_query)
-        dates = ["All"]
+        tasks = Task.objects.filter(Q(username=username) & Q(status="完成"))
     elif project != "All" and date == "All":
-        data = AutoUITestResult.objects.filter(Q(username=username) & Q(project=AppSettings.PROJECTS[project]))
-        result_query["condition"] = "username='%s' and project='%s'" % (username, AppSettings.PROJECTS[project])
-        result = select_uitestresult(**result_query)
-        dates = get_dates(result_query["condition"])
+        tasks = Task.objects.filter(Q(username=username) & Q(project=AppSettings.PROJECTS[project]) & Q(status="完成"))
     else:
-        data = AutoUITestResult.objects.filter(Q(username=username) & 
-                                                Q(project=AppSettings.PROJECTS[project]) &
-                                                Q(date=date))
-        result_query["condition"] = "username='%s' and project='%s' and date='%s'" % (username, AppSettings.PROJECTS[project], date)
-        result = select_uitestresult(**result_query)
-        condition = "username='%s' and project='%s'" % (username, AppSettings.PROJECTS[project])
-        dates = get_dates(condition)
-
-    if result:
-        result = [r[0] for r in result]
-
+        data = AutoUITestResult.objects.filter(Q(username=username) & Q(date=date) &
+                                                    Q(project=AppSettings.PROJECTS[project]))
+        success = AutoUITestResult.objects.filter(Q(username=username) & Q(date=date) & Q(testresult="通过") &
+                                                    Q(project=AppSettings.PROJECTS[project])).aggregate(Count("testresult"))
+        failure = AutoUITestResult.objects.filter(Q(username=username) & Q(date=date) & Q(testresult="失败") &
+                                                    Q(project=AppSettings.PROJECTS[project])).aggregate(Count("testresult"))
+        
     paginator = Paginator(data, AppSettings.ROWSNUMBER)
     page = request.GET.get("page")
     try:
@@ -91,11 +83,12 @@ def result(request):
                     "company": AppSettings.COMPANY,
                     "username": username,
                     "project": project,
-                    "projects": ["All"] + list(AppSettings.PROJECTS.keys()),
+                    "projects": list(AppSettings.PROJECTS.keys()),
                     "date": date,
-                    "dates": dates,
-                    "data": data,
-                    "result": result})
+                    "tasks": tasks or None,
+                    "data": data or None,
+                    "success": success["testresult__count"],
+                    "failure": failure["testresult__count"],})
 
 
 def insert(request):

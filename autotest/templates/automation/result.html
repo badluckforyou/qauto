@@ -156,6 +156,34 @@
       <!-- partial -->
       <div class="page-content-wrapper">
         <div class="page-content-wrapper-inner">
+          <div class="viewport-header">
+            <nav aria-label="breadcrumb">
+              <ol class="breadcrumb has-arrow">
+                {% ifnotequal project 'All' %}
+                <li class="breadcrumb-item">
+                  <a href="javascript:void(0)" onclick="getAllResult()">测试结果</a>
+                </li>
+                {% ifequal date 'All' %}
+                <li class="breadcrumb-item active">
+                  <a>{{ project }}</a>
+                </li>
+                {% endifequal %}
+                {% ifnotequal date 'All' %}
+                <li class="breadcrumb-item">
+                  <a href="javascript:void(0)" onclick="getResultOfProject('{{ project }}')">{{ project }}</a>
+                </li>
+                <li class="breadcrumb-item active">
+                  <a>{{ date }}</a>
+                </li>
+                {% endifnotequal %}
+                {% else %}
+                <li class="breadcrumb-item active">
+                  <a>测试结果</a>
+                </li>
+                {% endifnotequal %}
+              </ol>
+            </nav>
+          </div>
           <div class="content-viewport" style="float: left;">
             <div class="row">
               <div class="modal" id="newUrl" data-backdrop="true" style="position: fixed; ">
@@ -208,30 +236,50 @@
                 </div>
               </div>
               {% if user.is_authenticated %}
-              <div class="col-12">
-                <div class="grid" style="height: 60px;">
-                  <div class="grid-body text-gray">
-                    <div class="header">
-                      <form method="GET" id="projects" name="projects">
-                        <select class="custom-select" id="project" name="project" style="width: 250px;float: left;padding: 0 15px;height: 30px">
-                          {% for project in projects %}
-                          <option>{{ project }}</option>
-                          {% endfor %}
-                        </select>
-                        {% ifnotequal project 'All' %}
-                        <select class="custom-select" id="date" name="date" style="width: 250px;float: left;padding: 0 15px;height: 30px">
-                          {% for date in dates %}
-                          <option>{{ date }}</option>
-                          {% endfor %}
-                        </select>
-                        {% endifnotequal %}
-                        {% csrf_token %}
-                      </form>
-                    </div>
-                  </div>
+              {% ifnotequal tasks None %}
+              <div class="col-lg-12 equel-grid">
+                <div class="grid">
+                  <table id="table" name="table" class="table table-hover table-sm">
+                    <thead>
+                      <tr class="solid-header">
+                        <th style="width: 250px;">Project</th>
+                        <th style="width: 30px;">Platform</th>
+                        <th style="width: 200px;">Package</th>
+                        <th style="width: 250px;">Test Case</th>
+                        <th style="width: 300px;">SubServer</th>
+                        <th style="width: 150px;">Exec Time
+                          <span class="btn btn-trasnparent action-btn btn-xs component-flat pr-0" data-toggle="tooltip" data-placement="right" title="若执行时间早于当前时间, 即表明其会被尽快执行">
+                            <i class="mdi mdi-information-outline text-muted mdi-2x"></i>
+                          </span>
+                        </th>
+                        <th style="width: 50px;">Status</th>
+                        <th style="width: 50px;"></th>
+                      </tr>
+                    </thead>
+                    <tbody id="tasksPool" name="tasksPool">
+                      {% for task in tasks %}
+                      <tr class="solid-header" id="trId">
+                        <td style = "word-wrap:break-word;white-space:normal;">{{ task.project }}</td>
+                        <td style = "word-wrap:break-word;white-space:normal;">{{ task.platform }}</td>
+                        <td style = "word-wrap:break-word;white-space:normal;">{{ task.package }}</td>
+                        <td style = "word-wrap:break-word;white-space:normal;">{{ task.testcase }}</td>
+                        <td style = "word-wrap:break-word;white-space:normal;">{{ task.server }}</td>
+                        <td style = "word-wrap:break-word;white-space:normal;">{{ task.executetime }}</td>
+                        <td style = "word-wrap:break-word;white-space:normal;">{{ task.status }}</td>
+                        <td ><label class="badge badge-success" type="button" onclick="getResultOfDate('{{ task.project }}', '{{ task.executetime }}')">查看详细信息</label>
+                        </td>
+                      {% endfor %}
+                    </tbody>
+                  </table>
                 </div>
               </div>
+              {% else %}
+              <div class="col-lg-12 equel-grid">
+                <pre class="text-gray" style="font-size: 14px;"><h6><br><br>     Empty data.</h6></pre>
+              </div>
+              {% endifnotequal %}
               {% endif %}
+              {% ifnotequal data None %}
               <div class="col-md-5 equal-gird">
                 <div class="grid">
                   <div class="grid-body py-3">
@@ -395,6 +443,7 @@
                   </div>
                 </div>
               </div>
+              {% endifnotequal %}
             </div>
           </div>
         </div>
@@ -443,17 +492,8 @@
         $("#projects").change(function(){
           $("#projects").submit();
         });
-        var succ = 0;
-        var fail = 0;
-        var data = JSON.parse("{{ result }}".replace(/&#x27;/g, '"'));
-        for (i=0; i<data.length; i++){
-          if (data[i] == "通过"){
-            succ++;
-          }
-          else if (data[i] == "失败"){
-            fail++;
-          }
-        }
+        var succ = {{ success }};
+        var fail = {{ failure }};
         var total = succ + fail;
         var percent = ((succ / total) * 100).toFixed(1);
         // doughnut chart
@@ -577,6 +617,15 @@
         $("#successNum").html(succ);
         $("#failNum").html(fail);
       });
+      function getResultOfProject(project){
+        location.replace("/automation/result/?project=" + project);
+      }
+      function getAllResult(){
+        location.replace("/automation/result/");
+      }
+      function getResultOfDate(project, date){
+        location.replace("/automation/result/?project=" + project + "&date=" + date);
+      }
       /****** 跳转到新的页面 ******/
       function goToNewHtml(game, report){
         window.open("/report/?game=" + game + "&report=" + report, "_blank");

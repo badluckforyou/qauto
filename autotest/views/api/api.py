@@ -80,8 +80,6 @@ def reset_special_character(data):
             "&nbsp;": " ",
             "&#40;": "(",
             "&#41;": ")",
-            "&lsb;": "[",
-            "&rsb;": "]",
             "&#58;": ":",
             "&#124;": "|",
         }
@@ -123,6 +121,18 @@ def update_dict(dictionary, array, value):
     update_dict(dictionary[item], array, value)
 
 
+def send_request(d, method, url, **kwargs):
+    try:
+        response = requests.request(method, url, **kwargs)
+        d.setdefault("status_code", response.status_code)
+        try:
+            d.setdefault("recv_data", json.loads(response.text))
+        except:
+            d.setdefault("recv_data", "%s ..." % response.text[:200])
+    except:
+        d.setdefault("recv_data", "Send request failed %s" % traceback.format_exc())
+
+
 @login_required(login_url="/login/")
 def api_testing(request):
     return render(request, "templates/api/api.html", {
@@ -143,38 +153,25 @@ def request(request):
         data = request.POST.get("data")
         random_data = request.POST.get("randomData")
         random_times = request.POST.get("randomTimes")
-        if random_times is None:
-            random_times = 1
+        if not random_times:
+            random_times = 0
         elif not random_times.isdigit():
             return JsonResponse("The type of random times must be int.", safe=False)
         result = []
-        error = ""
-        try:
+        with suppress(Exception):
             data = json.loads(data.replace("'", '"'))
-        except:
-            error += "Get wrong data  %s ." % data
 
-        try:
+        with suppress(Exception):
             headers = json.loads(headers.replace("'", '"'))
-        except:
-            error += "Get wrong headers %s |" % headers
-
         if int(random_times) == 0:
             d = {}
+
             with suppress(Exception):
-                data = json.dumps(data) if data_type == "json" else data
-            
+                data = json.dumps(data) if data_type != "DICT" else data
+            d.setdefault("send_data", data)
             d.setdefault("run_time", datetime.datetime.now().strftime("%Y-%m-%d %X"))
             start_time = time.time()
-            try:
-                response = requests.request(method, url, headers=headers, data=data)
-                d.setdefault("status_code", response.status_code)
-                try:
-                    d.setdefault("data", json.loads(response.text))
-                except:
-                    d.setdefault("data", "%s ..." % response.text[:200])
-            except:
-                    d.setdefault("data", "%sSend request failed" % error)
+            send_request(d, method, url, headers=headers, data=data)
             d.setdefault("duration", "%.3fs" % (time.time() - start_time))
             result.append(d)
         else:
@@ -190,20 +187,12 @@ def request(request):
 
                 with suppress(Exception):
                     data = json.dumps(data) if data_type == "json" else data
-
+                d.setdefault("send_data", data)
                 d.setdefault("run_time", datetime.datetime.now().strftime("%Y-%m-%d %X"))
                 start_time = time.time()
-                try:
-                    response = requests.request(method, url, headers=headers, data=data)
-                    d.setdefault("status_code", response.status_code)
-                    try:
-                        d.setdefault("data", json.loads(response.text))
-                    except:
-                        d.setdefault("data", "%s ..." % response.text[:200])
-                except:
-                    d.setdefault("data", "%sSend request failed" % error)
+                send_request(d, method, url, headers=headers, data=data)
                 d.setdefault("duration", "%.3fs" % (time.time() - start_time))
                 if length is not None:
                     ident = (ident + 1) % length
                 result.append(d)
-        return JsonResponse(json.dumps(result, indent=4, ensure_ascii=False), safe=False)
+        return JsonResponse(result, safe=False)

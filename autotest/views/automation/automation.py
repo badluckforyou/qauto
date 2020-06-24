@@ -101,10 +101,7 @@ def automated_testing(request):
     subservers = get_subservers(username)
 
     status = get_status(request)
-    if status == 0:
-        tasks = Task.objects.filter(Q(username=username) & Q(show=0)).order_by("status")
-    elif status == 1:
-        tasks = Task.objects.filter(Q(username=username) & Q(show=0)).order_by("-status")
+    tasks = Task.objects.filter(Q(username=username) & Q(show=0) & Q(status__in=["队列", "执行", "空闲"]))
     tasks_num = len(tasks)
 
     if request.GET.get("n") is None:
@@ -118,7 +115,7 @@ def automated_testing(request):
     total_tasks = Task.objects.filter(Q(status="队列") | Q(status="执行") & Q(show=0))
     total_tasks_num = len(total_tasks)
     server_time = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M")
-
+    
     log_query = {"condition": "username='%s'" % username}
     total_logs = select_log(**log_query)
     return render(request, "templates/automation/automation.html", {
@@ -174,13 +171,13 @@ def add_task(request):
     try:
         exectime = request.POST.get("exectime")
         if exectime == "early":
-            exectime = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
+            exectime = datetime.datetime.now().strftime("%Y-%m-%d %X")
             logname = "普通任务"
             data = logname
         else:
-            exectime = exectime.replace("T", " ")
+            exectime = "%s:00" % exectime.replace("T", " ")
             logname = "定时任务"
-            data = logname + "[%s]" % exectime
+            data = "%s[%s]" % (logname, exectime)
         Task.objects.create(**{"username": request.session.get("user"),
                                 "platform": request.POST.get("platform"),
                                 "testcase": request.POST.get("casefile"),
@@ -192,11 +189,25 @@ def add_task(request):
                                 "show": 0,})
         Log.objects.create(**{"username": request.session.get("user"),
                                 "logname": logname,
-                                "recordtime": datetime.datetime.now().strftime("%Y-%m-%d %H:%M"),
+                                "recordtime": datetime.datetime.now().strftime("%Y-%m-%d %X"),
                                 "data": "添加%s进任务池" % data,})
         return JsonResponse("添加任务成功", safe=False)
     except:
         return JsonResponse("添加任务失败\nError: %s" % traceback.format_exc(), safe=False)
+
+
+@login_required(login_url="/login/")
+def reset_task(request):
+    try:
+        id = request.POST.get("id")
+        Task.objects.filter(id=int(id)).update(status="空闲")
+        Log.objects.create(**{"username": request.session.get("user"),
+                                "logname": "任务状态",
+                                "recordtime": datetime.datetime.now().strftime("%Y-%m-%d %X"),
+                                "data": "强制更改任务状态, 任务编号%s" % id})
+        return JsonResponse("更改任务状态成功", safe=False)
+    except:
+        return JsonResponse("更改任务状态失败\nError: %s" % traceback.format_exc(), safe=False)
 
 
 @login_required(login_url="/login/")
@@ -207,7 +218,7 @@ def remove_task(request):
             Task.objects.filter(id=task_id).update(show=1)
             Log.objects.create(**{"username": request.session.get("user"),
                                     "logname": "移除任务",
-                                    "recordtime": datetime.datetime.now().strftime("%Y-%m-%d %H:%M"),
+                                    "recordtime": datetime.datetime.now().strftime("%Y-%m-%d %X"),
                                     "data": "从任务池移除任务, 任务编号%s" % task_id,})
         return JsonResponse("移除任务成功", safe=False)
     except:
@@ -224,7 +235,7 @@ def execute(request):
             Task.objects.filter(id=task_id).update(status="队列")
             Log.objects.create(**{"username": request.session.get("user"),
                                     "logname": "执行任务",
-                                    "recordtime": datetime.datetime.now().strftime("%Y-%m-%d %H:%M"),
+                                    "recordtime": datetime.datetime.now().strftime("%Y-%m-%d %X"),
                                     "data": "将任务添加至队列, 任务编号%s" % task_id,})
         return JsonResponse("成功", safe=False)
 
@@ -282,22 +293,26 @@ def update_task(request):
     id = request.POST.get("id")
     if id is not None:
         status = request.POST.get("status")
-        Task.objects.filter(id=int(id)).update(status=status)
-        server = select_task(**{"wants": "server", "condition": "id=%s" % id})
-        if server:
-            _, server = server[0][0].split("-")
-            SubServer.objects.filter(server=server.strip()).update(status=0)
-        log = {
-            "username": select_task(**{"wants": "username", "condition": "id=%s" % id})[0][0],
-            "recordtime": datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
-        }
-        if status == "完成":
-            log["logname"] = "任务完成"
-            log["data"] = "的任务执行成功, 任务编号为%s" % id
-        else:
-            log["logname"] = "任务失败"
-            log["data"] = "的任务出错, 中断执行, 任务编号%s" % id
-        Log.objects.create(**log)
-        return JsonResponse("Update task status success", safe=False)
+        if status:
+            Task.objects.filter(id=int(id)).update(status=status)
+            server = select_task(**{"wants": "server", "condition": "id=%s" % id})
+            if server:
+                _, server = server[0][0].split("-")
+                SubServer.objects.filter(server=server.strip()).update(status=0)
+            log = {
+                "username": select_task(**{"wants": "username", "condition": "id=%s" % id})[0][0],
+                "recordtime": datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
+            }
+            if status == "完成":
+                log["logname"] = "任务完成"
+                log["data"] = "的任务执行成功, 任务编号为%s" % id
+            else:
+                log["logname"] = "任务失败"
+                log["data"] = "的任务出错, 中断执行, 任务编号%s" % id
+            Log.objects.create(**log)
+            return JsonResponse("Update task status success", safe=False)
+        date = request.POST.get("date")
+        if date:
+            Task.objects.filter(id=int(id)).update(executetime=date)
     return JsonResponse("Update task status failed", safe=False)
 

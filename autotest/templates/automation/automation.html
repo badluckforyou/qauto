@@ -372,16 +372,12 @@
                         <th style="width: 200px;">Package</th>
                         <th style="width: 150px;">Test Case</th>
                         <th style="width: 150px;">SubServer</th>
-                        {% ifequal status 0 %}
-                        <th style="width: 50px;">Status</th>
-                        {% else %}
-                        <th style="width: 50px;">Status<a class="mdi mdi-chevron-double-up" href="?n={{ shownum }}&s=0"></a></th>
-                        {% endifequal %}
                         <th style="width: 50px;">Exec Time
                           <span class="btn btn-trasnparent action-btn btn-xs component-flat pr-0" data-toggle="tooltip" data-placement="right" title="若执行时间早于当前时间, 即表明其会被尽快执行">
                             <i class="mdi mdi-information-outline text-muted mdi-2x"></i>
                           </span>
                         </th>
+                        <th style="width: 50px;">Status</th>
                         <th style="width: 50px;"></th>
                       </tr>
                     </thead>
@@ -395,8 +391,8 @@
                         <td style = "word-wrap:break-word;white-space:normal;">{{ task.package }}</td>
                         <td style = "word-wrap:break-word;white-space:normal;">{{ task.testcase }}</td>
                         <td style = "word-wrap:break-word;white-space:normal;">{{ task.server }}</td>
-                        <td style = "word-wrap:break-word;white-space:normal;">{{ task.status }}</td>
                         <td style = "word-wrap:break-word;white-space:normal;">{{ task.executetime }}</td>
+                        <td style = "word-wrap:break-word;white-space:normal;">{{ task.status }}</td>
                         <td >
                           <div class="btn-group">
                             <button type="button" class="btn btn-trasnparent action-btn btn-xs component-flat pr-0" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -404,6 +400,7 @@
                             </button>
                             <div class="dropdown-menu dropdown-menu-right">
                               <button class="dropdown-item" data-toggle="modal" data-target="#editTask">Delete</button>
+                              <button class="dropdown-item" onclick="resetTask('{{ task.id }}')">Reset</button>
                               <button class="dropdown-item" data-toggle="modal" data-target="#editTask">Edit</button>
                             </div>
                           </div>
@@ -465,8 +462,8 @@
                           <th style="width: 200px;">Package</th>
                           <th style="width: 150px;">Test Case</th>
                           <th style="width: 150px;">SubServer</th>
-                          <th style="width: 50px;">Status</th>
                           <th style="width: 50px;">Exec Time</th>
+                          <th style="width: 50px;">Status</th>
                         </tr>
                       </thead>
                       <tbody id="tasksPool" name="tasksPool">
@@ -485,8 +482,8 @@
                           <td style = "word-wrap:break-word;white-space:normal;">*****.***</td>
                           {% endif %}
                           <td style = "word-wrap:break-word;white-space:normal;">{{ task.server }}</td>
-                          <td style = "word-wrap:break-word;white-space:normal;">{{ task.status }}</td>
                           <td style = "word-wrap:break-word;white-space:normal;">{{ task.executetime }}</td>
+                          <td style = "word-wrap:break-word;white-space:normal;">{{ task.status }}</td>
                         {% endfor %}
                       </tbody>
                     </table>
@@ -518,7 +515,7 @@
       $(window).on("load", function(){
         $("table tr").each(function(){
           var checkbox = $(this).find("input[type=checkbox]");
-          var status = $(this).find("td:eq(7)");
+          var status = $(this).find("td:eq(8)");
           if (status.text() == "队列"){
             checkbox.attr("disabled","disabled");
             // status.css("color", "#333333");
@@ -636,7 +633,24 @@
               location.reload(true);
             }
           }
-        })
+        });
+      }
+      function resetTask(id){
+        $.ajax({
+          cache: false,
+          url: "resettask/",
+          dataType: "text",
+          type: "POST",
+          async: true,
+          data: {
+            "id": id
+          },
+          success: function(data){
+            if (confirm(JSON.parse(data))){
+              location.reload(true);
+            }
+          }
+        });
       }
       $("#addRealTimeTask").click(function(){
         addTask("early");

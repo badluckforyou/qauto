@@ -34,6 +34,7 @@ urlpatterns = [
     path("automation/", automation.automated_testing),
     path("automation/execute/", automation.execute),
     path("automation/addtask/", automation.add_task),
+    path("automation/resettask/", automation.reset_task),
     path("automation/removetask/", automation.remove_task),
     path("automation/update/", automation.update_task),
     path("automation/share/", automation.share),
