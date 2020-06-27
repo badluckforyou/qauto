@@ -220,8 +220,7 @@
                               <option>{{ type }}</option>
                               {% endfor %}
                             </select>
-                            <!-- <input type="text" name="targetUrl" id="targetUrl" placeholder="请输入目标地址, 如:http://www.baidu.com" style="padding: 0 15px;height: 30px;width: 69%;float: left;"> -->
-                            <input type="text" name="targetUrl" id="targetUrl" value="https://dev-main.bindo.io/api/v5/galaxy3" style="padding: 0 15px;height: 30px;width: 69%;float: left;">
+                            <input type="text" name="targetUrl" id="targetUrl" placeholder="请输入目标地址, 如:http://www.baidu.com" style="padding: 0 15px;height: 30px;width: 69%;float: left;">
                           </div>
                           <div class="col-md-2 showcase_text_area">
                             <button class="btn btn-success component-flat" id="startTest" style="padding: 0 15px;height: 30px;width: 99%">
@@ -255,7 +254,7 @@
                         <div class="form-group row showcase_row_area">
                           <div class="col-md-12 showcase_content_area">
                             <label>Data </label>
-                            <!-- <textarea class="form-control" rows="20" id="requestData" style="font-size: 15px; color: #000000; font-family:courier;">{
+                            <textarea class="form-control" rows="20" id="requestData" style="font-size: 15px; color: #000000; font-family:courier;">{
     'opera': 'test',
     'userid': 10000,
     'username': 'tester',
@@ -264,8 +263,7 @@
         'return': false
     },
     'remember': false
-}</textarea> -->
-                            <textarea class="form-control" rows="20" id="requestData" style="font-size: 15px; color: #000000; font-family:courier;">{"operationName":"login","variables":{"login":{"userName":"Jackey.lu@bindo.com","password":"654321","clientID":"2x9bfv9okp25jzwvrnzi0it","clientSecret":"aoug6tdt76lyopsbu5mr1ug3b"}},"query":"mutation login($login: LoginInput!) {\n  login(login: $login) {\n    id\n    fullName\n    phone\n    email\n    staff\n    admin\n    accessToken\n  }\n}\n"}</textarea>
+}</textarea>
                           </div>
                         </div>
                       </div>
