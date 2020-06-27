@@ -168,6 +168,29 @@
                   </div>
                 </div>
               </div>
+              <div class="modal" id="details" data-backdrop="true" style="position: fixed;">
+                <div class="modal-dialog modal-lg">
+                  <div class="modal-content" id="report_content">
+                    <div class="modal-header">
+                      <h6 class="modal-title" style="font-size: 20px">
+                        <strong>Details</strong>
+                      </h6>
+                    </div>
+                    <div class="modal-body">
+                      <label style="font-size: 18px;">发送数据</label>
+                      <div>
+                        <textarea class="form-control" id="sendData" rows="15" style="width: 99%; color: #bd4147" readonly></textarea>
+                      </div>
+                      <label>&nbsp;</label>
+                      <div></div>
+                      <label style="font-size: 18px;">接收数据</label>
+                      <div>
+                        <textarea class="form-control" id="recvData" rows="20" style="width: 99%;" readonly></textarea>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
               <div class="col-lg-6 equel-grid">
                 <div class="grid">
                   <div class="grid-body py-3">
@@ -197,7 +220,8 @@
                               <option>{{ type }}</option>
                               {% endfor %}
                             </select>
-                            <input type="text" name="targetUrl" id="targetUrl" placeholder="请输入目标地址, 如:http://www.baidu.com" style="padding: 0 15px;height: 30px;width: 69%;float: left;">
+                            <!-- <input type="text" name="targetUrl" id="targetUrl" placeholder="请输入目标地址, 如:http://www.baidu.com" style="padding: 0 15px;height: 30px;width: 69%;float: left;"> -->
+                            <input type="text" name="targetUrl" id="targetUrl" value="https://dev-main.bindo.io/api/v5/galaxy3" style="padding: 0 15px;height: 30px;width: 69%;float: left;">
                           </div>
                           <div class="col-md-2 showcase_text_area">
                             <button class="btn btn-success component-flat" id="startTest" style="padding: 0 15px;height: 30px;width: 99%">
@@ -231,7 +255,7 @@
                         <div class="form-group row showcase_row_area">
                           <div class="col-md-12 showcase_content_area">
                             <label>Data </label>
-                            <textarea class="form-control" rows="20" id="requestData" style="font-size: 15px; color: #000000; font-family:courier;">{
+                            <!-- <textarea class="form-control" rows="20" id="requestData" style="font-size: 15px; color: #000000; font-family:courier;">{
     'opera': 'test',
     'userid': 10000,
     'username': 'tester',
@@ -240,7 +264,8 @@
         'return': false
     },
     'remember': false
-}</textarea>
+}</textarea> -->
+                            <textarea class="form-control" rows="20" id="requestData" style="font-size: 15px; color: #000000; font-family:courier;">{"operationName":"login","variables":{"login":{"userName":"Jackey.lu@bindo.com","password":"654321","clientID":"2x9bfv9okp25jzwvrnzi0it","clientSecret":"aoug6tdt76lyopsbu5mr1ug3b"}},"query":"mutation login($login: LoginInput!) {\n  login(login: $login) {\n    id\n    fullName\n    phone\n    email\n    staff\n    admin\n    accessToken\n  }\n}\n"}</textarea>
                           </div>
                         </div>
                       </div>
@@ -296,6 +321,7 @@ remember: in_order(true, false)
                   <div class="form-group row showcase_row_area" id="responseData">
                     <pre class="text-gray" style="font-size: 14px;"><h6><br><br>     Empty data.</h6></pre>
                   </div>
+                  <div style="float: right;" id="tableSheet"></div>
                 </div>
               </div>
             </div>
@@ -332,48 +358,19 @@ remember: in_order(true, false)
       $("#requestHeaders").on("show.bs.modal", function(e){
         var modalHeight = $(this).height();
         var windowHeight = $(window).height();
-        console.log(modalHeight);
-        console.log((modalHeight - windowHeight) / 2);
         setModalHeight($(this), (modalHeight - windowHeight) / 2);
       });
-      function showRecv(data){
-        var html_data = `
-          <table id="table" name="table" class="table table-hover table-sm">
-            <thead>
-              <tr class="solid-header">
-                <th style="width: 50px;"></th>
-                <th style="width: 100px;">开始时间</th>
-                <th style="width: 50px;">状态码</th>
-                <th style="width: 50px;">耗时</th>
-                <th style="width: 150px;">发送数据</th>
-                <th style="width: 200px;">返回数据</th>
-              </tr>
-            </thead>
-            <tbody>`
-        for (var i=0; i<data.length; i++){
-          console.log(data[i]["run_time"]);
-          html_data += `
-              <tr class="solid-header" id="trId">
-                <td style = "word-wrap:break-word;white-space:normal;"><input type="checkbox"></td>
-                <td style = "word-wrap:break-word;white-space:normal;">`+ data[i]["run_time"] + `</td>
-                <td style = "word-wrap:break-word;white-space:normal;">`+ data[i]["status_code"] + `</td>
-                <td style = "word-wrap:break-word;white-space:normal;">`+ data[i]["duration"] + `</td>
-                <td style = "word-wrap:break-word;white-space:normal;">`+ data[i]["send_data"] + `</td>
-                <td style = "word-wrap:break-word;white-space:normal;">`+ data[i]["recv_data"] + `</td>
-              </tr>`
-        }
-        html_data += `
-            </tbody>
-          </table>`
-        console.log(html_data)
-        $("#responseData").html(html_data);
-      }
+      $("#details").on("show.bs.modal", function(e){
+        var modalHeight = $(this).height();
+        var windowHeight = $(window).height();
+        console.log(modalHeight, windowHeight);
+        setModalHeight($(this), (modalHeight - windowHeight) / 4);
+      });
       $("#removeRandom").click(function(){
         $("#ramdomTimes").val("");
         $("#randomData").val("");
         $("#randomWrapper").css("display", "none");
         $("#randomTitle").css("display", "none");
-        // $("#requestData").attr("rows", 41);
       });
       $("#clearHeaders").click(function(){
         $("#headers").val("");
@@ -403,7 +400,6 @@ remember: in_order(true, false)
           var randomTimes = "";
           var randomData = "";
         }
-        console.log(headers)
         $.ajax({
           cache: false,
           url: "request/",
@@ -420,11 +416,112 @@ remember: in_order(true, false)
             "randomTimes": randomTimes,
           },
           success: function(data){
-            showRecv(JSON.parse(data));
-            alert("Finished.");
+            // 置为全局变量
+            result = JSON.parse(data);
+            // 默认显示第1页
+            showRecv(result, 1);
           }
         });
       });
+      /*** 根据后端返回的数据生成对应的结果表及跳转页签 ***/
+      function showRecv(data, thisPage){
+        var splitIdent = 18;
+        var totalPage = Math.floor(data.length / splitIdent);
+        if (totalPage != (data.length / splitIdent)){
+          totalPage += 1;
+        }
+        if (thisPage == 1 && thisPage == totalPage){
+          var startIdent = 0;
+          var endIdent = data.length;
+          var tableSheet = `
+            <span>First </span>&nbsp;|
+            <span>Previous </span>&nbsp;|
+            <span>Next </span>&nbsp;|
+            <span>Last </span>&nbsp;|
+            &nbsp;Page&nbsp;<span>` + thisPage + `</span>/<span>` + totalPage + `</span>`
+        }
+        else if (thisPage == 1 && thisPage != totalPage){
+          var startIdent = 0;
+          var endIdent = splitIdent;
+          var tableSheet = `
+            <span>First </span>&nbsp;|
+            <span>Previous </span>&nbsp;|
+            <span><a href="javascript:void(0);" onclick="goPage(` + (thisPage + 1 ) + `)">Next </a></span>&nbsp;|
+            <span><a href="javascript:void(0);" onclick="goPage(` + totalPage + `)">Last </a></span>&nbsp;|
+            &nbsp;Page&nbsp;<span>` + thisPage + `</span>/<span>` + totalPage + `</span>`
+        }
+        else if (thisPage != 1 && thisPage != totalPage){
+          var startIdent = (thisPage - 1) * splitIdent;
+          var endIdent = thisPage * splitIdent;
+          var tableSheet = `
+            <span><a href="javascript:void(0);" onclick="goPage(1)">First </a></span>&nbsp;|
+            <span><a href="javascript:void(0);" onclick="goPage(` + (thisPage - 1 ) + `)">Previous </a></span>&nbsp;|
+            <span><a href="javascript:void(0);" onclick="goPage(` + (thisPage + 1 ) + `)">Next </a></span>&nbsp;|
+            <span><a href="javascript:void(0);" onclick="goPage(` + totalPage + `)">Last </a></span>&nbsp;|
+            &nbsp;Page&nbsp;<span>` + thisPage + `</span>/<span>` + totalPage + `</span>`
+        }
+        else if (thisPage != 1 && thisPage == totalPage){
+          var startIdent = (thisPage - 1) * splitIdent;
+          var endIdent = data.length;
+          var tableSheet = `
+            <span><a href="javascript:void(0);" onclick="goPage(1)">First </a></span>&nbsp;|
+            <span><a href="javascript:void(0);" onclick="goPage(` + (thisPage - 1 ) + `)">Previous </a></span>&nbsp;|
+            <span>Next </span>&nbsp;|
+            <span>Last </span>&nbsp;|
+            &nbsp;Page&nbsp;<span>` + thisPage + `</span>/<span>` + totalPage + `</span>`
+        }
+        var htmlData = `
+          <table id="table" name="table" class="table table-hover table-sm">
+            <thead>
+              <tr class="solid-header">
+                <th style="width: 100px;">开始时间</th>
+                <th style="width: 50px;">状态码</th>
+                <th style="width: 50px;">耗时</th>
+                <th style="width: 150px;">发送数据</th>
+                <th style="width: 200px;">返回数据</th>
+                <th style="width: 50px;"></th>
+              </tr>
+            </thead>
+            <tbody>`
+        for (var i=startIdent; i<endIdent; i++){
+          htmlData += `
+              <tr class="solid-header" id="` + i + `">
+                <td style = "word-wrap:break-word;white-space:normal;">`+ data[i]["run_time"] + `</td>
+                <td style = "word-wrap:break-word;white-space:normal;">`+ data[i]["status_code"] + `</td>
+                <td style = "word-wrap:break-word;white-space:normal;">`+ data[i]["duration"] + `</td>
+                <td style = "word-wrap:break-word;white-space:normal;">`+ data[i]["send_data"].toString().substring(0, 25) + ` ...</td>
+                <td style = "word-wrap:break-word;white-space:normal;">`+ JSON.stringify(data[i]["recv_data"]).substring(0, 50) + ` ...</td>
+                <td><label class="badge badge-success" type="button" data-toggle="modal" data-target="#details" onclick="showMore(`+ i + `)">详细信息</label></td>
+              </tr>`
+        }
+        htmlData += `
+            </tbody>
+          </table>`
+        // 生成结果表
+        $("#responseData").html(htmlData);
+        // 生成跳转页签
+        $("#tableSheet").html(tableSheet);
+        // staus code状态码颜色调整
+        $("table tr").each(function(){
+          var statusCode = $(this).find("td:eq(1)");
+          if (statusCode.text() != 200){
+            statusCode.css("color", "#f5003a");
+          }
+          else {
+            statusCode.css("color", "#4CCEAC");
+          }
+        });
+      }
+      function showMore(i){
+        var sendData = JSON.stringify(JSON.parse(result[i]["send_data"]), null, 4);
+        var recvData = JSON.stringify(JSON.parse(result[i]["recv_data"]), null, 4);
+        $("#sendData").html(sendData);
+        // $("#sendData").html(result[i]["send_data"]);
+        $("#recvData").val(recvData);
+      }
+      function goPage(page){
+        showRecv(result, page);
+      }
     </script>
   </body>
 </html>

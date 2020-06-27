@@ -1,0 +1,45 @@
+[2020-06-26 00:00:07,364] INFO run_with_reloader autoreload Watching for file changes with StatReloader
+[2020-06-26 00:02:21,676] INFO run_with_reloader autoreload Watching for file changes with StatReloader
+[2020-06-26 00:02:57,038] INFO trigger_reload autoreload G:\ZED\qauto\qauto\settings.py changed, reloading.
+[2020-06-26 00:02:57,759] INFO run_with_reloader autoreload Watching for file changes with StatReloader
+[2020-06-26 00:05:10,160] INFO trigger_reload autoreload G:\ZED\qauto\qauto\urls.py changed, reloading.
+[2020-06-26 00:05:10,847] INFO run_with_reloader autoreload Watching for file changes with StatReloader
+[2020-06-26 00:06:01,493] INFO trigger_reload autoreload G:\ZED\qauto\qauto\urls.py changed, reloading.
+[2020-06-26 00:06:05,704] INFO run_with_reloader autoreload Watching for file changes with StatReloader
+[2020-06-26 00:06:38,593] INFO run_with_reloader autoreload Watching for file changes with StatReloader
+[2020-06-26 00:06:55,269] INFO trigger_reload autoreload G:\ZED\qauto\qauto\settings.py changed, reloading.
+[2020-06-26 00:06:55,970] INFO run_with_reloader autoreload Watching for file changes with StatReloader
+[2020-06-26 00:06:58,947] INFO login login  JACKEY LOGIN
+[2020-06-26 00:07:52,128] INFO trigger_reload autoreload G:\ZED\qauto\qauto\urls.py changed, reloading.
+[2020-06-26 00:07:52,803] INFO run_with_reloader autoreload Watching for file changes with StatReloader
+[2020-06-26 00:08:32,653] INFO trigger_reload autoreload G:\ZED\qauto\qauto\settings.py changed, reloading.
+[2020-06-26 00:08:33,323] INFO run_with_reloader autoreload Watching for file changes with StatReloader
+[2020-06-26 00:08:40,643] INFO trigger_reload autoreload G:\ZED\qauto\qauto\settings.py changed, reloading.
+[2020-06-26 00:08:41,313] INFO run_with_reloader autoreload Watching for file changes with StatReloader
+[2020-06-26 00:09:31,790] INFO trigger_reload autoreload G:\ZED\qauto\qauto\urls.py changed, reloading.
+[2020-06-26 00:09:32,471] INFO run_with_reloader autoreload Watching for file changes with StatReloader
+[2020-06-26 00:09:45,573] INFO trigger_reload autoreload G:\ZED\qauto\qauto\urls.py changed, reloading.
+[2020-06-26 00:09:46,261] INFO run_with_reloader autoreload Watching for file changes with StatReloader
+[2020-06-26 00:12:27,761] INFO trigger_reload autoreload G:\ZED\qauto\qauto\settings.py changed, reloading.
+[2020-06-26 00:12:28,463] INFO run_with_reloader autoreload Watching for file changes with StatReloader
+[2020-06-26 00:12:42,707] INFO trigger_reload autoreload G:\ZED\qauto\qauto\urls.py changed, reloading.
+[2020-06-26 00:12:43,385] INFO run_with_reloader autoreload Watching for file changes with StatReloader
+[2020-06-26 00:18:33,257] INFO trigger_reload autoreload G:\ZED\qauto\qauto\urls.py changed, reloading.
+[2020-06-26 00:18:33,948] INFO run_with_reloader autoreload Watching for file changes with StatReloader
+[2020-06-26 00:19:20,767] INFO trigger_reload autoreload G:\ZED\qauto\qauto\urls.py changed, reloading.
+[2020-06-26 00:19:21,429] INFO run_with_reloader autoreload Watching for file changes with StatReloader
+[2020-06-26 00:19:35,683] INFO trigger_reload autoreload G:\ZED\qauto\qauto\settings.py changed, reloading.
+[2020-06-26 00:19:36,373] INFO run_with_reloader autoreload Watching for file changes with StatReloader
+[2020-06-26 00:20:08,067] INFO trigger_reload autoreload G:\ZED\qauto\qauto\settings.py changed, reloading.
+[2020-06-26 00:20:08,750] INFO run_with_reloader autoreload Watching for file changes with StatReloader
+[2020-06-26 00:20:09,128] WARNING log_response log Not Found: /home1/
+[2020-06-26 00:20:09,178] WARNING log_response log Not Found: /favicon.ico
+[2020-06-26 00:20:25,291] INFO trigger_reload autoreload G:\ZED\qauto\qauto\settings.py changed, reloading.
+[2020-06-26 00:20:25,987] INFO run_with_reloader autoreload Watching for file changes with StatReloader
+[2020-06-26 00:21:36,796] INFO trigger_reload autoreload G:\ZED\qauto\qauto\urls.py changed, reloading.
+[2020-06-26 00:21:37,487] INFO run_with_reloader autoreload Watching for file changes with StatReloader
+[2020-06-26 00:21:57,655] INFO trigger_reload autoreload G:\ZED\qauto\qauto\urls.py changed, reloading.
+[2020-06-26 00:21:58,348] INFO run_with_reloader autoreload Watching for file changes with StatReloader
+[2020-06-26 00:26:07,217] INFO trigger_reload autoreload G:\ZED\qauto\qauto\settings.py changed, reloading.
+[2020-06-26 00:26:07,900] INFO run_with_reloader autoreload Watching for file changes with StatReloader
+[2020-06-26 00:26:08,966] WARNING log_response log Not Found: /home1/

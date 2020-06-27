@@ -18,7 +18,7 @@ from django.urls import path, re_path
 from autotest.views import login, home, error
 from autotest.views import automation, api
 from django.conf import settings
-from django.conf.urls import handler404
+from django.conf.urls import handler404, url
 from django.conf.urls.static import static
 from django.views.static import serve
 
@@ -44,9 +44,10 @@ urlpatterns = [
     path("api/", api.api_testing),
     path("api/request/", api.request),
 
-    re_path(r'^automation/result/(?P<path>.*)$', serve, {"document_root": AppSettings.TESTERFOLDER})
+    re_path(r'^automation/result/(?P<path>.*)$', serve, {"document_root": AppSettings.TESTERFOLDER}),
+    re_path(r'^static/(?P<path>.*)$', serve, {"document_root": settings.STATIC_ROOT}),
 ]
 
-urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+# urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 handler404 = error.page_not_found

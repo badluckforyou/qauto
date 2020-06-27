@@ -33,7 +33,7 @@ ALLOWED_HOSTS = [
     "192.168.1.37",
     "192.168.191.249",
     "qauto.qicp.vip",
-    "bindo1111dembp.localdomain:8888",
+    "192.168.8.23",
 ]
 
 
@@ -205,11 +205,9 @@ USE_TZ = False
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, "/static/")
-
-
-STATICFILES_DIRS = (
-    os.path.join(BASE_DIR, "static"),
-)
+STATIC_ROOT = os.path.join(BASE_DIR, 'static').replace("\\", "/")
+STATICFILES_DIRS = [
+  os.path.join(BASE_DIR, '/static/'),
+]
 
 LOGIN_URL = '/login/'

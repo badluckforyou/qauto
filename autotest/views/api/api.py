@@ -8,7 +8,7 @@ import ujson as json
 
 from contextlib import suppress
 
-from django.shortcuts import render
+from django.shortcuts import render, HttpResponse
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 
@@ -122,15 +122,18 @@ def update_dict(dictionary, array, value):
 
 
 def send_request(d, method, url, **kwargs):
+    d["run_time"] = datetime.datetime.now().strftime("%X")
+    start_time = time.time()
     try:
         response = requests.request(method, url, **kwargs)
-        d.setdefault("status_code", response.status_code)
+        d["status_code"] = response.status_code
         try:
-            d.setdefault("recv_data", json.loads(response.text))
+            d["recv_data"] = response.text
         except:
-            d.setdefault("recv_data", "%s ..." % response.text[:200])
+            d["recv_data"] = json.dumps(response.text)
     except:
-        d.setdefault("recv_data", "Send request failed %s" % traceback.format_exc())
+        d["recv_data"] = json.dumps("Send request failed %s" % traceback.format_exc())
+    d["duration"] = "%.3fs" % (time.time() - start_time)
 
 
 @login_required(login_url="/login/")
@@ -159,40 +162,38 @@ def request(request):
             return JsonResponse("The type of random times must be int.", safe=False)
         result = []
         with suppress(Exception):
-            data = json.loads(data.replace("'", '"'))
+            data = json.loads(data)
 
         with suppress(Exception):
-            headers = json.loads(headers.replace("'", '"'))
+            headers = json.loads(headers)
+
         if int(random_times) == 0:
-            d = {}
+            d = dict.fromkeys(("run_time", "status_code", "duration", "send_data", "recv_data"))
 
             with suppress(Exception):
                 data = json.dumps(data) if data_type != "DICT" else data
-            d.setdefault("send_data", data)
-            d.setdefault("run_time", datetime.datetime.now().strftime("%Y-%m-%d %X"))
-            start_time = time.time()
+            d["send_data"] = json.dumps(data, indent=4, ensure_ascii=False) if not isinstance(data, str) else data
+            
             send_request(d, method, url, headers=headers, data=data)
-            d.setdefault("duration", "%.3fs" % (time.time() - start_time))
             result.append(d)
         else:
             ident = 0
             for _ in range(int(random_times)):
-                d = {}
+                d = dict.fromkeys(("run_time", "status_code", "duration", "send_data", "recv_data"))
                 length, _random_data = parse_random_data(ident, random_data)
 
                 if isinstance(data, dict):
                     for key, value in _random_data.items():
                         with suppress(Exception):
                             update_dict(data, key.split("|"), value)
-
-                with suppress(Exception):
-                    data = json.dumps(data) if data_type == "json" else data
-                d.setdefault("send_data", data)
-                d.setdefault("run_time", datetime.datetime.now().strftime("%Y-%m-%d %X"))
-                start_time = time.time()
-                send_request(d, method, url, headers=headers, data=data)
-                d.setdefault("duration", "%.3fs" % (time.time() - start_time))
+                try:
+                    send_data = json.dumps(data) if data_type != "DICT" else data
+                except:
+                    send_data = data
+                d["send_data"] = json.dumps(send_data, indent=4, ensure_ascii=False) if not isinstance(send_data, str) else send_data
+                
+                send_request(d, method, url, headers=headers, data=send_data)
                 if length is not None:
                     ident = (ident + 1) % length
                 result.append(d)
-        return JsonResponse(result, safe=False)
+        return HttpResponse(json.dumps(result, indent=4, ensure_ascii=False))

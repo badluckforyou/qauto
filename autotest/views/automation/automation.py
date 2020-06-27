@@ -31,7 +31,7 @@ from autotest.task_watching import watching
 LOGGER = logging.getLogger("autotest")
 # 任务池监控django运行时直接执行
 watching_thread = threading.Thread(target=watching, args=())
-watching_thread.setDaemon(False)
+watching_thread.setDaemon(True)
 watching_thread.start()
 
 
