@@ -512,7 +512,12 @@ remember: in_order(true, false)
       }
       function showMore(i){
         var sendData = JSON.stringify(JSON.parse(result[i]["send_data"]), null, 4);
-        var recvData = JSON.stringify(JSON.parse(result[i]["recv_data"]), null, 4);
+        console.log(result[i]["recv_data"].substring(0, 1))
+        if (result[i]["recv_data"].substring(0, 1) == "{") {
+          var recvData = JSON.stringify(JSON.parse(result[i]["recv_data"]), null, 4);
+        } else {
+          var recvData = result[i]["recv_data"];
+        }
         $("#sendData").html(sendData);
         // $("#sendData").html(result[i]["send_data"]);
         $("#recvData").val(recvData);

@@ -12,7 +12,7 @@ from copy import deepcopy
 from autotest.query import select_task
 from autotest.models import Task, SubServer, Log
 from autotest.app_settings import AppSettings
-from autotest.helper import _hash_encrypted
+from autotest.helper import _hash_encrypted, current_time
 from autotest.csv import parse_csv
 
 
@@ -90,7 +90,7 @@ def execute_task(id):
 
         Log.objects.create(**{"username": username,
                                 "logname": "任务开始",
-                                "recordtime": datetime.datetime.now().strftime("%Y-%m-%d %X"),
+                                "recordtime": current_time(),
                                 "data": "的任务开始执行, 任务编号%s" % id})
         try:
             _, server = server.split(' - ')

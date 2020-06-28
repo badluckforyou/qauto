@@ -1,7 +1,12 @@
 import os
 import hashlib
+import datetime
 
 from autotest.app_settings import AppSettings
+
+
+def current_time():
+    return datetime.datetime.now().strftime("%Y-%m-%d %X")
 
 
 def _hash_encrypted(entry):

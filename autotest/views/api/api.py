@@ -162,7 +162,7 @@ def request(request):
             return JsonResponse("The type of random times must be int.", safe=False)
         result = []
         with suppress(Exception):
-            data = json.loads(data)
+            data = json.loads(data) if method != "Get" else {}
 
         with suppress(Exception):
             headers = json.loads(headers)

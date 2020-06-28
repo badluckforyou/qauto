@@ -171,7 +171,7 @@ def add_task(request):
     try:
         exectime = request.POST.get("exectime")
         if exectime == "early":
-            exectime = datetime.datetime.now().strftime("%Y-%m-%d %X")
+            exectime = current_time()
             logname = "普通任务"
             data = logname
         else:
@@ -203,7 +203,7 @@ def reset_task(request):
         Task.objects.filter(id=int(id)).update(status="空闲")
         Log.objects.create(**{"username": request.session.get("user"),
                                 "logname": "任务状态",
-                                "recordtime": datetime.datetime.now().strftime("%Y-%m-%d %X"),
+                                "recordtime": current_time(),
                                 "data": "强制更改任务状态, 任务编号%s" % id})
         return JsonResponse("更改任务状态成功", safe=False)
     except:
@@ -218,7 +218,7 @@ def remove_task(request):
             Task.objects.filter(id=task_id).update(show=1)
             Log.objects.create(**{"username": request.session.get("user"),
                                     "logname": "移除任务",
-                                    "recordtime": datetime.datetime.now().strftime("%Y-%m-%d %X"),
+                                    "recordtime": current_time(),
                                     "data": "从任务池移除任务, 任务编号%s" % task_id,})
         return JsonResponse("移除任务成功", safe=False)
     except:
@@ -235,7 +235,7 @@ def execute(request):
             Task.objects.filter(id=task_id).update(status="队列")
             Log.objects.create(**{"username": request.session.get("user"),
                                     "logname": "执行任务",
-                                    "recordtime": datetime.datetime.now().strftime("%Y-%m-%d %X"),
+                                    "recordtime": current_time(),
                                     "data": "将任务添加至队列, 任务编号%s" % task_id,})
         return JsonResponse("成功", safe=False)
 
@@ -301,7 +301,7 @@ def update_task(request):
                 SubServer.objects.filter(server=server.strip()).update(status=0)
             log = {
                 "username": select_task(**{"wants": "username", "condition": "id=%s" % id})[0][0],
-                "recordtime": datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
+                "recordtime": current_time()
             }
             if status == "完成":
                 log["logname"] = "任务完成"
