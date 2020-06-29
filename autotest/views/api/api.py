@@ -64,6 +64,7 @@ def replace_special_character(data):
             r"\)": "&#41;",
             r"\:": "&#58;",
             r"\|": "&#124;",
+            r"\\": "&bacsl;",
         }
         for k, v in special_characters.items():
             data = data.replace(k, v)
@@ -82,6 +83,7 @@ def reset_special_character(data):
             "&#41;": ")",
             "&#58;": ":",
             "&#124;": "|",
+            "&bacsl;": "\\",
         }
         for k, v in special_characters.items():
             data = data.replace(k, v)
@@ -130,7 +132,7 @@ def send_request(d, method, url, **kwargs):
         try:
             d["recv_data"] = response.text
         except:
-            d["recv_data"] = json.dumps(response.text)
+            d["recv_data"] = json.dumps(response.content.decode("utf-8"))
     except:
         d["recv_data"] = json.dumps("Send request failed %s" % traceback.format_exc())
     d["duration"] = "%.3fs" % (time.time() - start_time)
@@ -180,8 +182,10 @@ def request(request):
             ident = 0
             for _ in range(int(random_times)):
                 d = dict.fromkeys(("run_time", "status_code", "duration", "send_data", "recv_data"))
-                length, _random_data = parse_random_data(ident, random_data)
 
+                length, _random_data = parse_random_data(ident, random_data)
+                if length is not None:
+                    ident = (ident + 1) % length
                 if isinstance(data, dict):
                     for key, value in _random_data.items():
                         with suppress(Exception):
@@ -193,7 +197,5 @@ def request(request):
                 d["send_data"] = json.dumps(send_data, indent=4, ensure_ascii=False) if not isinstance(send_data, str) else send_data
                 
                 send_request(d, method, url, headers=headers, data=send_data)
-                if length is not None:
-                    ident = (ident + 1) % length
                 result.append(d)
         return HttpResponse(json.dumps(result, indent=4, ensure_ascii=False))

@@ -21,7 +21,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 
 from autotest.app_settings import AppSettings
-from autotest.helper import _hash_encrypted, get_specified_files
+from autotest.helper import current_time, _hash_encrypted, get_specified_files
 from autotest.models import SubServer, Task, Log
 from autotest.query import select_subserver, select_task, select_log
 from autotest.task_watching import watching
@@ -144,11 +144,13 @@ def automated_testing(request):
 @login_required(login_url="/login/")
 def upload_file(request):
     """上传安装包"""
+    username = request.session.get("user")
+    if username.upper() == "VISITOR":
+        return "游客无法上传文件!"
     file = request.FILES.get("caseFile")
     if file is None:
         return
     project = AppSettings.PROJECTS[request.POST.get("caseProject")]
-    username = request.session.get("user")
     try:
         filepath = os.path.join(AppSettings.TESTERFOLDER, _hash_encrypted(username), project)
         # 检查文件格式

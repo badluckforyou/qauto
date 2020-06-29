@@ -46,4 +46,3 @@ def get_files(filepath, project="All"):
     else:
         result.append(tuple(_get_files(filepath)))
     return result
-

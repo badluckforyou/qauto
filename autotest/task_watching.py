@@ -43,8 +43,6 @@ def get_tasks():
         }
     }
     """
-
-
     init = dict.fromkeys((QUEUEING, RUNNING), {})
     result = deepcopy(init)
 
@@ -62,10 +60,10 @@ def get_tasks():
                 result[RUNNING] = {server: [t]}
                 break
             if server not in result[QUEUEING]:
-                t.setdefault(server, [t])
+                s.setdefault(server, [t])
             else:
-                t[server].append(t)
-            result[QUEUEING] = t
+                s[server].append(t)
+            result[QUEUEING] = s
     return result if result != init else None
 
 
@@ -152,6 +150,8 @@ def watching():
             if server in tasks[RUNNING].keys():
                 continue
             for id, exectime in tasksinfo:
+
+                exectime = time.mktime(time.strptime(exectime, "%Y-%m-%d %X"))
                 # 如果任务执行时间大于当前时间, 表明其为定时任务, 可直接跳过
                 if exectime - time.time() > 0:
                     continue
