@@ -85,11 +85,11 @@ def execute_task(id):
         #获取测试用例文件并解析成规定格式的数据
         file = os.path.join(AppSettings.TESTERFOLDER, _hash_encrypted(username), project, filename)
         testcase = parse_csv(file)
-
-        Log.objects.create(**{"username": username,
-                                "logname": "任务开始",
-                                "recordtime": current_time(),
-                                "data": "的任务开始执行, 任务编号%s" % id})
+        log = {"username": username,
+                "logname": "任务开始",
+                "recordtime": current_time(),
+                "data": "的任务开始执行, 任务编号%s" % id}
+        Log.objects.create(**log)
         try:
             _, server = server.split(' - ')
         except:

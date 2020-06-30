@@ -60,7 +60,6 @@ def result(request):
     if project == "All":
         tasks = Task.objects.filter(Q(username=username) & Q(status__in=["完成", "执行"]))
     elif project != "All" and date == "All":
-        print(AppSettings.PROJECTS[project])
         tasks = Task.objects.filter(Q(username=username) & Q(project=project) & Q(status__in=["完成", "执行"]))
     else:
         data = AutoUITestResult.objects.filter(Q(username=username) & Q(date=date) &
@@ -78,7 +77,6 @@ def result(request):
         data = paginator.page(1)
     except EmptyPage:
         data = paginator.page(paginator.num_pages)
-    print(tasks)
     return render(request, "templates/automation/result.html", {
                     "title": AppSettings.TITLE,
                     "company": AppSettings.COMPANY,

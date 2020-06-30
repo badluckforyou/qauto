@@ -220,30 +220,27 @@
                   <div class="vertical-timeline-wrapper" >
                     <div class="row">
                       <div class="col-md-6 mx-auto">
-                        <div class="form-group row">
-                          <form class="form-group" method="POST" id="uploadTestCasesForm" enctype="multipart/form-data">
-                            <label style="color: #778899">Project</label>
-                            <select class="custom-select" id="caseProject" name="caseProject" style="width: 120px;padding: 0 15px;height: 30px;width: 400px;">
-                              {% for project in projects %}
-                              <option>{{ project }}</option>
-                              {% endfor %}
-                            </select>
-                            <ul></ul>
-                            <div class="custom-file">
-                              <input type="file" class="custom-file-input" id="caseFile" name="caseFile">
-                              <label class="custom-file-label" for="caseFile">Choose File</label>
-                            </div>
-                            <ul></ul>
-                            <label style="color: #787879">NOTICE!! You can only upload one file.</label>
-                            <div class="modal-footer">
-                              <a class="btn btn-success btn-sm" data-dismiss="modal" id="uploadTestCasesButton">
-                                <i class="mdi mdi-cloud-upload"></i>
-                                UPLOAD
-                              </a>
-                            </div>
-                            {% csrf_token %}
-                          </form>
-                        </div>
+                        <form class="form-group" method="POST" id="uploadTestCasesForm" enctype="multipart/form-data">
+                          <select class="custom-select" id="caseProject" name="caseProject" style="padding: 0 15px;height: 30px;width: 90%;">
+                            {% for project in projects %}
+                            <option>{{ project }}</option>
+                            {% endfor %}
+                          </select>
+                          <ul></ul>
+                          <div class="custom-file" style="width: 90%;">
+                            <input type="file" class="custom-file-input" id="caseFile" name="caseFile">
+                            <label class="custom-file-label" for="caseFile">Choose File</label>
+                          </div>
+                          <ul></ul>
+                          <label style="color: #787879">NOTICE!! You can only upload one file.</label>
+                          <div class="modal-footer">
+                            <a class="btn btn-success btn-sm" data-dismiss="modal" id="uploadTestCasesButton">
+                              <i class="mdi mdi-cloud-upload"></i>
+                              UPLOAD
+                            </a>
+                          </div>
+                          {% csrf_token %}
+                        </form>
                       </div>
                     </div>
                   </div>
@@ -261,7 +258,7 @@
                               <label for="project"><b class="text-black font-weight-medium d-block">Project</b></label>
                             </div>
                             <div class="col-md-8">
-                              <select class="custom-select" id="project" name="project" style="padding: 0 15px;height: 30px;width: 300px;">
+                              <select class="custom-select" id="project" name="project" style="padding: 0 15px;height: 30px;width: 67%;">
                                 {% for project in projects %}
                                 <option>{{ project }}</option>
                                 {% endfor %}
@@ -275,7 +272,7 @@
                             <label for="choosePlatform"><b class="text-black font-weight-medium d-block">Platform</b></label>
                           </div>
                           <div class="col-md-8 showcase_content_area">
-                            <select class="custom-select" id="platform" name="platform" style="padding: 0 15px;height: 30px;width: 300px;">
+                            <select class="custom-select" id="platform" name="platform" style="padding: 0 15px;height: 30px;width: 67%;">
                               {% for platform in platforms %}
                               <option>{{ platform }}</option>
                               {% endfor %}
@@ -287,7 +284,7 @@
                             <label for="app"><b class="text-black font-weight-medium d-block">Packeage</b></label>
                           </div>
                           <div class="col-md-8 showcase_content_area">
-                            <select class="custom-select" id="app" name="app" style="padding: 0 15px;height: 30px;width: 300px;">
+                            <select class="custom-select" id="app" name="app" style="padding: 0 15px;height: 30px;width: 67%;">
                               {% for package in packages %}
                               <option>{{ package }}</option>
                               {% endfor %}
@@ -299,7 +296,7 @@
                             <label for="chooseCaseFile"><b class="text-black font-weight-medium d-block">Test Case</b></label>
                           </div>
                           <div class="col-md-8 showcase_content_area">
-                            <select class="custom-select" id="files" name="files" style="padding: 0 15px;height: 30px;width: 300px;">
+                            <select class="custom-select" id="files" name="files" style="padding: 0 15px;height: 30px;width: 67%;">
                               {% for file in files %}
                               <option>{{ file }}</option>
                               {% endfor %}
@@ -311,7 +308,7 @@
                             <label for="chooseServer"><b class="text-black font-weight-medium d-block">SubServer</b></label>
                           </div>
                           <div class="col-md-8 showcase_content_area">
-                            <select class="custom-select" id="server" name="server" style="padding: 0 15px;height: 30px;width: 300px;">
+                            <select class="custom-select" id="server" name="server" style="padding: 0 15px;height: 30px;width: 67%;">
                               {% for server in subservers %}
                               <option>{{ server }}</option>
                               {% endfor %}
@@ -367,20 +364,20 @@
                   <table id="table" name="table" class="table table-hover table-sm">
                     <thead>
                       <tr class="solid-header">
-                        <th style="width: 50px;">Select</th>
-                        <th style="width: 50px;">Task Id</th>
-                        <th style="width: 170px;">Project</th>
-                        <th style="width: 30px;">Platform</th>
-                        <th style="width: 200px;">Package</th>
-                        <th style="width: 150px;">Test Case</th>
-                        <th style="width: 150px;">SubServer</th>
-                        <th style="width: 50px;">Exec Time
+                        <th style="width: 5%;">Select</th>
+                        <th style="width: 5%;">Task Id</th>
+                        <th style="width: 15%;">Project</th>
+                        <th style="width: 5%;">Platform</th>
+                        <th style="width: 15%;">Package</th>
+                        <th style="width: 15%;">Test Case</th>
+                        <th style="width: 15%;">SubServer</th>
+                        <th style="width: 15%;">Exec Time
                           <span class="btn btn-trasnparent action-btn btn-xs component-flat pr-0" data-toggle="tooltip" data-placement="right" title="若执行时间早于当前时间, 即表明其会被尽快执行">
                             <i class="mdi mdi-information-outline text-muted mdi-2x"></i>
                           </span>
                         </th>
-                        <th style="width: 50px;">Status</th>
-                        <th style="width: 50px;"></th>
+                        <th style="width: 5%;">Status</th>
+                        <th style="width: 5%;"></th>
                       </tr>
                     </thead>
                     <tbody id="tasksPool" name="tasksPool">
@@ -458,14 +455,14 @@
                   <table id="table" name="table" class="table table-hover table-sm">
                       <thead>
                         <tr class="solid-header">
-                          <th style="width: 50px;">Tester</th>
-                          <th style="width: 170px;">Project</th>
-                          <th style="width: 30px;">Platform</th>
-                          <th style="width: 200px;">Package</th>
-                          <th style="width: 150px;">Test Case</th>
-                          <th style="width: 150px;">SubServer</th>
-                          <th style="width: 50px;">Exec Time</th>
-                          <th style="width: 50px;">Status</th>
+                          <th style="width: 5%;">Tester</th>
+                          <th style="width: 15%;">Project</th>
+                          <th style="width: 5%;">Platform</th>
+                          <th style="width: 15%;">Package</th>
+                          <th style="width: 15%;">Test Case</th>
+                          <th style="width: 15%;">SubServer</th>
+                          <th style="width: 15%;">Exec Time</th>
+                          <th style="width: 15%;">Status</th>
                         </tr>
                       </thead>
                       <tbody id="tasksPool" name="tasksPool">

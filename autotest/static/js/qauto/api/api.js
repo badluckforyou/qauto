@@ -132,12 +132,12 @@ function showRecv(data, thisPage){
         <table id="table" name="table" class="table table-hover table-sm">
         <thead>
           <tr class="solid-header">
-            <th style="width: 100px;">开始时间</th>
-            <th style="width: 50px;">状态码</th>
-            <th style="width: 50px;">耗时</th>
-            <th style="width: 150px;">发送数据</th>
-            <th style="width: 200px;">返回数据</th>
-            <th style="width: 100px;"></th>
+            <th style="width: 20%;">开始时间</th>
+            <th style="width: 10%;">状态码</th>
+            <th style="width: 10%;">耗时</th>
+            <th style="width: 25%;">发送数据</th>
+            <th style="width: 25%;">返回数据</th>
+            <th style="width: 10%;"></th>
           </tr>
         </thead>
         <tbody>`
