@@ -291,7 +291,7 @@
                                 <i class="mdi mdi-information-outline text-muted mdi-2x"></i>
                               </span>
                             </label>
-                            <textarea class="form-control" rows="15" id="randomData" style="font-size: 15px; color: #000000; font-family:courier">// 若要添加带有, ()'|\字符的测试数据, 需要在字符前添加\
+                            <textarea class="form-control" rows="15" id="randomData" style="font-size: 15px; color: #000000; font-family:courier">// 若要添加带有&,'" ():|字符的测试数据, 需要在字符前添加\
 // string类型的测试数据, 需以''包裹
 // random_between, 从1至100随机取值, 仅用于int/float类型
 userid: random_between(1, 100)
@@ -314,6 +314,11 @@ remember: in_order(true, false)
                   <div class="grid-body py-3">
                     <div class="split-header">
                       <p class="card-title">Response</p>
+                      <div class="btn-group">
+                        <button class="btn action-btn btn-xs component-flat">
+                          <a class="mdi mdi-download text-muted mdi-2x" download="result.csv" onclick="downloadCsv(this)" href="#"></a>
+                        </button>
+                      </div>
                     </div>
                   </div>
                   <div class="form-group row showcase_row_area" id="responseData">

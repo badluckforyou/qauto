@@ -1,4 +1,4 @@
-var halfWindowHeight = $(window).height() / 2;
+var result = "";
 /****** 设置modal 显示的坐标 ******/
 function setModalHeight(modal, height){
     modal.css("display", "block");
@@ -177,7 +177,7 @@ function showRecv(data, thisPage){
         }
     });
 }
-function showMore(i){
+function showMore(i) {
     var sendData = JSON.stringify(JSON.parse(result[i]["send_data"]), null, 4);
     if (result[i]["recv_data"].substring(0, 1) == "{") {
         var recvData = JSON.stringify(JSON.parse(result[i]["recv_data"]), null, 4);
@@ -188,6 +188,17 @@ function showMore(i){
     // $("#sendData").html(result[i]["send_data"]);
     $("#recvData").val(recvData);
 }
-function goPage(page){
+function goPage(page) {
     showRecv(result, page);
+}
+/****** 测试结果以csv文件形式下载 ******/
+function downloadCsv(d) {
+    var data = "开始时间,状态码,耗时,发送数据,返回数据\n";
+    for (var i=0; i<result.length; i++){
+        for (const k in result[i]) {
+            data += result[i][k].toString().replace(/,/g, "&#44;") + ",";
+        }
+        data += "\n"
+    }
+    d.href = "data:text/csv;charset=utf-8," + encodeURIComponent(data);
 }

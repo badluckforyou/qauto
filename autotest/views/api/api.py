@@ -64,7 +64,6 @@ def replace_special_character(data):
             r"\)": "&#41;",
             r"\:": "&#58;",
             r"\|": "&#124;",
-            r"\\": "&bacsl;",
         }
         for k, v in special_characters.items():
             data = data.replace(k, v)
@@ -83,7 +82,6 @@ def reset_special_character(data):
             "&#41;": ")",
             "&#58;": ":",
             "&#124;": "|",
-            "&bacsl;": "\\",
         }
         for k, v in special_characters.items():
             data = data.replace(k, v)

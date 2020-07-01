@@ -18,7 +18,7 @@
     4.接口压测
 
 展示:
-    <a href="http://qauto.qicp.vip/">http://qauto.qicp.vip/</a>
+    <a href="http://qauto.qicp.vip/" target="_blank">http://qauto.qicp.vip/</a>
     账号:visitor
     密码:welcometoqauto
 </code></pre>
