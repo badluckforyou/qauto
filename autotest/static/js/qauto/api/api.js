@@ -145,7 +145,7 @@ function showRecv(data, thisPage){
         var sendData = data[i]["send_data"].toString().substring(0, 25)
         var recvDataFront = data[i]["recv_data"].substring(0, 1);
         if (recvDataFront != "[" && recvDataFront != "{") {
-            var recvData = "似乎是一些string类型的数据";
+            var recvData = "一些string类型的数据";
         } else {
             var recvData = data[i]["recv_data"].toString().substring(0, 25);
         }

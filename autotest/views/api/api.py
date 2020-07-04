@@ -132,7 +132,8 @@ def send_request(d, method, url, **kwargs):
         except:
             d["recv_data"] = json.dumps(response.content.decode("utf-8"))
     except:
-        d["recv_data"] = json.dumps("Send request failed %s" % traceback.format_exc())
+        d["recv_data"] = json.dumps("Send request failed. Please check your headers or data.")
+        traceback.print_exc()
     d["duration"] = "%.3fs" % (time.time() - start_time)
 
 
@@ -166,15 +167,16 @@ def request(request):
 
         with suppress(Exception):
             headers = json.loads(headers)
-
         if int(random_times) == 0:
             d = dict.fromkeys(("run_time", "status_code", "duration", "send_data", "recv_data"))
 
-            with suppress(Exception):
-                data = json.dumps(data) if data_type != "DICT" else data
-            d["send_data"] = json.dumps(data, indent=4, ensure_ascii=False) if not isinstance(data, str) else data
-            
-            send_request(d, method, url, headers=headers, data=data)
+            try:
+                send_data = json.dumps(data) if data_type != "DICT" else data
+            except:
+                send_data = data
+            d["send_data"] = json.dumps(send_data, indent=4, ensure_ascii=False) if not isinstance(send_data, str) else send_data
+
+            send_request(d, method, url, headers=headers, data=send_data)
             result.append(d)
         else:
             ident = 0
