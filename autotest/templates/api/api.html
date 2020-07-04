@@ -44,6 +44,7 @@
               <button class="btn btn-primary" type="submit"><i class="mdi mdi-arrow-right-thick"></i></button>
             </div>
           </form>
+          {% if user.is_authenticated %}
           <ul class="nav ml-auto">
             <li class="nav-item dropdown">
               <a class="nav-link" href="#" id="notificationDropdown" data-toggle="dropdown" aria-expanded="false">
@@ -69,6 +70,7 @@
               </div>
             </li>
           </ul>
+          {% endif %}
         </div>
       </div>
     </nav>
@@ -85,6 +87,7 @@
           </div>
         </div>
         <ul class="navigation-menu">
+          {% if user.is_authenticated %}
           <li class="nav-category-divider">HOME</li>
           <li>
             <a href="/home/">
@@ -138,6 +141,14 @@
               <i class="mdi mdi-account link-icon"></i>
             </a>
           </li>
+          {% else %}
+          <li>
+            <a href="/login/">
+              <span class="link-title">Go to login</span>
+              <i class="mdi mdi-account link-icon"></i>
+            </a>
+          </li>
+          {% endif %}
         </ul>
       </div>
       <!-- partial -->
@@ -253,7 +264,7 @@
                         </div>
                         <div class="form-group row showcase_row_area">
                           <div class="col-md-12 showcase_content_area">
-                            <label>Data <code style="font-size: 10px;">  ——暂时仅支持JSON格式, 若为Get请求, 则不会读取data</code></label>
+                            <label>Data <code style="font-size: 10px;">  ——暂时仅支持JSON格式</code></label>
                             <textarea class="form-control" rows="20" id="requestData" style="font-size: 15px; color: #000000; font-family:courier;">{
     "opera": "test",
     "userid": 10000,
