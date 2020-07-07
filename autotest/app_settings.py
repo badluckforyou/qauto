@@ -3,7 +3,7 @@ import os
 class AppSettings:
     
     TITLE = "Qauto|v0.0.0beta"
-    COMPANY = "Bindo"
+    COMPANY = ""
     ROWSNUMBER = 20
     PROJECTS = {
         "Bindo Pos Store K7701": "k7701",
@@ -25,3 +25,5 @@ class AppSettings:
     TESTERFOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), "testersinfo")
     LOGPATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "log")
 
+if not os.path.exists(AppSettings.TESTERFOLDER):
+    os.mkdir(AppSettings.TESTERFOLDER)

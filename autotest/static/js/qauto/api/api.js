@@ -50,6 +50,7 @@ $("#startTest").click(function(){
         var randomTimes = "";
         var randomData = "";
     }
+    var sendType = $("#sendType").val();
     // 清空结果表
     $("#responseData").html("");
     // 清空跳转页签
@@ -68,6 +69,7 @@ $("#startTest").click(function(){
             "dataType": dataType,
             "randomData": randomData,
             "randomTimes": randomTimes,
+            "sendType": sendType,
         },
         success: function(data){
             if (data.substring(0, 1) != "[") {

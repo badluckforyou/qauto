@@ -1,11 +1,14 @@
 import re
 import time
 import random
+import asyncio
+import aiohttp
 import requests
 import datetime
 import traceback
 import ujson as json
 
+from queue import Queue
 from contextlib import suppress
 
 from django.shortcuts import render, HttpResponse
@@ -43,11 +46,12 @@ def exec_code(ident, code):
     # 匹配参数的正则
     pattern = re.compile(r"\((.*?)\)$")
     args = []
-    args_found = pattern.findall(code)
+    args_found = pattern.findall(code.replace(" ", ""))
     # 配置之后如果有多个(), 表明传入的随机规则不正确
     if len(args_found) != 1:
         return
-    for arg in args_found[0].split(", "):
+
+    for arg in args_found[0].split(","):
         arg = arg.replace('"', "").replace("'", '"').strip(" ")
         try:
             args.append(json.loads(arg))
@@ -93,7 +97,7 @@ def reset_special_character(data):
     return data
 
 
-def parse_random_data(ident, data):
+def parse_random_data(idents, data):
     """解析获取到的规则, 拆分关键字及要执行的代码"""
     length = None
     parse_data = {}
@@ -110,11 +114,15 @@ def parse_random_data(ident, data):
                 keyword, code = split_line
             else:
                 continue
+            if keyword not in idents:
+                idents.setdefault(keyword, [0, 0])
+            ident = idents[keyword][0]
             length, new_value = exec_code(ident, code)
+            idents[keyword] = [ident, length]
             parse_data.setdefault(keyword, reset_special_character(new_value))
     except:
         traceback.print_exc()
-    return length, parse_data
+    return parse_data
 
 
 def update_dict(dictionary, array, value):
@@ -131,27 +139,100 @@ def update_dict(dictionary, array, value):
     update_dict(dictionary[item], array, value)
 
 
-def send_request(d, method, url, data_type, headers, data):
+class AsyncRequest:
+
+    def __init__(self, method, url, headers, data, queue):
+        self.method = method
+        self.url = url
+        self.headers = headers
+        self.data = data
+        self.queue = queue
+        self.result = []
+
+    async def _async_request(self, data):
+        record = dict.fromkeys(("run_time", "status_code", 
+                                "duration", "send_data", "recv_data"))
+
+        async with aiohttp.ClientSession() as session:
+            record["send_data"] = json.dumps(data) if not isinstance(data, str) else data
+            record["run_time"] = datetime.datetime.now().strftime("%X")
+            start_time = time.time()
+            try:
+                response = await session.request(self.method, self.url, headers=self.headers, data=data, ssl=False)
+                record["status_code"] = response.status
+                try:
+                    record["recv_data"] = await response.text()
+                except:
+                    record["recv_data"] = json.dumps(await response.text())
+            except:
+                record["status_code"] = "undefined"
+                record["recv_data"] = json.dumps("Send request failed. Please check your headers or data.")
+                traceback.print_exc()
+            record["duration"] = "%.3fs" % (time.time() - start_time)
+        self.result.append(record)
+
+    async def async_request(self):
+        request_tasks = [asyncio.create_task(self._async_request(d))
+                                for d in self.data]
+        for request_task in request_tasks:
+            await request_task
+        self.queue.put(self.result)
+
+
+def normal_request(method, url, headers, request_data):
     """发送请求"""
-    try:
-        send_data = json.dumps(data) if data_type != "DICT" else data
-    except:
-        send_data = data
-    d["send_data"] = json.dumps(send_data, indent=4, ensure_ascii=False) if not isinstance(send_data, str) else send_data
-    d["run_time"] = datetime.datetime.now().strftime("%X")
-    start_time = time.time()
-    try:
-        response = requests.request(method, url, headers=headers, data=send_data)
-        d["status_code"] = response.status_code
+    result = []
+    for data in request_data:
+        record = dict.fromkeys(("run_time", "status_code", 
+                                "duration", "send_data", "recv_data"))
+        record["send_data"] = json.dumps(data) if not isinstance(data, str) else data
+        record["run_time"] = datetime.datetime.now().strftime("%X")
+        start_time = time.time()
         try:
-            d["recv_data"] = response.text
+            response = requests.request(method, url, headers=headers, data=data)
+            record["status_code"] = response.status_code
+            try:
+                record["recv_data"] = response.text
+            except:
+                record["recv_data"] = json.dumps(response.content.decode("utf-8"))
         except:
-            d["recv_data"] = json.dumps(response.content.decode("utf-8"))
-    except:
-        d["status_code"] = "undefined"
-        d["recv_data"] = json.dumps("Send request failed. Please check your headers or data.")
-        traceback.print_exc()
-    d["duration"] = "%.3fs" % (time.time() - start_time)
+            record["status_code"] = "undefined"
+            record["recv_data"] = json.dumps("Send request failed. Please check your headers or data.")
+            traceback.print_exc()
+        record["duration"] = "%.3fs" % (time.time() - start_time)
+        result.append(record)
+    return result
+
+
+def async_request(method, url, headers, request_data):
+    queue = Queue()
+    request = AsyncRequest(method, url, headers, request_data, queue)
+    asyncio.run(request.async_request())
+    return queue.get()
+
+
+def send_request(random_times, random_data, send_type, method, url, data_type, headers, data):
+    idents = {}
+    request_data = []
+    for _ in range(random_times if random_times != 0 else 1):
+        if random_times != 0:
+            _random_data = parse_random_data(idents, random_data)
+            for k, v in idents.items():
+                if v[1] is not None:
+                    idents[k] = [(v[0] + 1) % v[1], v[1]]
+            if isinstance(data, dict):
+                for key, value in _random_data.items():
+                    with suppress(Exception):
+                        update_dict(data, key.split("|"), value)
+        try:
+            send_data = json.dumps(data) if data_type != "DICT" else data
+        except:
+            send_data = data
+        request_data.append(send_data)
+    if send_type == "asynchronous":
+        return async_request(method, url, headers, request_data)
+    elif send_type == "synchronous":
+        return normal_request(method, url, headers, request_data)
 
 
 # @login_required(login_url="/login/")
@@ -174,38 +255,17 @@ def request(request):
         data = request.POST.get("data")
         random_data = request.POST.get("randomData")
         random_times = request.POST.get("randomTimes")
+        send_type = request.POST.get("sendType")
         # 随机次数的值需要检验是否为数字
         if not random_times:
             random_times = 0
         elif not random_times.isdigit():
             return JsonResponse("The type of random times must be int.", safe=False)
-        result = []
         # 解析data
         with suppress(Exception):
             data = json.loads(data)
         # 解析headers
         with suppress(Exception):
             headers = json.loads(headers)
-        # 随机次数为0时, 发送1次请求
-        if int(random_times) == 0:
-            d = dict.fromkeys(("run_time", "status_code", "duration", "send_data", "recv_data"))
-            send_request(d, method, url, data_type, headers, data)
-            result.append(d)
-        else:
-            # ident为in_order的标识符, 用于in_order方法的取值
-            ident = 0
-            for _ in range(int(random_times)):
-                d = dict.fromkeys(("run_time", "status_code", "duration", "send_data", "recv_data"))
-
-                length, _random_data = parse_random_data(ident, random_data)
-                # ident通过余数
-                if length is not None:
-                    ident = (ident + 1) % length
-                if isinstance(data, dict):
-                    for key, value in _random_data.items():
-                        with suppress(Exception):
-                            update_dict(data, key.split("|"), value)
-
-                send_request(d, method, url, data_type, headers, data)
-                result.append(d)
+        result = send_request(int(random_times), random_data, send_type, method, url, data_type, headers, data)
         return HttpResponse(json.dumps(result, indent=4, ensure_ascii=False))

@@ -44,9 +44,12 @@ def select_log(**kwargs):
         h, m = divmod(m, 60)
         # 取天、时
         d, h = divmod(h, 24)
+        # 仅显示7天以内的log
+        if d >= 7:
+            continue
         if d != 0:
             r["pasttime"] = "%s Days Ago" % int(d)
-        if d == 0 and h != 0:
+        elif d == 0 and h != 0:
             r["pasttime"] = "%s Hours Ago" % int(h)
         else:
             r["pasttime"] = "%s Mins Ago" % int(m)

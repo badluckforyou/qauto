@@ -295,19 +295,22 @@
                           <div class="col-md-12 showcase_content_area">
                             <label>随机次数</label>
                             <label>
-                              <input class="form-control" type="" name="randomTimes" id="randomTimes" value="0" style="width: 70px;">
+                              <input type="" name="randomTimes" id="randomTimes" value="0" style="width: 70px;">
                             </label>
+                            <label>发送方式</label>
                             <label>
-                              <span class="btn btn-trasnparent action-btn btn-xs component-flat pr-0" data-toggle="tooltip" data-placement="right" title="执行x次api测试">
-                                <i class="mdi mdi-information-outline text-muted mdi-2x"></i>
-                              </span>
+                              <select id="sendType" name="sendType" >
+                                <option>synchronous</option>
+                                <option>asynchronous</option>
+                              </select>
                             </label>
+                            <label><code style="font-size: 10px;">  ——当随机次数较多时, 建议使用异步模式</code></label>
                             <textarea class="form-control" rows="15" id="randomData" style="font-size: 15px; color: #000000; font-family:courier">// 若要添加带有&,'" ():|字符的测试数据, 需要在字符前添加\
 // string类型的测试数据, 需以''包裹
 // random_between, 从1至100随机取值, 仅用于int/float类型
 userid: random_between(1, 100)
 // random_in, 从各个值中随机取值
-username: random_in('t', 't\,e', 'tes', 'te\ st', 'te\(ste', 'tes\)ter','tes\[ter','tes\]ter')
+username: random_in('t', 't\,e', 'tes', 'te\ st', 'te\(ste', 'tes\)ter','tes\&ter','tes\:ter')
 // x|y, 在{'x':{'y': z}}中改变z的值; in_order, 按顺序取值
 child\|data|info: in_order(true, 'true', 'True', false, 'false', 'False')
 // in_order, 按顺序取值

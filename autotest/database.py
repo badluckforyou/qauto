@@ -23,7 +23,7 @@ def operas(func):
         如果传入的判定key与预期不符, 直接raise
         如果行为是前者, 在connect连接失败时, 直接返回False
         """
-        if self.connection is True:
+        if self.connection is False:
             try:
                 self.connect()
             except ConnectionError:
@@ -37,15 +37,14 @@ def operas(func):
                 self.curs = self.conn.cursor()
                 out = func(self, *args, **kwargs)
             self.close()
-        elif self.connection is False:
+        elif self.connection is True:
             # 数据库有可能会突然断开, 需要重新cursor
             try:
                 out = func(self, *args, **kwargs)
             except:
                 self.curs = self.conn.cursor()
                 out = func(self, *args, **kwargs)
-        else:
-            raise ValueError("The value of 'connection' is not True or False, it's %s" % kwargs["connection"])
+        else: pass
         return out
     return wrapper
 
@@ -59,10 +58,13 @@ class DataBaseManage:
 
     def __init__(self, database=None):
         self.database = database or db
-        self.connection = True
+        # 默认设置处于未连接状态
+        self.connection = False
 
-    def set_connection(self, connection):
-        self.connection = connection
+    def set_status(self, status):
+        if status not in (True, False):
+            raise ValueError("Connection status only supports True or Fasle, not %s" % status)
+        self.connection = status
 
     def connect(self):
         """连接数据库"""
@@ -115,7 +117,7 @@ class DataBaseManage:
         在列表中删除行
         """
         if condition is None:
-            statement = "DELETE FROM {}".format(table);
+            statement = "DELETE FROM {};".format(table)
         else:
             statement = "DELETE FROM {} WHERE {};".format(table, condition)
         self.curs.execute(statement)
