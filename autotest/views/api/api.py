@@ -214,7 +214,8 @@ def async_request(method, url, headers, request_data):
 def send_request(random_times, random_data, send_type, method, url, data_type, headers, data):
     idents = {}
     request_data = []
-    for _ in range(random_times if random_times != 0 else 1):
+    times = random_times if random_times != 0 else 1
+    for _ in range(times):
         if random_times != 0:
             _random_data = parse_random_data(idents, random_data)
             for k, v in idents.items():

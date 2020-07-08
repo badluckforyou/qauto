@@ -1,3 +1,30 @@
+function updateRequestBySize(requestDivSize) {
+    if (requestDivSize > 500 && requestDivSize < 700) {
+        $("#methods").css("width", "22%");
+        $("#dataType").css("width", "22%");
+        $("#targetUrl").css("width", "54%");
+        $("#headerType").css("width", "33%");
+        $("#headerBody").css("width", "65%");
+        $("#startTest").html("Send");
+        $("#setHeaders").html("Customize");
+    } else if (requestDivSize <= 500) {
+        $("#methods").css("width", "30%");
+        $("#dataType").css("width", "30%");
+        $("#targetUrl").css("width", "38%");
+        $("#headerType").css("width", "40%");
+        $("#headerBody").css("width", "58%");
+        $("#startTest").html("Send");
+        $("#setHeaders").html("Cust");
+    } else {
+        $("#methods").css("width", "15%");
+        $("#dataType").css("width", "15%");
+        $("#targetUrl").css("width", "69%");
+        $("#headerType").css("width", "20%");
+        $("#headerBody").css("width", "79%");
+        $("#startTest").html("发送");
+        $("#setHeaders").html("自定义");
+    }
+}
 var result = "";
 /****** 设置modal 显示的坐标 ******/
 function setModalHeight(modal, height){
@@ -99,50 +126,48 @@ function showRecv(data, thisPage){
             <span>Next </span>&nbsp;|
             <span>Last </span>&nbsp;|
             &nbsp;Page&nbsp;<span>` + thisPage + `</span>/<span>` + totalPage + `</span>`
-    }
-    else if (thisPage == 1 && thisPage != totalPage){
+    } else if (thisPage == 1 && thisPage != totalPage){
         var startIdent = 0;
         var endIdent = splitIdent;
         var tableSheet = `
             <span>First </span>&nbsp;|
             <span>Previous </span>&nbsp;|
-            <span><a href="javascript:void(0);" onclick="goPage(` + (thisPage + 1 ) + `)">Next </a></span>&nbsp;|
+            <span><a href="javascript:void(0);" onclick="goPage(` + (thisPage + 1) + `)">Next </a></span>&nbsp;|
             <span><a href="javascript:void(0);" onclick="goPage(` + totalPage + `)">Last </a></span>&nbsp;|
             &nbsp;Page&nbsp;<span>` + thisPage + `</span>/<span>` + totalPage + `</span>`
-    }
-    else if (thisPage != 1 && thisPage != totalPage){
+    } else if (thisPage != 1 && thisPage != totalPage){
         var startIdent = (thisPage - 1) * splitIdent;
         var endIdent = thisPage * splitIdent;
         var tableSheet = `
             <span><a href="javascript:void(0);" onclick="goPage(1)">First </a></span>&nbsp;|
-            <span><a href="javascript:void(0);" onclick="goPage(` + (thisPage - 1 ) + `)">Previous </a></span>&nbsp;|
-            <span><a href="javascript:void(0);" onclick="goPage(` + (thisPage + 1 ) + `)">Next </a></span>&nbsp;|
+            <span><a href="javascript:void(0);" onclick="goPage(` + (thisPage - 1) + `)">Previous </a></span>&nbsp;|
+            <span><a href="javascript:void(0);" onclick="goPage(` + (thisPage + 1) + `)">Next </a></span>&nbsp;|
             <span><a href="javascript:void(0);" onclick="goPage(` + totalPage + `)">Last </a></span>&nbsp;|
             &nbsp;Page&nbsp;<span>` + thisPage + `</span>/<span>` + totalPage + `</span>`
-    }
-    else if (thisPage != 1 && thisPage == totalPage){
+    } else if (thisPage != 1 && thisPage == totalPage){
         var startIdent = (thisPage - 1) * splitIdent;
         var endIdent = data.length;
         var tableSheet = `
             <span><a href="javascript:void(0);" onclick="goPage(1)">First </a></span>&nbsp;|
-            <span><a href="javascript:void(0);" onclick="goPage(` + (thisPage - 1 ) + `)">Previous </a></span>&nbsp;|
+            <span><a href="javascript:void(0);" onclick="goPage(` + (thisPage - 1) + `)">Previous </a></span>&nbsp;|
             <span>Next </span>&nbsp;|
             <span>Last </span>&nbsp;|
             &nbsp;Page&nbsp;<span>` + thisPage + `</span>/<span>` + totalPage + `</span>`
     }
     var htmlData = `
-        <table id="table" name="table" class="table table-hover table-sm">
-        <thead>
-          <tr class="solid-header">
-            <th style="width: 20%;">开始时间</th>
-            <th style="width: 10%;">状态码</th>
-            <th style="width: 10%;">耗时</th>
-            <th style="width: 25%;">发送数据</th>
-            <th style="width: 25%;">返回数据</th>
-            <th style="width: 10%;"></th>
-          </tr>
-        </thead>
-        <tbody>`
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead>
+            <tr class="solid-header">
+              <th style="width: 20%;">开始时间</th>
+              <th style="width: 10%;">状态码</th>
+              <th style="width: 10%;">耗时</th>
+              <th style="width: 25%;">发送数据</th>
+              <th style="width: 25%;">返回数据</th>
+              <th style="width: 10%;"></th>
+            </tr>
+          </thead>
+          <tbody>`
     for (var i=startIdent; i<endIdent; i++){
         var sendData = data[i]["send_data"].toString().substring(0, 25)
         var recvDataFront = data[i]["recv_data"].substring(0, 1);
@@ -152,18 +177,19 @@ function showRecv(data, thisPage){
             var recvData = data[i]["recv_data"].toString().substring(0, 25);
         }
         htmlData += `
-          <tr class="solid-header" id="` + i + `">
-            <td style = "word-wrap:break-word;white-space:normal;">`+ data[i]["run_time"] + `</td>
-            <td style = "word-wrap:break-word;white-space:normal;">`+ data[i]["status_code"] + `</td>
-            <td style = "word-wrap:break-word;white-space:normal;">`+ data[i]["duration"] + `</td>
-            <td style = "word-wrap:break-word;white-space:normal;">`+ sendData + ` ...</td>
-            <td style = "word-wrap:break-word;white-space:normal;">`+ recvData + ` ...</td>
-            <td><label class="badge badge-success" type="button" data-toggle="modal" data-target="#details" onclick="showMore(`+ i + `)">详细信息</label></td>
-          </tr>`
+            <tr class="solid-header" id="` + i + `">
+              <td>`+ data[i]["run_time"] + `</td>
+              <td>`+ data[i]["status_code"] + `</td>
+              <td>`+ data[i]["duration"] + `</td>
+              <td>`+ sendData + ` ...</td>
+              <td>`+ recvData + ` ...</td>
+              <td><label class="badge badge-success" type="button" data-toggle="modal" data-target="#details" onclick="showMore(`+ i + `)">详细信息</label></td>
+            </tr>`
     }
     htmlData += `
-        </tbody>
-        </table>`
+          </tbody>
+        </table>
+      </div>`
     // 生成结果表
     $("#responseData").html(htmlData);
     // 生成跳转页签
@@ -187,7 +213,6 @@ function showMore(i) {
         var recvData = result[i]["recv_data"];
     }
     $("#sendData").html(sendData);
-    // $("#sendData").html(result[i]["send_data"]);
     $("#recvData").val(recvData);
 }
 function goPage(page) {
@@ -204,3 +229,12 @@ function downloadCsv(d) {
     }
     d.href = "data:text/csv;charset=utf-8," + encodeURIComponent(data);
 }
+
+$(function(){
+    var requestDivSize = $("#request").width();
+    updateRequestBySize(requestDivSize);
+});
+$(window).resize(function(){
+    var requestDivSize = $("#request").width();
+    updateRequestBySize(requestDivSize);
+});

@@ -75,7 +75,7 @@
       </div>
     </nav>
     <!-- partial -->
-    <div class="page-body">
+    <div id="pageBody" class="page-body">
       <!-- partial:partials/_sidebar.html -->
       <div class="sidebar">
         <div class="user-profile">
@@ -180,7 +180,7 @@
                 </div>
               </div>
               <div class="modal" id="details" data-backdrop="true" style="position: fixed;">
-                <div class="modal-dialog modal-lg">
+                <div id="detailsStyle" class="modal-dialog modal-lg">
                   <div class="modal-content" id="report_content">
                     <div class="modal-header">
                       <h6 class="modal-title" style="font-size: 20px">
@@ -190,19 +190,19 @@
                     <div class="modal-body">
                       <label style="font-size: 18px;">发送数据</label>
                       <div>
-                        <textarea class="form-control" id="sendData" rows="15" style="width: 99%; color: #bd4147" readonly></textarea>
+                        <textarea class="form-control" id="sendData" rows="10" style="width: 99%; color: #bd4147" readonly></textarea>
                       </div>
                       <label>&nbsp;</label>
                       <div></div>
                       <label style="font-size: 18px;">接收数据</label>
                       <div>
-                        <textarea class="form-control" id="recvData" rows="20" style="width: 99%;" readonly></textarea>
+                        <textarea class="form-control" id="recvData" rows="10" style="width: 99%;" readonly></textarea>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
-              <div class="col-lg-6 equel-grid">
+              <div id="request" name="request" class="col-lg-6 equel-grid">
                 <div class="grid">
                   <div class="grid-body py-3">
                     <div class="split-header">
@@ -249,7 +249,7 @@
                             <label>Headers</label>
                           </div>
                           <div class="col-md-10 showcase_content_area">
-                            <input id="headerType" name="headerType" value="Content-Type" style="width: 20%;" readonly>
+                            <input id="headerType" name="headerType" value="Content-Type" style="padding: 0 15px;height: 30px;width: 20%;" readonly>
                             <select id="headerBody" name="headerBody" style="padding: 0 15px;height: 30px;width: 79%;">
                               <option>application/json;charset=UTF-8</option>
                               <option>application/x-www-form-urlencoded;charset=utf-8</option>
@@ -257,7 +257,7 @@
                             </select>
                           </div>
                           <div class="col-md-2 showcase_text_area">
-                            <button class="btn btn-inverse-primary component-flat" data-toggle="modal" data-target="#requestHeaders" style="padding: 0 15px;height: 30px;width: 99%">
+                            <button id="setHeaders" name="setHeaders" class="btn btn-inverse-primary component-flat" data-toggle="modal" data-target="#requestHeaders" style="padding: 0 15px;height: 30px;width: 99%">
                               自定义
                             </button>
                           </div>
@@ -323,7 +323,7 @@ remember: in_order(true, false)
                   </div>
                 </div>
               </div>
-              <div class="col-lg-6 equel-grid">
+              <div id="response" name="response" class="col-lg-6 equel-grid">
                 <div class="grid">
                   <div class="grid-body py-3">
                     <div class="split-header">
