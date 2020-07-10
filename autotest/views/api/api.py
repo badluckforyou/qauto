@@ -16,95 +16,18 @@ from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 
 from autotest.app_settings import AppSettings
+from .random_request import get_random_request_data
+from .full_request import get_full_request_data
 
 
-RANDOM_METHODS = ("random_between", "random_in", "in_order")
-
-
-def random_between(ident, start, end):
-    if isinstance(start, int) and isinstance(end, int):
-        new_value = random.randint(start, end)
-    else:
-        new_value = random.uniform(float(start), float(end))
-    return None, new_value
-
-
-def random_in(ident, *args):
-    return None, random.choice(args)
-
-
-def in_order(ident, *args):
-    return len(args), args[ident]
-
-
-def exec_code(ident, code):
-    """解析并执行对应的方法"""
-    # 解析方法名
-    method = code.split("(")[0].strip(" ")
-    if method not in RANDOM_METHODS:
-        return
-    # 匹配参数的正则
-    pattern = re.compile(r"\((.*?)\)$")
-    args = []
-    args_found = pattern.findall(code.replace(" ", ""))
-    # 配置之后如果有多个(), 表明传入的随机规则不正确
-    if len(args_found) != 1:
-        return
-
-    for arg in args_found[0].split(","):
-        arg = arg.replace('"', "").replace("'", '"').strip(" ")
-        try:
-            args.append(json.loads(arg))
-        except:
-            args.append(arg)
-    return globals()[method](ident, *args)
-
-
-def replace_special_character(data):
-    """将request data内的特殊字符改成其它字符"""
-    if isinstance(data, str):
-        special_characters = {
-            r"\&": "&amp;",
-            r"\,": "&#44;",
-            r"\'": "&#39;",
-            r'\"': "&quot;",
-            r"\ ": "&nbsp;",
-            r"\(": "&#40;",
-            r"\)": "&#41;",
-            r"\:": "&#58;",
-            r"\|": "&#124;",
-        }
-        for k, v in special_characters.items():
-            data = data.replace(k, v)
-    return data
-
-
-def reset_special_character(data):
-    if isinstance(data, str):
-        special_characters = {
-            "&amp;": "&",
-            "&#44;": ",",
-            "&#39;": "'",
-            "&quot;": '"',
-            "&nbsp;": " ",
-            "&#40;": "(",
-            "&#41;": ")",
-            "&#58;": ":",
-            "&#124;": "|",
-        }
-        for k, v in special_characters.items():
-            data = data.replace(k, v)
-    return data
-
-
-def parse_random_data(idents, data):
+def parse_full_data(idents, data):
     """解析获取到的规则, 拆分关键字及要执行的代码"""
     length = None
     parse_data = {}
     try:
         for line in data.splitlines():
             # 跳过空行和注释行
-            if not line or line.lstrip(" ").startswith("//"):
+            if "in_order" not in line:
                 continue
             line = replace_special_character(line)
             # 尝试拆分关键字及要执行的代码
@@ -123,20 +46,6 @@ def parse_random_data(idents, data):
     except:
         traceback.print_exc()
     return parse_data
-
-
-def update_dict(dictionary, array, value):
-    """递归给字典赋值"""
-    if not isinstance(dictionary, dict) and not isinstance(array, list):
-        return
-    item = array.pop(0)
-    item = reset_special_character(item)
-    if item not in dictionary:
-        raise ValueError("%s not in %s" % (item, dictionary.keys()))
-    if not array:
-        dictionary[item] = value
-        return
-    update_dict(dictionary[item], array, value)
 
 
 class AsyncRequest:
@@ -211,25 +120,22 @@ def async_request(method, url, headers, request_data):
     return queue.get()
 
 
-def send_request(random_times, random_data, send_type, method, url, data_type, headers, data):
-    idents = {}
-    request_data = []
-    times = random_times if random_times != 0 else 1
-    for _ in range(times):
-        if random_times != 0:
-            _random_data = parse_random_data(idents, random_data)
-            for k, v in idents.items():
-                if v[1] is not None:
-                    idents[k] = [(v[0] + 1) % v[1], v[1]]
-            if isinstance(data, dict):
-                for key, value in _random_data.items():
-                    with suppress(Exception):
-                        update_dict(data, key.split("|"), value)
-        try:
-            send_data = json.dumps(data) if data_type != "DICT" else data
-        except:
-            send_data = data
-        request_data.append(send_data)
+def send_request(
+        send_type,
+        method, 
+        url, 
+        data_type, 
+        headers, 
+        data, 
+        random_times=None, 
+        random_data=None, 
+        full_data=None):
+    if random_times is not None and full_data is None:
+        request_data = get_random_request_data(data, int(random_times), random_data)
+    elif random_times is None and full_data is not None:
+        request_data = get_full_request_data(data, full_data)
+    else:
+        request_data = [data]
     if send_type == "asynchronous":
         return async_request(method, url, headers, request_data)
     elif send_type == "synchronous":
@@ -254,13 +160,12 @@ def request(request):
         headers = request.POST.get("headers")
         data_type = request.POST.get("dataType")
         data = request.POST.get("data")
-        random_data = request.POST.get("randomData")
-        random_times = request.POST.get("randomTimes")
         send_type = request.POST.get("sendType")
-        # 随机次数的值需要检验是否为数字
-        if not random_times:
-            random_times = 0
-        elif not random_times.isdigit():
+        random_data = request.POST.get("randomData") or None
+        random_times = request.POST.get("randomTimes") or None
+        full_data = request.POST.get("fullData") or None
+        # 随机次数校验
+        if random_times is not None and not random_times.isdigit():
             return JsonResponse("The type of random times must be int.", safe=False)
         # 解析data
         with suppress(Exception):
@@ -268,5 +173,34 @@ def request(request):
         # 解析headers
         with suppress(Exception):
             headers = json.loads(headers)
-        result = send_request(int(random_times), random_data, send_type, method, url, data_type, headers, data)
+        if random_times is None and full_data is not None:
+            result = send_request(
+                send_type,
+                method,
+                url,
+                data_type,
+                headers,
+                data,
+                full_data=full_data
+            )
+        elif full_data is None and random_times is not None:
+            result = send_request(
+                send_type,
+                method,
+                url,
+                data_type,
+                headers,
+                data,
+                random_times=int(random_times),
+                random_data=random_data
+            )
+        else:
+            result = send_request(
+                send_type,
+                method,
+                url,
+                data_type,
+                headers,
+                data
+            )
         return HttpResponse(json.dumps(result, indent=4, ensure_ascii=False))

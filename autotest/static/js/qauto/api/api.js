@@ -49,6 +49,12 @@ $("#removeRandom").click(function(){
     $("#randomWrapper").css("display", "none");
     $("#randomTitle").css("display", "none");
 });
+$("#removeFull").click(function(){
+    $("#fullTest").prop("checked", false);
+    $("#fullData").val("");
+    $("#fullWrapper").css("display", "none");
+    $("#fullTitle").css("display", "none");
+});
 $("#clearHeaders").click(function(){
     $("#headers").val("");
 });
@@ -57,27 +63,36 @@ $("#startTest").click(function(){
     var dataType = $("#dataType").val();
     var targetUrl = $("#targetUrl").val();
     var requestData = $("#requestData").val();
-    if (targetUrl == ""){
+    var sendType = "synchronous";
+    if (targetUrl == "") {
         alert("请输入目标地址!")
         return
     }
-    if ($("#headers").val() != ""){
+    if ($("#headers").val() != "") {
         var headers = $("#headers").val();
-    }
-    else {
+    } else {
         var dict = {};
         dict[$("#headerType").val()] = $("#headerBody").val();
         var headers = JSON.stringify(dict);
     }
-    if ($("#randomWrapper").css("display") == "block"){
-        var randomTimes = $("#randomTimes").val();
-        var randomData = $("#randomData").val();
-    }
-    else {
+    if ($("#randomWrapper").css("display") == "none" || $("#randomTimes").val() == 0 || $("#randomTimes").val() == "") {
         var randomTimes = "";
         var randomData = "";
+    } else {
+        var randomTimes = $("#randomTimes").val();
+        var randomData = $("#randomData").val();
+        sendType = $("#sendType").val();
     }
-    var sendType = $("#sendType").val();
+    if ($("#fullTest").is(":checked")) {
+        var fullData = $("#fullData").val();
+        sendType = "asynchronous";
+    } else {
+        var fullData = "";
+    }
+    if (randomData != "" && fullData != "") {
+        alert("两种测试互斥, 无法同时执行!");
+        return
+    }
     // 清空结果表
     $("#responseData").html("");
     // 清空跳转页签
@@ -94,9 +109,10 @@ $("#startTest").click(function(){
             "headers": headers,
             "data": requestData,
             "dataType": dataType,
+            "sendType": sendType,
+            "fullData": fullData,
             "randomData": randomData,
             "randomTimes": randomTimes,
-            "sendType": sendType,
         },
         success: function(data){
             if (data.substring(0, 1) != "[") {
@@ -112,7 +128,13 @@ $("#startTest").click(function(){
 });
 /*** 根据后端返回的数据生成对应的结果表及跳转页签 ***/
 function showRecv(data, thisPage){
-    var splitIdent = 18;
+    if ($("#fullWrapper").css("display") == "block" && $("#randomWrapper").css("display") == "block") {
+        var splitIdent = 24;
+    } else if ($("#fullWrapper").css("display") == "none" && $("#randomWrapper").css("display") == "none") {
+        var splitIdent = 8;
+    } else {
+        var splitIdent = 16;
+    }
     var totalPage = Math.floor(data.length / splitIdent);
     if (totalPage != (data.length / splitIdent)){
         totalPage += 1;
@@ -125,7 +147,7 @@ function showRecv(data, thisPage){
             <span>Previous </span>&nbsp;|
             <span>Next </span>&nbsp;|
             <span>Last </span>&nbsp;|
-            &nbsp;Page&nbsp;<span>` + thisPage + `</span>/<span>` + totalPage + `</span>`
+            &nbsp;Page&nbsp;<span>` + thisPage + `</span>/<span>` + totalPage + `</span>`;
     } else if (thisPage == 1 && thisPage != totalPage){
         var startIdent = 0;
         var endIdent = splitIdent;
@@ -134,7 +156,7 @@ function showRecv(data, thisPage){
             <span>Previous </span>&nbsp;|
             <span><a href="javascript:void(0);" onclick="goPage(` + (thisPage + 1) + `)">Next </a></span>&nbsp;|
             <span><a href="javascript:void(0);" onclick="goPage(` + totalPage + `)">Last </a></span>&nbsp;|
-            &nbsp;Page&nbsp;<span>` + thisPage + `</span>/<span>` + totalPage + `</span>`
+            &nbsp;Page&nbsp;<span>` + thisPage + `</span>/<span>` + totalPage + `</span>`;
     } else if (thisPage != 1 && thisPage != totalPage){
         var startIdent = (thisPage - 1) * splitIdent;
         var endIdent = thisPage * splitIdent;
@@ -143,7 +165,7 @@ function showRecv(data, thisPage){
             <span><a href="javascript:void(0);" onclick="goPage(` + (thisPage - 1) + `)">Previous </a></span>&nbsp;|
             <span><a href="javascript:void(0);" onclick="goPage(` + (thisPage + 1) + `)">Next </a></span>&nbsp;|
             <span><a href="javascript:void(0);" onclick="goPage(` + totalPage + `)">Last </a></span>&nbsp;|
-            &nbsp;Page&nbsp;<span>` + thisPage + `</span>/<span>` + totalPage + `</span>`
+            &nbsp;Page&nbsp;<span>` + thisPage + `</span>/<span>` + totalPage + `</span>`;
     } else if (thisPage != 1 && thisPage == totalPage){
         var startIdent = (thisPage - 1) * splitIdent;
         var endIdent = data.length;
@@ -152,7 +174,7 @@ function showRecv(data, thisPage){
             <span><a href="javascript:void(0);" onclick="goPage(` + (thisPage - 1) + `)">Previous </a></span>&nbsp;|
             <span>Next </span>&nbsp;|
             <span>Last </span>&nbsp;|
-            &nbsp;Page&nbsp;<span>` + thisPage + `</span>/<span>` + totalPage + `</span>`
+            &nbsp;Page&nbsp;<span>` + thisPage + `</span>/<span>` + totalPage + `</span>`;
     }
     var htmlData = `
       <div class="table-responsive">
@@ -167,7 +189,7 @@ function showRecv(data, thisPage){
               <th style="width: 10%;"></th>
             </tr>
           </thead>
-          <tbody>`
+          <tbody>`;
     for (var i=startIdent; i<endIdent; i++){
         var sendData = data[i]["send_data"].toString().substring(0, 25)
         var recvDataFront = data[i]["recv_data"].substring(0, 1);
@@ -184,12 +206,12 @@ function showRecv(data, thisPage){
               <td>`+ sendData + ` ...</td>
               <td>`+ recvData + ` ...</td>
               <td><label class="badge badge-success" type="button" data-toggle="modal" data-target="#details" onclick="showMore(`+ i + `)">详细信息</label></td>
-            </tr>`
+            </tr>`;
     }
     htmlData += `
           </tbody>
         </table>
-      </div>`
+      </div>`;
     // 生成结果表
     $("#responseData").html(htmlData);
     // 生成跳转页签
