@@ -101,8 +101,8 @@ def update_dict(data, keys, value, ident=0):
         update_dict(data[keys[ident]], keys, value, ident + 1)
 
 
-def get_request_data(keys, full_data, data, ident=0):
-    for v in full_data[keys[ident]]:
+def get_request_data(keys, parse_data, data, ident=0):
+    for v in parse_data[keys[ident]]:
         new_data = deepcopy(data)
         # key值特殊字符还原及子key值的拆分
         new_keys = [reset_special_character(key) for key in keys[ident].split("|")]
@@ -117,12 +117,9 @@ def get_request_data(keys, full_data, data, ident=0):
         if ident + 1 == len(keys):
             yield new_data
         else:
-            yield from get_request_data(keys, full_data, new_data, ident + 1)
+            yield from get_request_data(keys, parse_data, new_data, ident + 1)
 
 
 def get_full_request_data(data, full_data):
-    keys, full_data = parse_full_data(full_data)
-    request_data = list(get_request_data(keys, full_data, data))
-    return request_data
-
-
+    keys, parse_data = parse_full_data(full_data)
+    return list(get_request_data(keys, parse_data, data)) if parse_data else [data]

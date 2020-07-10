@@ -89,7 +89,7 @@ $("#startTest").click(function(){
     } else {
         var fullData = "";
     }
-    if (randomData != "" && fullData != "") {
+    if (randomTimes != "" && $("#fullTest").is(":checked")) {
         alert("两种测试互斥, 无法同时执行!");
         return
     }

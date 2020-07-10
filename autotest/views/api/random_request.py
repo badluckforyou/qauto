@@ -89,7 +89,7 @@ def parse_random_data(idents, data):
     """解析获取到的规则, 拆分关键字及要执行的代码"""
     length = None
     parse_data = {}
-    try:
+    with suppress(Exception):
         for line in data.splitlines():
             # 跳过空行和注释行
             if not line or line.lstrip(" ").startswith("//"):
@@ -108,8 +108,6 @@ def parse_random_data(idents, data):
             length, new_value = exec_code(ident, code)
             idents[keyword] = [ident, length]
             parse_data.setdefault(keyword, reset_special_character(new_value))
-    except:
-        traceback.print_exc()
     return parse_data
 
 
@@ -132,17 +130,13 @@ def get_random_request_data(data, random_times, random_data):
     request_data = []
     for _ in range(random_times):
         new_data = deepcopy(data)
-        _random_data = parse_random_data(idents, random_data)
+        parse_data = parse_random_data(idents, random_data)
         for k, v in idents.items():
             if v[1] is not None:
                 idents[k] = [(v[0] + 1) % v[1], v[1]]
-        if isinstance(data, dict):
-            for key, value in _random_data.items():
+        if isinstance(new_data, dict):
+            for key, value in parse_data.items():
                 with suppress(Exception):
                     update_dict(new_data, key.split("|"), value)
-        try:
-            send_data = json.dumps(new_data) if data_type != "DICT" else new_data
-        except:
-            send_data = new_data
-        request_data.append(send_data)
+        request_data.append(new_data)
     return request_data

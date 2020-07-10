@@ -136,10 +136,17 @@ def send_request(
         request_data = get_full_request_data(data, full_data)
     else:
         request_data = [data]
+        
+    _request_data = []
+    for r in request_data:
+        with suppress(Exception):
+            r = json.dumps(r) if data_type != "DICT" else r
+        _request_data.append(r)
+
     if send_type == "asynchronous":
-        return async_request(method, url, headers, request_data)
+        return async_request(method, url, headers, _request_data)
     elif send_type == "synchronous":
-        return normal_request(method, url, headers, request_data)
+        return normal_request(method, url, headers, _request_data)
 
 
 # @login_required(login_url="/login/")
